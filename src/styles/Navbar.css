@@ -1,0 +1,173 @@
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-brand svg {
+  color: #0f766e;
+  transition: color 0.3s;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-link {
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #0f766e;
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  transition: color 0.3s;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+.logout-btn:hover {
+  background: #fecaca;
+}
+
+.nav-button {
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.register-btn {
+  background: #fca311;
+  color: #111827;
+}
+
+.register-btn:hover {
+  background: #f59e0b;
+}
+
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.theme-toggle-btn:hover {
+  background: #f3f4f6;
+  color: #0f766e;
+}
+
+/* Dark mode navbar overrides */
+html.dark .navbar {
+  background: #090d16;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark .nav-brand {
+  color: #ffffff;
+}
+
+html.dark .nav-brand svg {
+  color: #14b8a6;
+}
+
+html.dark .nav-link {
+  color: #9ca3af;
+}
+
+html.dark .nav-link:hover,
+html.dark .nav-link.active {
+  color: #2dd4bf;
+}
+
+html.dark .user-name {
+  color: #ffffff;
+}
+
+html.dark .theme-toggle-btn {
+  color: #cbd5e1;
+}
+
+html.dark .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #2dd4bf;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 20px;
+  }
+
+  .nav-links {
+    gap: 16px;
+  }
+
+  .nav-auth {
+    gap: 12px;
+    width: 100%;
+    margin-top: 12px;
+  }
+}

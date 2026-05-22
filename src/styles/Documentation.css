@@ -1,0 +1,424 @@
+/* Premium Documentation Stylesheet - Cohesive Teal & Dark Theme */
+
+.docs-page {
+  min-height: 100vh;
+  background-color: #030712;
+  color: #f3f4f6;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle background glow effect */
+.docs-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.08) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.docs-header {
+  position: relative;
+  background: #090d16;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 80px 20px 60px;
+  text-align: center;
+  z-index: 1;
+}
+
+.docs-header h1 {
+  font-size: 42px;
+  margin: 0 0 16px;
+  font-weight: 850;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.docs-header p {
+  font-size: 18px;
+  color: #9ca3af;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.docs-content {
+  position: relative;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 50px 24px;
+  z-index: 1;
+}
+
+.docs-nav {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.nav-section {
+  margin-bottom: 28px;
+}
+
+.nav-section:last-child {
+  margin-bottom: 0;
+}
+
+.nav-section h3 {
+  font-size: 12px;
+  font-weight: 800;
+  color: #14b8a6;
+  margin: 0 0 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nav-section a {
+  display: block;
+  padding: 10px 14px;
+  color: #9ca3af;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14.5px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-section a:hover {
+  background: rgba(20, 184, 166, 0.08);
+  color: #2dd4bf;
+  transform: translateX(4px);
+}
+
+.docs-main {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 48px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.doc-section {
+  margin-bottom: 56px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.doc-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.doc-section h2 {
+  font-size: 30px;
+  color: #ffffff;
+  margin: 0 0 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.doc-section h3 {
+  font-size: 17px;
+  color: #e2e8f0;
+  margin: 32px 0 16px;
+  font-weight: 700;
+}
+
+.doc-section p {
+  color: #9ca3af;
+  font-size: 15.5px;
+  line-height: 1.7;
+  margin: 0 0 20px;
+}
+
+.endpoint-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  width: fit-content;
+}
+
+.endpoint-header .method {
+  display: inline-block;
+  background: rgba(20, 184, 166, 0.12);
+  color: #2dd4bf;
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.endpoint-header .path {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  color: #e2e8f0;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.code-block {
+  position: relative;
+  background: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  padding: 20px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin: 16px 0;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.code-block pre {
+  margin: 0;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.copy-btn svg.success {
+  color: #10b981;
+}
+
+.headers-table,
+.errors-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.headers-table thead,
+.errors-table thead {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.headers-table th,
+.errors-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 14.5px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.headers-table td,
+.errors-table td {
+  padding: 14px 16px;
+  color: #cbd5e1;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.headers-table tr:last-child td,
+.errors-table tr:last-child td {
+  border-bottom: none;
+}
+
+.headers-table tr:hover,
+.errors-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 1024px) {
+  .docs-content {
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .docs-content {
+    grid-template-columns: 1fr;
+    padding: 30px 16px;
+  }
+
+  .docs-nav {
+    position: static;
+    margin-bottom: 24px;
+  }
+
+  .docs-main {
+    padding: 30px 20px;
+  }
+  
+  .docs-header h1 {
+    font-size: 32px;
+  }
+}
+
+/* Light Mode Overrides for Documentation Page */
+html.light .docs-page {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+html.light .docs-page::before {
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.05) 0%, transparent 70%);
+}
+
+html.light .docs-header {
+  background: #f1f5f9;
+  border-bottom-color: #e2e8f0;
+}
+
+html.light .docs-header h1 {
+  background: linear-gradient(135deg, #0f172a 0%, #0f766e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.light .docs-header p {
+  color: #4b5563;
+}
+
+html.light .docs-nav {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+html.light .nav-section h3 {
+  color: #0f766e;
+}
+
+html.light .nav-section a {
+  color: #4b5563;
+}
+
+html.light .nav-section a:hover {
+  background: rgba(15, 118, 110, 0.08);
+  color: #0f766e;
+}
+
+html.light .docs-main {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+html.light .doc-section {
+  border-bottom-color: #e2e8f0;
+}
+
+html.light .doc-section h2 {
+  color: #0f172a;
+}
+
+html.light .doc-section h3 {
+  color: #1e293b;
+}
+
+html.light .doc-section p {
+  color: #4b5563;
+}
+
+html.light .endpoint-header {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+html.light .endpoint-header .method {
+  background: rgba(15, 118, 110, 0.08);
+  color: #0f766e;
+  border-color: rgba(15, 118, 110, 0.2);
+}
+
+html.light .endpoint-header .path {
+  color: #1e293b;
+}
+
+html.light .code-block {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  color: #1e293b;
+}
+
+html.light .copy-btn {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+
+html.light .copy-btn:hover {
+  background: #f3f4f6;
+  color: #0f172a;
+}
+
+html.light .headers-table,
+html.light .errors-table {
+  border-color: #cbd5e1;
+}
+
+html.light .headers-table thead,
+html.light .errors-table thead {
+  background: #f1f5f9;
+}
+
+html.light .headers-table th,
+html.light .errors-table th {
+  color: #0f172a;
+  border-bottom-color: #cbd5e1;
+}
+
+html.light .headers-table td,
+html.light .errors-table td {
+  color: #334155;
+  border-bottom-color: #e2e8f0;
+}
+
+html.light .headers-table tr:hover,
+html.light .errors-table tr:hover {
+  background: #f8fafc;
+}

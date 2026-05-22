@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MailBridge Demo Client</title>
+  <!-- Google Fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-bg">
+    <div class="glow-sphere glow-purple"></div>
+    <div class="glow-sphere glow-blue"></div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <main class="app-container">
+    <!-- LOG IN PAGE -->
+    <section id="page-login" class="page-view active">
+      <div class="card glassmorphism">
+        <div class="card-header">
+          <div class="logo-badge">MB</div>
+          <h1>Welcome Back</h1>
+          <p class="subtitle">Log in to your isolated sandbox account</p>
+        </div>
+
+        <form id="form-login" class="auth-form">
+          <div class="input-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" required placeholder="name@domain.com">
+          </div>
+          <div class="input-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn-primary" id="btn-login-submit">
+            <span class="btn-text">Sign In</span>
+            <span class="loader hidden"></span>
+          </button>
+        </form>
+
+        <div class="card-footer">
+          <p>Don't have an account? <a href="#" id="link-to-register">Create one</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTER PAGE -->
+    <section id="page-register" class="page-view">
+      <div class="card glassmorphism">
+        <div class="card-header">
+          <div class="logo-badge">MB</div>
+          <h1>Create Account</h1>
+          <p class="subtitle">Sign up to trigger your Welcome Email</p>
+        </div>
+
+        <form id="form-register" class="auth-form">
+          <div class="input-group">
+            <label for="register-name">Full Name</label>
+            <input type="text" id="register-name" required placeholder="Alex Johnson">
+          </div>
+          <div class="input-group">
+            <label for="register-email">Email Address</label>
+            <input type="email" id="register-email" required placeholder="name@domain.com">
+          </div>
+          <div class="input-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn-primary" id="btn-register-submit">
+            <span class="btn-text">Sign Up & Send Welcome Email</span>
+            <span class="loader hidden"></span>
+          </button>
+        </form>
+
+        <div class="card-footer">
+          <p>Already have an account? <a href="#" id="link-to-login">Sign in</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOME PAGE -->
+    <section id="page-home" class="page-view">
+      <div class="dashboard-container glassmorphism">
+        <header class="db-header">
+          <div class="user-greeting">
+            <span class="badge">Isolated Sandbox Mode</span>
+            <h1 id="home-greeting">Hello, User!</h1>
+            <p>Welcome to your isolated application dashboard.</p>
+          </div>
+          <div class="header-actions">
+            <button id="btn-to-admin" class="btn-secondary" style="margin-right: 8px; border-color: var(--color-primary);">Admin Portal</button>
+            <button id="btn-logout" class="btn-secondary">Log Out</button>
+          </div>
+        </header>
+
+        <div class="db-content">
+          <!-- API Status Card -->
+          <div class="db-card status-card">
+            <h3>MailBridge API Key</h3>
+            <p class="card-desc">The following API key is being used to deliver account alerts:</p>
+            <div class="api-key-container">
+              <input type="text" id="api-key-input" readonly value="mb_174263ffaf8ed464635e566abbf7c58d">
+              <button id="btn-copy-key" class="btn-icon" title="Copy Key">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+            <div class="badge-row">
+              <span class="status-indicator active"></span>
+              <span class="status-label">Active & Configured</span>
+            </div>
+          </div>
+
+          <!-- Sandbox Details Card -->
+          <div class="db-card details-card">
+            <h3>Local Simulation Log</h3>
+            <p class="card-desc">History of API email actions triggered by this app session:</p>
+            <div id="log-list" class="log-list">
+              <div class="empty-log">No actions logged yet in this session.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-footer">
+          <p>Powered by MailBridge MERN Email Engine • Operating on <span class="url-code">http://localhost:5000</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN PAGE -->
+    <section id="page-admin" class="page-view">
+      <div class="dashboard-container glassmorphism" style="max-width: 100%;">
+        <header class="db-header">
+          <div class="user-greeting">
+            <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: var(--color-primary-hover); border-color: rgba(139, 92, 246, 0.25);">Admin Portal</span>
+            <h1>Email Template Customizer</h1>
+            <p>Design your own custom styled email template and generate API payloads.</p>
+          </div>
+          <button id="btn-admin-back" class="btn-secondary">Back to Dashboard</button>
+        </header>
+
+        <div class="db-content" style="grid-template-columns: 1fr 1.2fr; gap: 32px; align-items: start;">
+          <!-- Editor Panel (Left) -->
+          <div class="db-card" style="display: flex; flex-direction: column; gap: 20px; max-height: 75vh; overflow-y: auto; padding-right: 8px;">
+            <div>
+              <h3 style="font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">Brand Details</h3>
+              <div class="input-group">
+                <label for="brand-name">Brand Name</label>
+                <input type="text" id="brand-name" value="Acme Corporation">
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">Theme Styling</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div class="input-group">
+                  <label for="color-header-bg">Header BG</label>
+                  <input type="color" id="color-header-bg" value="#1e293b" style="height: 42px; padding: 2px; cursor: pointer;">
+                </div>
+                <div class="input-group">
+                  <label for="color-header-text">Header Text</label>
+                  <input type="color" id="color-header-text" value="#ffffff" style="height: 42px; padding: 2px; cursor: pointer;">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="input-group">
+                  <label for="color-button-bg">Button Color</label>
+                  <input type="color" id="color-button-bg" value="#8b5cf6" style="height: 42px; padding: 2px; cursor: pointer;">
+                </div>
+                <div class="input-group">
+                  <label for="color-bg-light">Email Outside BG</label>
+                  <input type="color" id="color-bg-light" value="#f6f7f9" style="height: 42px; padding: 2px; cursor: pointer;">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">Email Content</h3>
+              <div class="input-group" style="margin-bottom: 12px;">
+                <label for="email-title">Email Heading</label>
+                <input type="text" id="email-title" value="Welcome to the Future">
+              </div>
+              <div class="input-group" style="margin-bottom: 12px;">
+                <label for="email-message">Email Body Text</label>
+                <textarea id="email-message" rows="4" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: var(--color-text-main); font-family: var(--font-primary); font-size: 14px; width: 100%; resize: vertical;">Thank you for joining our platform. We are excited to help you automate your workflows and build incredible applications.</textarea>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="input-group">
+                  <label for="email-action-text">Button Text</label>
+                  <input type="text" id="email-action-text" value="Get Started Now">
+                </div>
+                <div class="input-group">
+                  <label for="email-action-url">Button URL</label>
+                  <input type="text" id="email-action-url" value="https://example.com/start">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">Footer Settings</h3>
+              <div class="input-group">
+                <label for="email-footer">Footer Copyright</label>
+                <input type="text" id="email-footer" value="© 2026 Acme Corp. All rights reserved.">
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px; margin-top: 8px;">
+              <h3 style="font-size: 16px; margin-bottom: 12px;">Send Test Delivery</h3>
+              <div class="input-group" style="margin-bottom: 12px;">
+                <label for="test-recipient">Recipient Email</label>
+                <input type="email" id="test-recipient" placeholder="your-email@gmail.com">
+              </div>
+              <button id="btn-send-test" class="btn-primary" style="width: 100%;">
+                <span class="btn-text">Send Custom Styled Email</span>
+                <span class="loader hidden"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview & API Panel (Right) -->
+          <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+            <div class="preview-tabs" style="display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; gap: 4px;">
+              <button class="tab-btn active" id="tab-btn-preview" style="flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; color: var(--color-text-muted); cursor: pointer; font-weight: 600; font-family: var(--font-primary); font-size: 14px; transition: var(--transition-smooth);">Live Email Preview</button>
+              <button class="tab-btn" id="tab-btn-api" style="flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; color: var(--color-text-muted); cursor: pointer; font-weight: 600; font-family: var(--font-primary); font-size: 14px; transition: var(--transition-smooth);">Integration API</button>
+            </div>
+
+            <!-- Live Preview Tab Content -->
+            <div id="tab-content-preview" class="tab-content-view active" style="width: 100%;">
+              <div style="background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);">
+                <div style="background: rgba(255,255,255,0.02); padding: 12px 18px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 4px;">
+                  <div><span style="color: var(--color-text-muted);">From:</span> <strong>MailBridge Sandbox &lt;noreply@mailbridge.com&gt;</strong></div>
+                  <div><span style="color: var(--color-text-muted);">Subject:</span> <strong id="preview-email-subject">Welcome to the Future</strong></div>
+                </div>
+                <div style="background: #ffffff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 380px;">
+                  <div id="email-preview-container" style="width: 100%; max-width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- API Code Tab Content -->
+            <div id="tab-content-api" class="tab-content-view" style="display: none; width: 100%;">
+              <p class="card-desc" style="margin-bottom: 12px;">Trigger this custom-styled email dynamically by sending the generated HTML payload to the <code>/api/v1/emails/custom</code> endpoint:</p>
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden;">
+                <div style="background: rgba(255,255,255,0.03); padding: 10px 18px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-family: monospace; color: var(--color-primary-hover);">API Payload Integration</span>
+                  <button id="btn-copy-code" class="btn-secondary" style="padding: 4px 10px; font-size: 11px; border-radius: 6px;">Copy Code</button>
+                </div>
+                <pre style="margin: 0; padding: 18px; overflow-x: auto; max-height: 340px; font-family: monospace; font-size: 12px; color: var(--color-success); line-height: 1.5;"><code id="api-payload-code"></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
