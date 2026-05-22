@@ -1,6 +1,6 @@
 // Configuration
 const API_URL = 'http://localhost:5000/api/v1';
-const DEFAULT_API_KEY = 'mb_1dd8f478be6f69da6431c69133fb2374';
+const DEFAULT_API_KEY = '';
 
 // DOM Pages
 const pageLogin = document.getElementById('page-login');
