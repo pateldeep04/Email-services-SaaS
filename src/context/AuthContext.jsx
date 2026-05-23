@@ -112,7 +112,10 @@ export function AuthProvider({ children }) {
       const updatedUser = { 
         ...user, 
         templateSettings: data.templateSettings,
-        useGlobalTemplateSettings: data.useGlobalTemplateSettings
+        useGlobalTemplateSettings: data.useGlobalTemplateSettings,
+        senderName: data.senderName,
+        senderEmail: data.senderEmail,
+        smtpSettings: data.smtpSettings
       };
       setUser(updatedUser);
       localStorage.setItem("mailbridge_user", JSON.stringify(updatedUser));

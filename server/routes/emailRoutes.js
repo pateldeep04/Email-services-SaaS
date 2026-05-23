@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import EmailLog from "../models/EmailLog.js";
 import OtpToken from "../models/OtpToken.js";
+import User from "../models/User.js";
 import { requireApiKey } from "../middleware/apiKey.js";
 import { sendEmail, testSmtpConnection } from "../services/emailService.js";
 import { memoryStore } from "../services/memoryStore.js";
@@ -54,15 +55,45 @@ async function saveLog(log) {
 }
 
 async function deliver(type, to, template, metadata = {}, userId = null, apiKey = null, keyStyle = "Global Style") {
+  let fromName = metadata.fromName;
+  let fromEmail = metadata.fromEmail;
+
   try {
-    const result = await sendEmail({ to, ...template });
+    let customSmtp = null;
+
+    if (userId) {
+      const user = hasMongo()
+        ? await User.findById(userId)
+        : await memoryStore.findUserById(userId);
+      if (user) {
+        if (user.smtpSettings && user.smtpSettings.enabled) {
+          customSmtp = user.smtpSettings;
+        }
+        if (!fromName) fromName = user.senderName;
+        if (!fromEmail) fromEmail = user.senderEmail;
+      }
+    }
+
+    let senderProfile = null;
+    if (fromName || fromEmail) {
+      senderProfile = { fromName, fromEmail };
+    }
+
+    const result = await sendEmail({ to, ...template }, customSmtp, senderProfile);
     const log = await saveLog({
       type,
       to,
       subject: template.subject,
       status: result.status,
       providerMessageId: result.messageId,
-      metadata: { ...metadata, note: result.note },
+      metadata: { 
+        ...metadata, 
+        note: result.note, 
+        senderName: fromName || "", 
+        senderEmail: fromEmail || "",
+        hasCustomSender: Boolean(fromName || fromEmail),
+        smtpType: customSmtp ? "custom" : "global"
+      },
       userId,
       apiKey,
       keyStyle
@@ -76,13 +107,29 @@ async function deliver(type, to, template, metadata = {}, userId = null, apiKey 
       note: result.note
     };
   } catch (error) {
+    let finalSmtpType = "global";
+    if (userId) {
+      const user = hasMongo()
+        ? await User.findById(userId)
+        : await memoryStore.findUserById(userId);
+      if (user && user.smtpSettings && user.smtpSettings.enabled) {
+        finalSmtpType = "custom";
+      }
+    }
+
     await saveLog({
       type,
       to,
       subject: template.subject,
       status: "failed",
       error: error.message,
-      metadata,
+      metadata: { 
+        ...metadata, 
+        senderName: fromName || "", 
+        senderEmail: fromEmail || "",
+        hasCustomSender: Boolean(fromName || fromEmail),
+        smtpType: finalSmtpType
+      },
       userId,
       apiKey,
       keyStyle
@@ -128,10 +175,13 @@ router.post("/otp", async (req, res, next) => {
     const codeHash = await bcrypt.hash(code, 10);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
+    const userId = req.apiClient?._id;
+    const apiKey = req.apiKeyUsed;
+
     if (hasMongo()) {
-      await OtpToken.create({ email: to, purpose, codeHash, expiresAt });
+      await OtpToken.create({ email: to, purpose, codeHash, expiresAt, userId, apiKey });
     } else {
-      await memoryStore.createOtp({ email: to, purpose, codeHash, expiresAt });
+      await memoryStore.createOtp({ email: to, purpose, codeHash, expiresAt, userId, apiKey });
     }
 
     const response = await deliver(
@@ -139,8 +189,8 @@ router.post("/otp", async (req, res, next) => {
       to,
       otpTemplate({ code, purpose }, getTemplateSettings(req)),
       { ...req.body, code, expiresAt },
-      req.apiClient?._id,
-      req.apiKeyUsed,
+      userId,
+      apiKey,
       getStyleNameUsed(req)
     );
     res.status(201).json({ ...response, expiresInMinutes: 10 });
@@ -154,12 +204,17 @@ router.post("/verify-otp", async (req, res, next) => {
     const { to, code, purpose = "login" } = req.body;
     validateEmail(to);
 
-    const token = hasMongo;
     let foundToken;
     if (hasMongo()) {
-      foundToken = await OtpToken.findOne({ email: to, purpose, used: false }).sort({ createdAt: -1 });
+      const query = { email: to, purpose, used: false };
+      if (req.apiClient?._id) {
+        query.userId = req.apiClient._id;
+      } else if (req.apiKeyUsed) {
+        query.apiKey = req.apiKeyUsed;
+      }
+      foundToken = await OtpToken.findOne(query).sort({ createdAt: -1 });
     } else {
-      foundToken = await memoryStore.findLatestOtp(to, purpose);
+      foundToken = await memoryStore.findLatestOtp(to, purpose, req.apiClient?._id, req.apiKeyUsed);
     }
 
     if (!foundToken || new Date(foundToken.expiresAt).getTime() < Date.now()) {

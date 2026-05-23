@@ -1,16 +1,19 @@
 // Configuration
 const API_URL = 'http://localhost:5000/api/v1';
-const DEFAULT_API_KEY = 'mb_1dd8f478be6f69da6431c69133fb2374';
+const DEFAULT_API_KEY = '';
 
 // DOM Pages
 const pageLogin = document.getElementById('page-login');
 const pageRegister = document.getElementById('page-register');
 const pageHome = document.getElementById('page-home');
 const pageAdmin = document.getElementById('page-admin');
+const pageLoginOtp = document.getElementById('page-login-otp');
 
 // DOM Forms & Buttons
 const formLogin = document.getElementById('form-login');
 const formRegister = document.getElementById('form-register');
+const formOtpSend = document.getElementById('form-otp-send');
+const formOtpVerify = document.getElementById('form-otp-verify');
 
 const linkToRegister = document.getElementById('link-to-register');
 const linkToLogin = document.getElementById('link-to-login');
@@ -20,6 +23,13 @@ const btnAdminBack = document.getElementById('btn-admin-back');
 
 const btnLoginSubmit = document.getElementById('btn-login-submit');
 const btnRegisterSubmit = document.getElementById('btn-register-submit');
+const btnOtpSendSubmit = document.getElementById('btn-otp-send-submit');
+const btnOtpVerifySubmit = document.getElementById('btn-otp-verify-submit');
+const btnOtpResend = document.getElementById('btn-otp-resend');
+
+const linkToOtpLogin = document.getElementById('link-to-otp-login');
+const linkToPasswordLogin = document.getElementById('link-to-password-login');
+const linkOtpToRegister = document.getElementById('link-otp-to-register');
 
 // Dashboard Elements
 const homeGreeting = document.getElementById('home-greeting');
@@ -74,6 +84,27 @@ document.addEventListener('DOMContentLoaded', () => {
   linkToLogin.addEventListener('click', (e) => {
     e.preventDefault();
     switchPage('login');
+  });
+
+  linkToOtpLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchPage('login-otp');
+  });
+
+  linkToPasswordLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchPage('login');
+  });
+
+  linkOtpToRegister.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchPage('register');
+  });
+
+  btnOtpResend.addEventListener('click', () => {
+    formOtpVerify.classList.add('hidden');
+    formOtpSend.classList.remove('hidden');
+    document.getElementById('otp-code').value = '';
   });
 
   btnLogout.addEventListener('click', () => {
@@ -131,7 +162,36 @@ document.addEventListener('DOMContentLoaded', () => {
   // Form Submissions
   formRegister.addEventListener('submit', handleRegister);
   formLogin.addEventListener('submit', handleLogin);
+  formOtpSend.addEventListener('submit', handleOtpSend);
+  formOtpVerify.addEventListener('submit', handleOtpVerify);
   btnSendTest.addEventListener('click', handleSendTest);
+
+  // Playground Bindings
+  const playEndpoint = document.getElementById('play-endpoint');
+  const playSenderOverrideToggle = document.getElementById('play-sender-override-toggle');
+  const playSenderOverrideFields = document.getElementById('play-sender-override-fields');
+  const formPlayground = document.getElementById('form-playground');
+
+  playEndpoint.addEventListener('change', (e) => {
+    const selected = e.target.value;
+    document.querySelectorAll('.play-param-group').forEach(group => {
+      group.classList.add('hidden');
+    });
+    const targetGroup = document.getElementById(`play-group-${selected}`);
+    if (targetGroup) {
+      targetGroup.classList.remove('hidden');
+    }
+  });
+
+  playSenderOverrideToggle.addEventListener('change', (e) => {
+    if (e.target.checked) {
+      playSenderOverrideFields.classList.remove('hidden');
+    } else {
+      playSenderOverrideFields.classList.add('hidden');
+    }
+  });
+
+  formPlayground.addEventListener('submit', handlePlaygroundSubmit);
 });
 
 // Navigation / View Router
@@ -140,6 +200,15 @@ function switchPage(pageId) {
   pageRegister.classList.remove('active');
   pageHome.classList.remove('active');
   pageAdmin.classList.remove('active');
+  pageLoginOtp.classList.remove('active');
+
+  // Reset OTP forms when switching
+  if (pageId !== 'login-otp') {
+    formOtpVerify.classList.add('hidden');
+    formOtpSend.classList.remove('hidden');
+    formOtpSend.reset();
+    formOtpVerify.reset();
+  }
 
   // Display page with slide animation
   setTimeout(() => {
@@ -151,6 +220,8 @@ function switchPage(pageId) {
       pageHome.classList.add('active');
     } else if (pageId === 'admin') {
       pageAdmin.classList.add('active');
+    } else if (pageId === 'login-otp') {
+      pageLoginOtp.classList.add('active');
     }
   }, 100);
 }
@@ -168,6 +239,10 @@ function checkSession() {
 
 function setupDashboard(user) {
   homeGreeting.textContent = `Hello, ${user.name}!`;
+  const playToInput = document.getElementById('play-to');
+  if (playToInput) {
+    playToInput.value = user.email || '';
+  }
   renderLogs();
 }
 
@@ -473,5 +548,186 @@ function setLoading(button, isLoading) {
     button.disabled = false;
     textEl.style.opacity = '1';
     loaderEl.classList.add('hidden');
+  }
+}
+
+// OTP Send Handler
+async function handleOtpSend(e) {
+  e.preventDefault();
+  const email = document.getElementById('otp-email').value.trim();
+
+  // Validate that user exists in localStorage
+  const users = getUsers();
+  const userExists = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+  if (!userExists) {
+    showToast('Email not registered. Please sign up first.', 'error');
+    return;
+  }
+
+  setLoading(btnOtpSendSubmit, true);
+
+  try {
+    const response = await fetch(`${API_URL}/emails/otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKeyInput.value
+      },
+      body: JSON.stringify({
+        to: email,
+        purpose: 'login'
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to send OTP code');
+    }
+
+    showToast('OTP sent successfully! Check your email.', 'success');
+    logAction('otp', email, true, `OTP code generated and sent. MessageId: ${data.messageId || 'Simulated'}`);
+
+    // Transition to Step 2
+    document.getElementById('otp-verify-email-readonly').value = email;
+    formOtpSend.classList.add('hidden');
+    formOtpVerify.classList.remove('hidden');
+    document.getElementById('otp-code').focus();
+
+  } catch (error) {
+    showToast(error.message, 'error');
+    logAction('otp', email, false, error.message);
+  } finally {
+    setLoading(btnOtpSendSubmit, false);
+  }
+}
+
+// OTP Verify Handler
+async function handleOtpVerify(e) {
+  e.preventDefault();
+  const email = document.getElementById('otp-verify-email-readonly').value.trim();
+  const code = document.getElementById('otp-code').value.trim();
+
+  setLoading(btnOtpVerifySubmit, true);
+
+  try {
+    const response = await fetch(`${API_URL}/emails/verify-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKeyInput.value
+      },
+      body: JSON.stringify({
+        to: email,
+        code: code,
+        purpose: 'login'
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Invalid or expired OTP');
+    }
+
+    if (data.verified) {
+      showToast('OTP verified successfully! Welcome back.', 'success');
+      logAction('verify-otp', email, true, `OTP successfully verified.`);
+
+      const users = getUsers();
+      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+      sessionStorage.setItem('mailbridge_demo_current_user', JSON.stringify({ name: user.name, email: user.email }));
+      setupDashboard(user);
+
+      formOtpSend.reset();
+      formOtpVerify.reset();
+      switchPage('home');
+    } else {
+      throw new Error(data.error || 'Verification failed');
+    }
+
+  } catch (error) {
+    showToast(error.message, 'error');
+    logAction('verify-otp', email, false, error.message);
+  } finally {
+    setLoading(btnOtpVerifySubmit, false);
+  }
+}
+
+// Playground API Request Handler
+async function handlePlaygroundSubmit(e) {
+  e.preventDefault();
+  
+  const endpoint = document.getElementById('play-endpoint').value;
+  const to = document.getElementById('play-to').value.trim();
+  const btnPlaySubmit = document.getElementById('btn-play-submit');
+  const responseContainer = document.getElementById('play-response-container');
+  const responseCode = document.getElementById('play-response-code');
+
+  setLoading(btnPlaySubmit, true);
+  responseContainer.classList.add('hidden');
+  responseCode.textContent = '';
+
+  let body = { to };
+
+  // Collect specific parameters
+  if (endpoint === 'welcome') {
+    body.name = document.getElementById('play-welcome-name').value.trim();
+    body.company = document.getElementById('play-welcome-company').value.trim();
+  } else if (endpoint === 'otp') {
+    body.purpose = document.getElementById('play-otp-purpose').value.trim();
+  } else if (endpoint === 'verify-otp') {
+    body.code = document.getElementById('play-verify-code').value.trim();
+    body.purpose = document.getElementById('play-verify-purpose').value.trim();
+  } else if (endpoint === 'forgot-password') {
+    body.resetUrl = document.getElementById('play-forgot-reset-url').value.trim();
+  } else if (endpoint === 'notification') {
+    body.title = document.getElementById('play-notif-title').value.trim();
+    body.message = document.getElementById('play-notif-message').value.trim();
+  } else if (endpoint === 'custom') {
+    body.subject = document.getElementById('play-custom-subject').value.trim();
+    const plainMsg = document.getElementById('play-custom-message').value.trim();
+    if (plainMsg) body.message = plainMsg;
+    const htmlMsg = document.getElementById('play-custom-html').value.trim();
+    if (htmlMsg) body.html = htmlMsg;
+  }
+
+  // Sender override options
+  const senderOverride = document.getElementById('play-sender-override-toggle').checked;
+  if (senderOverride) {
+    const fromName = document.getElementById('play-from-name').value.trim();
+    const fromEmail = document.getElementById('play-from-email').value.trim();
+    if (fromName) body.fromName = fromName;
+    if (fromEmail) body.fromEmail = fromEmail;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/emails/${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKeyInput.value
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+
+    responseCode.textContent = JSON.stringify(data, null, 2);
+    responseContainer.classList.remove('hidden');
+
+    if (!response.ok) {
+      throw new Error(data.error || `Failed to execute ${endpoint} API call`);
+    }
+
+    showToast(`API Call to /emails/${endpoint} executed successfully!`, 'success');
+    logAction(endpoint, to, true, `API Executed. Response: ${data.messageId || JSON.stringify(data)}`);
+  } catch (error) {
+    showToast(error.message, 'error');
+    logAction(endpoint, to, false, error.message);
+  } finally {
+    setLoading(btnPlaySubmit, false);
   }
 }

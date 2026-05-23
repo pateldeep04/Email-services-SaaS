@@ -45,7 +45,55 @@
         </form>
 
         <div class="card-footer">
-          <p>Don't have an account? <a href="#" id="link-to-register">Create one</a></p>
+          <p>Or, <a href="#" id="link-to-otp-login" style="color: var(--color-secondary);">Sign in with OTP</a></p>
+          <p style="margin-top: 10px;">Don't have an account? <a href="#" id="link-to-register">Create one</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OTP LOG IN PAGE -->
+    <section id="page-login-otp" class="page-view">
+      <div class="card glassmorphism">
+        <div class="card-header">
+          <div class="logo-badge">MB</div>
+          <h1>Passwordless Sign In</h1>
+          <p class="subtitle">Log in using a secure 6-digit OTP code</p>
+        </div>
+
+        <!-- Step 1: Send OTP -->
+        <form id="form-otp-send" class="auth-form">
+          <div class="input-group">
+            <label for="otp-email">Email Address</label>
+            <input type="email" id="otp-email" required placeholder="name@domain.com">
+          </div>
+          <button type="submit" class="btn-primary" id="btn-otp-send-submit">
+            <span class="btn-text">Send Verification Code</span>
+            <span class="loader hidden"></span>
+          </button>
+        </form>
+
+        <!-- Step 2: Verify OTP (initially hidden) -->
+        <form id="form-otp-verify" class="auth-form hidden">
+          <div class="input-group">
+            <label>Recipient Email</label>
+            <input type="email" id="otp-verify-email-readonly" readonly style="opacity: 0.7; cursor: not-allowed; background: rgba(255, 255, 255, 0.02);">
+          </div>
+          <div class="input-group">
+            <label for="otp-code">6-Digit Verification Code</label>
+            <input type="text" id="otp-code" required placeholder="123456" pattern="\d{6}" maxlength="6">
+          </div>
+          <button type="submit" class="btn-primary" id="btn-otp-verify-submit">
+            <span class="btn-text">Verify & Sign In</span>
+            <span class="loader hidden"></span>
+          </button>
+          <button type="button" id="btn-otp-resend" class="btn-secondary" style="margin-top: -8px;">
+            <span class="btn-text">Change Email / Resend</span>
+          </button>
+        </form>
+
+        <div class="card-footer">
+          <p>Or, <a href="#" id="link-to-password-login" style="color: var(--color-primary-hover);">Sign in with Password</a></p>
+          <p style="margin-top: 10px;">Don't have an account? <a href="#" id="link-otp-to-register">Create one</a></p>
         </div>
       </div>
     </section>
@@ -100,27 +148,153 @@
         </header>
 
         <div class="db-content">
-          <!-- API Status Card -->
-          <div class="db-card status-card">
-            <h3>MailBridge API Key</h3>
-            <p class="card-desc">The following API key is being used to deliver account alerts:</p>
-            <div class="api-key-container">
-              <input type="text" id="api-key-input" readonly value="mb_174263ffaf8ed464635e566abbf7c58d">
-              <button id="btn-copy-key" class="btn-icon" title="Copy Key">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              </button>
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- API Status Card -->
+            <div class="db-card status-card">
+              <h3>MailBridge API Key</h3>
+              <p class="card-desc">The following API key is being used to deliver account alerts:</p>
+              <div class="api-key-container">
+                <input type="text" id="api-key-input" readonly value="mb_174263ffaf8ed464635e566abbf7c58d">
+                <button id="btn-copy-key" class="btn-icon" title="Copy Key">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+              <div class="badge-row">
+                <span class="status-indicator active"></span>
+                <span class="status-label">Active & Configured</span>
+              </div>
             </div>
-            <div class="badge-row">
-              <span class="status-indicator active"></span>
-              <span class="status-label">Active & Configured</span>
+
+            <!-- API Playground Card -->
+            <div class="db-card playground-card">
+              <h3>Trigger API Mailer Playground</h3>
+              <p class="card-desc" style="margin-bottom: 12px;">Select any MailBridge endpoint to test real email deliveries.</p>
+              
+              <div class="input-group" style="margin-bottom: 12px;">
+                <label for="play-endpoint">Select API Endpoint</label>
+                <select id="play-endpoint" class="select-field" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; color: var(--color-text-main); font-family: var(--font-primary); width: 100%; cursor: pointer; outline: none;">
+                  <option value="welcome">Welcome Email (POST /emails/welcome)</option>
+                  <option value="otp">Send OTP (POST /emails/otp)</option>
+                  <option value="verify-otp">Verify OTP (POST /emails/verify-otp)</option>
+                  <option value="forgot-password">Forgot Password (POST /emails/forgot-password)</option>
+                  <option value="notification">Notification (POST /emails/notification)</option>
+                  <option value="custom">Custom Email (POST /emails/custom)</option>
+                </select>
+              </div>
+
+              <!-- Shared / Dynamic fields container -->
+              <form id="form-playground" class="auth-form" style="gap: 12px;">
+                <div class="input-group">
+                  <label for="play-to">Recipient Email (to)</label>
+                  <input type="email" id="play-to" required placeholder="recipient@domain.com">
+                </div>
+
+                <!-- welcome parameters -->
+                <div id="play-group-welcome" class="play-param-group">
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-welcome-name">Name</label>
+                    <input type="text" id="play-welcome-name" value="there">
+                  </div>
+                  <div class="input-group">
+                    <label for="play-welcome-company">Company</label>
+                    <input type="text" id="play-welcome-company" value="your company">
+                  </div>
+                </div>
+
+                <!-- otp parameters -->
+                <div id="play-group-otp" class="play-param-group hidden">
+                  <div class="input-group">
+                    <label for="play-otp-purpose">Purpose</label>
+                    <input type="text" id="play-otp-purpose" value="login">
+                  </div>
+                </div>
+
+                <!-- verify-otp parameters -->
+                <div id="play-group-verify-otp" class="play-param-group hidden">
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-verify-code">6-Digit Code</label>
+                    <input type="text" id="play-verify-code" placeholder="123456" maxlength="6">
+                  </div>
+                  <div class="input-group">
+                    <label for="play-verify-purpose">Purpose</label>
+                    <input type="text" id="play-verify-purpose" value="login">
+                  </div>
+                </div>
+
+                <!-- forgot-password parameters -->
+                <div id="play-group-forgot-password" class="play-param-group hidden">
+                  <div class="input-group">
+                    <label for="play-forgot-reset-url">Reset URL (resetUrl)</label>
+                    <input type="text" id="play-forgot-reset-url" value="https://mailbridge.io/reset-password?token=123">
+                  </div>
+                </div>
+
+                <!-- notification parameters -->
+                <div id="play-group-notification" class="play-param-group hidden">
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-notif-title">Title</label>
+                    <input type="text" id="play-notif-title" value="Security Alert">
+                  </div>
+                  <div class="input-group">
+                    <label for="play-notif-message">Message</label>
+                    <textarea id="play-notif-message" rows="3" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: var(--color-text-main); font-family: var(--font-primary); font-size: 14px; width: 100%; resize: vertical; outline: none; border-color: rgba(255, 255, 255, 0.08);">A login attempt was detected from a new location. Please review your account logs.</textarea>
+                  </div>
+                </div>
+
+                <!-- custom parameters -->
+                <div id="play-group-custom" class="play-param-group hidden">
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-custom-subject">Subject</label>
+                    <input type="text" id="play-custom-subject" placeholder="Enter Subject" value="Custom Alert Notice">
+                  </div>
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-custom-message">Plain Message</label>
+                    <textarea id="play-custom-message" rows="2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: var(--color-text-main); font-family: var(--font-primary); font-size: 14px; width: 100%; resize: vertical; outline: none;" placeholder="Enter plain text message...">Hello, this is a custom transactional notification alert.</textarea>
+                  </div>
+                  <div class="input-group">
+                    <label for="play-custom-html">HTML Body (Optional)</label>
+                    <textarea id="play-custom-html" rows="2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: var(--color-text-main); font-family: var(--font-primary); font-size: 14px; width: 100%; resize: vertical; outline: none;" placeholder="e.g. <div style='color:red;'>Custom html</div>"></textarea>
+                  </div>
+                </div>
+
+                <!-- Custom Sender Overrides (Allows testing custom domain settings) -->
+                <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; margin-top: 8px;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; user-select: none; color: var(--color-text-muted);">
+                    <input type="checkbox" id="play-sender-override-toggle" style="width: 15px; height: 15px; cursor: pointer;">
+                    Customize Sender Identity (From Name/Email override)
+                  </label>
+                  
+                  <div id="play-sender-override-fields" class="hidden" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    <div class="input-group">
+                      <label for="play-from-name">From Name</label>
+                      <input type="text" id="play-from-name" placeholder="e.g. My Domain Corp">
+                    </div>
+                    <div class="input-group">
+                      <label for="play-from-email">From Email (Custom Domain)</label>
+                      <input type="email" id="play-from-email" placeholder="e.g. patel@deep.com">
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="btn-play-submit" style="width: 100%; margin-top: 12px;">
+                  <span class="btn-text">Execute API Call</span>
+                  <span class="loader hidden"></span>
+                </button>
+              </form>
+
+              <!-- Response display area -->
+              <div id="play-response-container" class="hidden" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); display: block; margin-bottom: 6px;">Response Payload</label>
+                <pre style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 10px; font-family: monospace; font-size: 11px; overflow-x: auto; color: var(--color-success); max-height: 120px; text-align: left;"><code id="play-response-code"></code></pre>
+              </div>
             </div>
           </div>
 
           <!-- Sandbox Details Card -->
-          <div class="db-card details-card">
+          <div class="db-card details-card" style="display: flex; flex-direction: column; max-height: 820px; overflow-y: auto;">
             <h3>Local Simulation Log</h3>
             <p class="card-desc">History of API email actions triggered by this app session:</p>
-            <div id="log-list" class="log-list">
+            <div id="log-list" class="log-list" style="margin-top: 12px; overflow-y: auto; flex: 1; padding-right: 4px;">
               <div class="empty-log">No actions logged yet in this session.</div>
             </div>
           </div>

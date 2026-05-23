@@ -19,7 +19,8 @@ import {
   Eye,
   EyeOff,
   X,
-  Search
+  Search,
+  Settings
 } from "lucide-react";
 import "../styles/Dashboard.css";
 
@@ -83,10 +84,52 @@ export function DashboardPage() {
   // API Key creation configuration options
   const [inheritStyle, setInheritStyle] = useState(true);
 
+  // Custom Sender Profile Settings state
+  const [senderName, setSenderName] = useState("");
+  const [senderEmail, setSenderEmail] = useState("");
+  const [savingSender, setSavingSender] = useState(false);
+  const [senderSaveResult, setSenderSaveResult] = useState(null); // { success: boolean, message: string }
+
+  // Custom SMTP Settings states
+  const [smtpEnabled, setSmtpEnabled] = useState(false);
+  const [smtpHost, setSmtpHost] = useState("");
+  const [smtpPort, setSmtpPort] = useState(587);
+  const [smtpSecure, setSmtpSecure] = useState(false);
+  const [smtpUser, setSmtpUser] = useState("");
+  const [smtpPass, setSmtpPass] = useState("");
+  const [smtpFromEmail, setSmtpFromEmail] = useState("");
+  const [smtpFromName, setSmtpFromName] = useState("");
+  const [hasSmtpPassSaved, setHasSmtpPassSaved] = useState(false);
+  
+  const [testingSmtp, setTestingSmtp] = useState(false);
+  const [smtpTestResult, setSmtpTestResult] = useState(null);
+  const [savingSmtp, setSavingSmtp] = useState(false);
+  const [smtpSaveResult, setSmtpSaveResult] = useState(null);
+
   // Auto-fill test recipient when user loads
   useEffect(() => {
     if (user && !testRecipient) {
       setTestRecipient(user.email);
+    }
+  }, [user]);
+
+  // Synchronize SMTP settings and Sender Profile form values from context user profile state
+  useEffect(() => {
+    if (user) {
+      setSenderName(user.senderName || "");
+      setSenderEmail(user.senderEmail || "");
+      
+      if (user.smtpSettings) {
+        setSmtpEnabled(user.smtpSettings.enabled || false);
+        setSmtpHost(user.smtpSettings.host || "");
+        setSmtpPort(user.smtpSettings.port || 587);
+        setSmtpSecure(user.smtpSettings.secure || false);
+        setSmtpUser(user.smtpSettings.user || "");
+        setSmtpFromEmail(user.smtpSettings.fromEmail || "");
+        setSmtpFromName(user.smtpSettings.fromName || "");
+        setHasSmtpPassSaved(user.smtpSettings.hasPassword || false);
+        setSmtpPass(""); // Clear password field for typing new password
+      }
     }
   }, [user]);
 
@@ -152,6 +195,97 @@ export function DashboardPage() {
       setSaveStatus({ success: false, message: error.message || "Failed to save settings." });
     } finally {
       setSavingSettings(false);
+    }
+  };
+
+  const handleSaveSenderProfile = async (e) => {
+    if (e) e.preventDefault();
+    setSavingSender(true);
+    setSenderSaveResult(null);
+    try {
+      const payload = {
+        senderName,
+        senderEmail
+      };
+      
+      const success = await updateUserSettings(payload);
+      if (success) {
+        setSenderSaveResult({ success: true, message: "Sender Profile saved successfully!" });
+        setTimeout(() => setSenderSaveResult(null), 4000);
+      } else {
+        setSenderSaveResult({ success: false, message: "Failed to save Sender Profile." });
+      }
+      fetchDashboardData();
+    } catch (error) {
+      setSenderSaveResult({ success: false, message: error.message || "Failed to save Sender Profile settings." });
+    } finally {
+      setSavingSender(false);
+    }
+  };
+  
+  const handleTestSmtpConnection = async () => {
+    setTestingSmtp(true);
+    setSmtpTestResult(null);
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/auth/smtp/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          host: smtpHost,
+          port: Number(smtpPort),
+          secure: smtpSecure,
+          user: smtpUser,
+          pass: smtpPass,
+          fromEmail: smtpFromEmail,
+          fromName: smtpFromName
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSmtpTestResult({ success: true, message: "SMTP connection verified successfully!" });
+      } else {
+        setSmtpTestResult({ success: false, message: data.error || "Failed to test SMTP connection." });
+      }
+    } catch (error) {
+      setSmtpTestResult({ success: false, message: error.message || "Error testing connection." });
+    } finally {
+      setTestingSmtp(false);
+    }
+  };
+
+  const handleSaveSmtpSettings = async (e) => {
+    e.preventDefault();
+    setSavingSmtp(true);
+    setSmtpSaveResult(null);
+    try {
+      const payload = {
+        smtpSettings: {
+          enabled: smtpEnabled,
+          host: smtpHost,
+          port: Number(smtpPort),
+          secure: smtpSecure,
+          user: smtpUser,
+          pass: smtpPass,
+          fromEmail: smtpFromEmail,
+          fromName: smtpFromName
+        }
+      };
+      const success = await updateUserSettings(payload);
+      if (success) {
+        setSmtpSaveResult({ success: true, message: "SMTP settings saved successfully!" });
+        setSmtpPass(""); // Clear password field on save
+        setTimeout(() => setSmtpSaveResult(null), 3000);
+      } else {
+        setSmtpSaveResult({ success: false, message: "Failed to save SMTP settings." });
+      }
+      fetchDashboardData();
+    } catch (error) {
+      setSmtpSaveResult({ success: false, message: error.message || "Failed to save SMTP settings." });
+    } finally {
+      setSavingSmtp(false);
     }
   };
   
@@ -286,6 +420,38 @@ export function DashboardPage() {
   const successRate = total > 0 ? Math.round(((sent + simulated) / total) * 100) : 0;
 
   const renderSmtpBanner = () => {
+    if (user && user.smtpSettings && user.smtpSettings.enabled) {
+      return (
+        <div className="smtp-banner success">
+          <div className="smtp-banner-icon">
+            <ShieldCheck size={28} />
+          </div>
+          <div className="smtp-banner-content">
+            <h4>Custom SMTP Connection Enabled</h4>
+            <p>
+              Emails are being delivered via your custom SMTP server (<code>{user.smtpSettings.host}</code>) on behalf of <strong>{user.smtpSettings.fromName || "MailBridge"}</strong> &lt;<code>{user.smtpSettings.fromEmail || user.smtpSettings.user}</code>&gt;.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (user && (user.senderName || user.senderEmail)) {
+      return (
+        <div className="smtp-banner success">
+          <div className="smtp-banner-icon">
+            <ShieldCheck size={28} />
+          </div>
+          <div className="smtp-banner-content">
+            <h4>Custom Sender Identity Configured</h4>
+            <p>
+              Emails will be sent on behalf of <strong>{user.senderName || "No Name"}</strong> &lt;<code>{user.senderEmail || "no-email"}</code>&gt; utilizing the system's email server.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     if (!smtpStatus) return null;
 
     if (smtpStatus.status === "invalid") {
@@ -517,7 +683,7 @@ export function DashboardPage() {
                     <tr key={key._id}>
                       <td className="key-name-cell">
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                          <span style={{ fontWeight: 700, color: "#0f172a" }}>{key.name}</span>
+                          <span style={{ fontWeight: 700, color: "var(--text-main)" }}>{key.name}</span>
                           <div>
                             <span className={`log-style-badge ${key.styleType === "custom" ? "key-specific" : "global"}`} style={{ fontSize: "10px", padding: "2px 6px" }}>
                               {key.styleType === "custom" ? "Custom Style" : "Global Style"}
@@ -849,9 +1015,31 @@ export function DashboardPage() {
                   {new Date(selectedLog.createdAt).toLocaleTimeString()}
                 </p>
               </div>
+              <div className="log-detail-item">
+                <label>Sender Identity</label>
+                <p>
+                  {selectedLog.metadata?.hasCustomSender ? (
+                    <span style={{ fontSize: "13px" }}>
+                      <strong>{selectedLog.metadata.senderName}</strong> &lt;<code>{selectedLog.metadata.senderEmail}</code>&gt;
+                    </span>
+                  ) : (
+                    <span className="log-style-badge global" style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>
+                      System Default
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div className="log-detail-item">
+                <label>SMTP Gateway</label>
+                <p>
+                  <span className={`log-style-badge ${selectedLog.metadata?.smtpType === "custom" ? "key-specific" : "global"}`} style={{ textTransform: "uppercase", fontSize: "11px", fontWeight: "700" }}>
+                    {selectedLog.metadata?.smtpType === "custom" ? "Custom SMTP" : "System SMTP"}
+                  </span>
+                </p>
+              </div>
               <div className="log-detail-item full">
                 <label>Email Subject</label>
-                <p style={{ fontWeight: "600", color: "#0f172a" }}>{selectedLog.subject}</p>
+                <p style={{ fontWeight: "600", color: "var(--text-main)" }}>{selectedLog.subject}</p>
               </div>
               {selectedLog.providerMessageId && (
                 <div className="log-detail-item full">
@@ -984,6 +1172,155 @@ export function DashboardPage() {
     } finally {
       setSendingTest(false);
     }
+  };
+
+  const renderSmtpSettings = () => {
+    return (
+      <div className="smtp-settings-container card">
+        <div className="smtp-settings-header">
+          <h2>Custom SMTP Configuration</h2>
+          <p className="smtp-settings-subtitle">
+            Configure your own custom SMTP servers (like Gmail, SendGrid, Amazon SES, etc.) to send emails through your own domain.
+          </p>
+        </div>
+
+        <form onSubmit={handleSaveSmtpSettings} className="smtp-settings-form">
+          {/* Toggle Switch */}
+          <div className="smtp-toggle-section">
+            <div className="smtp-toggle-info">
+              <h4>Enable Custom SMTP</h4>
+              <p>When enabled, all emails sent via your API keys will use these SMTP settings instead of global defaults.</p>
+            </div>
+            <label className="switch">
+              <input 
+                type="checkbox" 
+                checked={smtpEnabled} 
+                onChange={(e) => setSmtpEnabled(e.target.checked)} 
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+
+          <div className={`smtp-fields-grid ${smtpEnabled ? "active" : "disabled"}`}>
+            <div className="form-group">
+              <label>SMTP Host</label>
+              <input 
+                type="text" 
+                placeholder="e.g. smtp.gmail.com" 
+                value={smtpHost} 
+                onChange={(e) => setSmtpHost(e.target.value)}
+                disabled={!smtpEnabled}
+                required={smtpEnabled}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>SMTP Port</label>
+              <input 
+                type="number" 
+                placeholder="e.g. 587" 
+                value={smtpPort} 
+                onChange={(e) => setSmtpPort(Number(e.target.value))}
+                disabled={!smtpEnabled}
+                required={smtpEnabled}
+              />
+            </div>
+
+            <div className="form-group smtp-secure-checkbox">
+              <label className="checkbox-container">
+                <input 
+                  type="checkbox" 
+                  checked={smtpSecure} 
+                  onChange={(e) => setSmtpSecure(e.target.checked)}
+                  disabled={!smtpEnabled}
+                />
+                Use Secure Connection (SSL/TLS for Port 465)
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label>SMTP Username / User Email</label>
+              <input 
+                type="text" 
+                placeholder="e.g. user@domain.com" 
+                value={smtpUser} 
+                onChange={(e) => setSmtpUser(e.target.value)}
+                disabled={!smtpEnabled}
+                required={smtpEnabled}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>SMTP Password</label>
+              <input 
+                type="password" 
+                placeholder={hasSmtpPassSaved ? "••••••••" : "Enter password or App password"} 
+                value={smtpPass} 
+                onChange={(e) => setSmtpPass(e.target.value)}
+                disabled={!smtpEnabled}
+                required={smtpEnabled && !hasSmtpPassSaved}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Default Sender Email (From Address)</label>
+              <input 
+                type="email" 
+                placeholder="e.g. no-reply@yourcompany.com" 
+                value={smtpFromEmail} 
+                onChange={(e) => setSmtpFromEmail(e.target.value)}
+                disabled={!smtpEnabled}
+                required={smtpEnabled}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Default Sender Name (From Name)</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Acme Support" 
+                value={smtpFromName} 
+                onChange={(e) => setSmtpFromName(e.target.value)}
+                disabled={!smtpEnabled}
+                required={smtpEnabled}
+              />
+            </div>
+          </div>
+
+          {smtpTestResult && (
+            <div className={`smtp-result-banner ${smtpTestResult.success ? "success" : "error"}`}>
+              {smtpTestResult.success ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+              <span>{smtpTestResult.message}</span>
+            </div>
+          )}
+
+          {smtpSaveResult && (
+            <div className={`smtp-result-banner ${smtpSaveResult.success ? "success" : "error"}`}>
+              {smtpSaveResult.success ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+              <span>{smtpSaveResult.message}</span>
+            </div>
+          )}
+
+          <div className="smtp-actions-bar">
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={handleTestSmtpConnection}
+              disabled={!smtpEnabled || testingSmtp}
+            >
+              {testingSmtp ? "Testing Connection..." : "Test Connection"}
+            </button>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={savingSmtp || !smtpEnabled}
+            >
+              {savingSmtp ? "Saving Configuration..." : "Save Settings"}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
   };
 
   const renderCustomizer = () => {
@@ -1284,9 +1621,15 @@ export function DashboardPage() {
         >
           <SparklesIcon size={18} /> Email Template Builder
         </button>
+        <button 
+          className={`dashboard-tab-btn ${activeTab === "smtp" ? "active" : ""}`}
+          onClick={() => setActiveTab("smtp")}
+        >
+          <Settings size={18} /> SMTP Configuration
+        </button>
       </div>
 
-      {activeTab === "overview" ? (
+      {activeTab === "overview" && (
         <>
           {renderSmtpBanner()}
 
@@ -1361,9 +1704,11 @@ export function DashboardPage() {
             {renderLogsTable()}
           </div>
         </>
-      ) : (
-        renderCustomizer()
       )}
+
+      {activeTab === "customizer" && renderCustomizer()}
+
+      {activeTab === "smtp" && renderSmtpSettings()}
 
       {selectedLog && renderLogDetailModal()}
     </div>

@@ -18,6 +18,13 @@ export function TesterPage() {
       body: { to: user?.email || "test@example.com", purpose: "login" }
     },
     {
+      id: "verify-otp",
+      title: "Verify OTP",
+      method: "POST",
+      path: "/api/v1/emails/verify-otp",
+      body: { to: user?.email || "test@example.com", code: "123456", purpose: "login" }
+    },
+    {
       id: "welcome",
       title: "Welcome Email",
       method: "POST",

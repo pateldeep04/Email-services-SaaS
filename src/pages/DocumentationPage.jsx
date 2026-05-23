@@ -22,6 +22,21 @@ const endpoints = [
   },
   {
     method: "POST",
+    path: "/api/v1/emails/verify-otp",
+    title: "Verify OTP",
+    description: "Verify a 6-digit OTP code sent to a recipient",
+    request: {
+      to: "user@example.com",
+      code: "123456",
+      purpose: "login"
+    },
+    response: {
+      verified: true,
+      message: "OTP verified successfully."
+    }
+  },
+  {
+    method: "POST",
     path: "/api/v1/emails/welcome",
     title: "Welcome Email",
     description: "Send onboarding email to new users",

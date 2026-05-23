@@ -15,6 +15,18 @@ const userSchema = new mongoose.Schema(
       colorButtonBg: { type: String, default: "#0f766e" },
       colorBgLight: { type: String, default: "#f1f5f9" },
       emailFooter: { type: String, default: "© 2026 MailBridge. All rights reserved." }
+    },
+    senderName: { type: String, default: "" },
+    senderEmail: { type: String, default: "" },
+    smtpSettings: {
+      enabled: { type: Boolean, default: false },
+      host: { type: String, default: "" },
+      port: { type: Number, default: 587 },
+      secure: { type: Boolean, default: false },
+      user: { type: String, default: "" },
+      pass: { type: String, default: "" },
+      fromEmail: { type: String, default: "" },
+      fromName: { type: String, default: "" }
     }
   },
   { timestamps: true }

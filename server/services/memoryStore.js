@@ -33,9 +33,13 @@ export const memoryStore = {
     });
   },
 
-  async findLatestOtp(email, purpose) {
+  async findLatestOtp(email, purpose, userId = null, apiKey = null) {
     return otpTokens.find(
-      (token) => token.email === email && token.purpose === purpose && !token.used
+      (token) =>
+        token.email === email &&
+        token.purpose === purpose &&
+        !token.used &&
+        (userId ? String(token.userId) === String(userId) : (apiKey ? token.apiKey === apiKey : true))
     );
   },
 
@@ -54,6 +58,18 @@ export const memoryStore = {
         colorButtonBg: "#0f766e",
         colorBgLight: "#f1f5f9",
         emailFooter: "© 2026 MailBridge. All rights reserved."
+      },
+      senderName: "",
+      senderEmail: "",
+      smtpSettings: {
+        enabled: false,
+        host: "",
+        port: 587,
+        secure: false,
+        user: "",
+        pass: "",
+        fromEmail: "",
+        fromName: ""
       },
       ...user,
       createdAt: new Date().toISOString(),

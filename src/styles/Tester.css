@@ -6,7 +6,7 @@
   color: #f3f4f6;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Subtle background glow effect */
@@ -164,6 +164,9 @@
 
 /* Tester Sidebar styling */
 .tester-sidebar {
+  position: sticky;
+  top: 100px;
+  align-self: start;
   background: rgba(15, 23, 42, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
@@ -642,6 +645,7 @@
   }
 
   .tester-sidebar {
+    position: static;
     height: auto;
   }
 

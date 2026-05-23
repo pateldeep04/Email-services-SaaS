@@ -619,3 +619,17 @@ input[type="color"]::-webkit-color-swatch {
   border-radius: 8px;
 }
 
+/* OTP login extra styles */
+.hidden {
+  display: none !important;
+}
+
+#otp-code {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: monospace;
+  text-transform: uppercase;
+}
+

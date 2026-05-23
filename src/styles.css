@@ -6,6 +6,17 @@
 @import url('./styles/Dashboard.css');
 @import url('./styles/Tester.css');
 
+:root {
+  --bg-main: #f9fafb;
+  --text-main: #1f2937;
+  --transition-speed: 0.3s;
+}
+
+html.dark {
+  --bg-main: #030712;
+  --text-main: #f3f4f6;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -22,8 +33,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f9fafb;
-  color: #1f2937;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 code {

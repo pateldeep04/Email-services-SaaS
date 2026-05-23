@@ -7,6 +7,7 @@ It implements a mock user sign-up and login flow stored entirely in the browser'
 ## Features
 - **Register Screen**: Sign up an isolated user and trigger a **Welcome Email** via the `/api/v1/emails/welcome` endpoint.
 - **Login Screen**: Log in using stored local credentials and trigger a **Custom Login Alert Email** via the `/api/v1/emails/custom` endpoint.
+- **OTP Sign In Screen**: Passwordless login by generating a 6-digit OTP code using `/api/v1/emails/otp` and verifying it via the `/api/v1/emails/verify-otp` endpoint.
 - **Home Screen**: A clean dashboard greeting the user (`Hello, [Name]!`) and listing session logs for triggered MailBridge API requests.
 - **Preconfigured API Key**: Preloaded with `mb_174263ffaf8ed464635e566abbf7c58d`.
 

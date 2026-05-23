@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import nodemailer from "nodemailer";
 import User from "../models/User.js";
 import ApiKey from "../models/ApiKey.js";
 import EmailLog from "../models/EmailLog.js";
@@ -11,6 +12,36 @@ import { testSmtpConnection } from "../services/emailService.js";
 const router = express.Router();
 
 const hasMongo = () => mongoose.connection.readyState === 1;
+
+function formatUserResponse(user) {
+  return {
+    email: user.email,
+    name: user.name,
+    templateSettings: user.templateSettings,
+    useGlobalTemplateSettings: user.useGlobalTemplateSettings,
+    senderName: user.senderName || "",
+    senderEmail: user.senderEmail || "",
+    smtpSettings: user.smtpSettings ? {
+      enabled: user.smtpSettings.enabled || false,
+      host: user.smtpSettings.host || "",
+      port: user.smtpSettings.port || 587,
+      secure: user.smtpSettings.secure || false,
+      user: user.smtpSettings.user || "",
+      fromEmail: user.smtpSettings.fromEmail || "",
+      fromName: user.smtpSettings.fromName || "",
+      hasPassword: !!user.smtpSettings.pass
+    } : {
+      enabled: false,
+      host: "",
+      port: 587,
+      secure: false,
+      user: "",
+      fromEmail: "",
+      fromName: "",
+      hasPassword: false
+    }
+  };
+}
 
 async function findUserByEmail(email) {
   if (hasMongo()) {
@@ -71,12 +102,7 @@ router.post("/register", async (req, res, next) => {
     const token = createJwtToken(user);
 
     res.status(201).json({
-      user: { 
-        email: user.email, 
-        name: user.name, 
-        templateSettings: user.templateSettings,
-        useGlobalTemplateSettings: user.useGlobalTemplateSettings
-      },
+      user: formatUserResponse(user),
       apiKey: user.apiKey,
       token
     });
@@ -136,12 +162,7 @@ router.post("/login", async (req, res, next) => {
     }
 
     res.json({ 
-      user: { 
-        email: user.email, 
-        name: user.name, 
-        templateSettings: user.templateSettings,
-        useGlobalTemplateSettings: user.useGlobalTemplateSettings
-      }, 
+      user: formatUserResponse(user), 
       apiKey: activeKey, 
       token 
     });
@@ -189,12 +210,7 @@ router.get("/me", requireAuth, async (req, res, next) => {
     }
 
     res.json({ 
-      user: { 
-        email: user.email, 
-        name: user.name, 
-        templateSettings: user.templateSettings,
-        useGlobalTemplateSettings: user.useGlobalTemplateSettings
-      }, 
+      user: formatUserResponse(user), 
       apiKey: activeKey 
     });
   } catch (error) {
@@ -208,13 +224,36 @@ router.put("/settings", requireAuth, async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
-    const { templateSettings, useGlobalTemplateSettings } = req.body;
+    const { templateSettings, useGlobalTemplateSettings, senderName, senderEmail, smtpSettings } = req.body;
     if (hasMongo()) {
       if (templateSettings !== undefined) {
         user.templateSettings = { ...user.templateSettings, ...templateSettings };
       }
       if (useGlobalTemplateSettings !== undefined) {
         user.useGlobalTemplateSettings = useGlobalTemplateSettings;
+      }
+      if (senderName !== undefined) {
+        user.senderName = senderName;
+      }
+      if (senderEmail !== undefined) {
+        user.senderEmail = senderEmail;
+      }
+      if (smtpSettings !== undefined) {
+        const existingSmtp = user.smtpSettings || {};
+        let newPass = smtpSettings.pass;
+        if (newPass === "••••••••" || !newPass) {
+          newPass = existingSmtp.pass || "";
+        }
+        user.smtpSettings = {
+          enabled: smtpSettings.enabled !== undefined ? smtpSettings.enabled : existingSmtp.enabled,
+          host: smtpSettings.host !== undefined ? smtpSettings.host : existingSmtp.host,
+          port: smtpSettings.port !== undefined ? smtpSettings.port : existingSmtp.port,
+          secure: smtpSettings.secure !== undefined ? smtpSettings.secure : existingSmtp.secure,
+          user: smtpSettings.user !== undefined ? smtpSettings.user : existingSmtp.user,
+          pass: newPass,
+          fromEmail: smtpSettings.fromEmail !== undefined ? smtpSettings.fromEmail : existingSmtp.fromEmail,
+          fromName: smtpSettings.fromName !== undefined ? smtpSettings.fromName : existingSmtp.fromName
+        };
       }
       await user.save();
     } else {
@@ -224,14 +263,75 @@ router.put("/settings", requireAuth, async (req, res, next) => {
       if (useGlobalTemplateSettings !== undefined) {
         user.useGlobalTemplateSettings = useGlobalTemplateSettings;
       }
+      if (senderName !== undefined) {
+        user.senderName = senderName;
+      }
+      if (senderEmail !== undefined) {
+        user.senderEmail = senderEmail;
+      }
+      if (smtpSettings !== undefined) {
+        const existingSmtp = user.smtpSettings || {};
+        let newPass = smtpSettings.pass;
+        if (newPass === "••••••••" || !newPass) {
+          newPass = existingSmtp.pass || "";
+        }
+        user.smtpSettings = {
+          enabled: smtpSettings.enabled !== undefined ? smtpSettings.enabled : existingSmtp.enabled,
+          host: smtpSettings.host !== undefined ? smtpSettings.host : existingSmtp.host,
+          port: smtpSettings.port !== undefined ? smtpSettings.port : existingSmtp.port,
+          secure: smtpSettings.secure !== undefined ? smtpSettings.secure : existingSmtp.secure,
+          user: smtpSettings.user !== undefined ? smtpSettings.user : existingSmtp.user,
+          pass: newPass,
+          fromEmail: smtpSettings.fromEmail !== undefined ? smtpSettings.fromEmail : existingSmtp.fromEmail,
+          fromName: smtpSettings.fromName !== undefined ? smtpSettings.fromName : existingSmtp.fromName
+        };
+      }
     }
+    const formatted = formatUserResponse(user);
     res.json({ 
       success: true, 
-      templateSettings: user.templateSettings,
-      useGlobalTemplateSettings: user.useGlobalTemplateSettings
+      templateSettings: formatted.templateSettings,
+      useGlobalTemplateSettings: formatted.useGlobalTemplateSettings,
+      senderName: formatted.senderName,
+      senderEmail: formatted.senderEmail,
+      smtpSettings: formatted.smtpSettings
     });
   } catch (error) {
     next(error);
+  }
+});
+
+router.post("/smtp/test", requireAuth, async (req, res, next) => {
+  try {
+    const { host, port, secure, user, pass } = req.body;
+    let smtpPass = pass;
+    if (pass === "••••••••" || !pass) {
+      const currentUser = await findUserById(req.user.id);
+      if (currentUser && currentUser.smtpSettings && currentUser.smtpSettings.pass) {
+        smtpPass = currentUser.smtpSettings.pass;
+      }
+    }
+
+    if (!host || !port || !user || !smtpPass) {
+      return res.status(400).json({ error: "Host, port, username, and password are required to test connection." });
+    }
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port: Number(port),
+      secure: Boolean(secure),
+      auth: {
+        user,
+        pass: smtpPass
+      },
+      connectionTimeout: 5000,
+      greetingTimeout: 5000
+    });
+
+    await transporter.verify();
+    res.json({ success: true, message: "SMTP connection verified successfully!" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -338,7 +438,7 @@ router.delete("/keys/:id", requireAuth, async (req, res, next) => {
       const remainingKeys = await ApiKey.find({ userId: req.user.id }).sort({ createdAt: -1 });
       const user = await User.findById(req.user.id);
       if (user) {
-        user.apiKey = remainingKeys.length > 0 ? remainingKeys[0].key : "";
+        user.apiKey = remainingKeys.length > 0 ? remainingKeys[0].key : undefined;
         await user.save();
       }
       
@@ -353,7 +453,7 @@ router.delete("/keys/:id", requireAuth, async (req, res, next) => {
       const remainingKeys = await memoryStore.listApiKeys(req.user.id);
       const user = await memoryStore.findUserById(req.user.id);
       if (user) {
-        user.apiKey = remainingKeys.length > 0 ? remainingKeys[0].key : "";
+        user.apiKey = remainingKeys.length > 0 ? remainingKeys[0].key : undefined;
       }
       
       res.json({ success: true, message: "API key deleted successfully." });
