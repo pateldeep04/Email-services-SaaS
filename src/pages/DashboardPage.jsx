@@ -511,9 +511,9 @@ export function DashboardPage() {
           <ShieldCheck size={28} />
         </div>
         <div className="smtp-banner-content">
-          <h4>SMTP Connection Active</h4>
+          <h4>System Active</h4>
           <p>
-            MailBridge is successfully connected to your Gmail SMTP server. Real emails will be delivered.
+            System is ready to deliver emails.
           </p>
         </div>
       </div>
