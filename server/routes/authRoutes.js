@@ -512,10 +512,6 @@ router.get("/stats", requireAuth, async (req, res, next) => {
         byType[t] = await EmailLog.countDocuments({ userId, type: t });
       }
 
-      const recentLogs = await EmailLog.find({ userId })
-        .sort({ createdAt: -1 })
-        .limit(500);
-
       res.json({
         stats: {
           total,
@@ -525,16 +521,57 @@ router.get("/stats", requireAuth, async (req, res, next) => {
           byType
         },
         smtpStatus,
-        recentLogs
+        recentLogs: []
       });
     } else {
       const stats = await memoryStore.getEmailStats(userId);
-      const recentLogs = await memoryStore.listLogs(500, userId);
       res.json({
         stats,
         smtpStatus,
-        recentLogs
+        recentLogs: []
       });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Paginated Logs Route for the dashboard table
+router.get("/logs", requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const page = Number(req.query.page || 1);
+    const limit = Number(req.query.limit || 10);
+    const search = req.query.search || "";
+    const status = req.query.status || "all";
+    const type = req.query.type || "all";
+
+    if (hasMongo()) {
+      const query = { userId };
+      if (status !== "all") {
+        query.status = status;
+      }
+      if (type !== "all") {
+        query.type = type;
+      }
+      if (search) {
+        query.$or = [
+          { to: { $regex: search, $options: "i" } },
+          { subject: { $regex: search, $options: "i" } }
+        ];
+      }
+
+      const totalLogs = await EmailLog.countDocuments(query);
+      const totalPages = Math.ceil(totalLogs / limit) || 1;
+      const logs = await EmailLog.find(query)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+      res.json({ logs, totalLogs, totalPages });
+    } else {
+      const result = await memoryStore.getPaginatedLogs(userId, { page, limit, search, status, type });
+      res.json(result);
     }
   } catch (error) {
     next(error);

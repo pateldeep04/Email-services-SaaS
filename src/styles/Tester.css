@@ -915,3 +915,148 @@ html.light .template-name-input {
 html.light .template-name-input:focus {
   border-color: #14b8a6;
 }
+
+/* AI Assistant Styles for Tester Page */
+.tester-ai-container {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px dashed rgba(168, 85, 247, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+html.light .tester-ai-container {
+  background: #faf5ff;
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.tester-ai-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #c084fc;
+  margin-bottom: 12px;
+}
+
+html.light .tester-ai-title {
+  color: #7c3aed;
+}
+
+.tester-ai-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tester-ai-form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tester-ai-form-group.full {
+  width: 100%;
+}
+
+.tester-ai-form-group label {
+  font-size: 10px !important;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+html.light .tester-ai-form-group label {
+  color: #64748b;
+}
+
+.tester-ai-input,
+.tester-ai-select {
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.3);
+  outline: none;
+}
+
+html.light .tester-ai-input,
+html.light .tester-ai-select {
+  border-color: #cbd5e1;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.tester-ai-input:focus,
+.tester-ai-select:focus {
+  border-color: #a855f7;
+}
+
+.tester-ai-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-tester-ai-generate {
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s;
+}
+
+.btn-tester-ai-generate:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.btn-tester-ai-generate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-tester-ai-cancel {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+html.light .btn-tester-ai-cancel {
+  border-color: #cbd5e1;
+  color: #4b5563;
+}
+
+html.light .btn-tester-ai-cancel:hover {
+  background: #f1f5f9;
+}
+
+.tester-ai-note {
+  font-size: 11px;
+  color: #a855f7;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+html.light .tester-ai-note {
+  color: #6d28d9;
+}
+

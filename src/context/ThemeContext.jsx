@@ -4,9 +4,9 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    // Default to 'dark' mode since it matches the developer branding,
+    // Default to 'light' mode since user requested it,
     // but check localStorage for any previous preference.
-    return localStorage.getItem("mailbridge-theme") || "dark";
+    return localStorage.getItem("mailbridge-theme") || "light";
   });
 
   const toggleTheme = () => {

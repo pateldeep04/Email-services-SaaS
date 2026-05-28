@@ -20,7 +20,8 @@ import {
   EyeOff,
   X,
   Search,
-  Settings
+  Settings,
+  Sparkles
 } from "lucide-react";
 import "../styles/Dashboard.css";
 
@@ -31,6 +32,9 @@ export function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [smtpStatus, setSmtpStatus] = useState(null);
   const [recentLogs, setRecentLogs] = useState([]);
+  const [totalLogs, setTotalLogs] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [apiKeys, setApiKeys] = useState([]);
   
   const [newKeyName, setNewKeyName] = useState("");
@@ -105,6 +109,15 @@ export function DashboardPage() {
   const [smtpTestResult, setSmtpTestResult] = useState(null);
   const [savingSmtp, setSavingSmtp] = useState(false);
   const [smtpSaveResult, setSmtpSaveResult] = useState(null);
+
+  // AI assistant states
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiTone, setAiTone] = useState("Professional");
+  const [aiType, setAiType] = useState("custom");
+  const [generatingAi, setGeneratingAi] = useState(false);
+  const [aiNote, setAiNote] = useState("");
+  const [showAiCard, setShowAiCard] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState("custom");
 
   // Auto-fill test recipient when user loads
   useEffect(() => {
@@ -289,6 +302,32 @@ export function DashboardPage() {
     }
   };
   
+  const fetchLogs = async (pageVal = currentPage, limitVal = pageSize, searchVal = searchQuery, statusVal = statusFilter, typeVal = typeFilter) => {
+    try {
+      setLoadingLogs(true);
+      const params = new URLSearchParams({
+        page: pageVal,
+        limit: limitVal,
+        search: searchVal,
+        status: statusVal,
+        type: typeVal
+      });
+      const res = await fetch(`http://localhost:5000/api/v1/auth/logs?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRecentLogs(data.logs || []);
+        setTotalLogs(data.totalLogs || 0);
+        setTotalPages(data.totalPages || 1);
+      }
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -301,8 +340,10 @@ export function DashboardPage() {
       if (statsRes.ok) {
         setStats(statsData.stats);
         setSmtpStatus(statsData.smtpStatus);
-        setRecentLogs(statsData.recentLogs || []);
       }
+
+      // Also fetch the first page of logs
+      await fetchLogs(currentPage, pageSize, searchQuery, statusFilter, typeFilter);
 
       // 2. Fetch api keys
       const keysRes = await fetch("http://localhost:5000/api/v1/auth/keys", {
@@ -335,6 +376,20 @@ export function DashboardPage() {
     }
     fetchDashboardData();
   }, [token]);
+
+  // Reset currentPage to 1 when filters or page size change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, typeFilter, pageSize]);
+
+  // Fetch logs when pagination parameters change (debounced for search query)
+  useEffect(() => {
+    if (!token) return;
+    const timer = setTimeout(() => {
+      fetchLogs(currentPage, pageSize, searchQuery, statusFilter, typeFilter);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [token, currentPage, pageSize, searchQuery, statusFilter, typeFilter]);
 
   const handleGenerateKey = async (e) => {
     e.preventDefault();
@@ -740,27 +795,15 @@ export function DashboardPage() {
   };
 
   const renderLogsTable = () => {
-    const countAll = recentLogs.length;
-    const countSent = recentLogs.filter(l => l.status === "sent").length;
-    const countSimulated = recentLogs.filter(l => l.status === "simulated").length;
-    const countFailed = recentLogs.filter(l => l.status === "failed").length;
+    const countAll = stats?.total || 0;
+    const countSent = stats?.sent || 0;
+    const countSimulated = stats?.simulated || 0;
+    const countFailed = stats?.failed || 0;
 
-    const filteredLogs = recentLogs.filter((log) => {
-      const matchesSearch = 
-        log.to.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        (log.subject && log.subject.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesStatus = statusFilter === "all" || log.status === statusFilter;
-      const matchesType = typeFilter === "all" || log.type === typeFilter;
-      
-      return matchesSearch && matchesStatus && matchesType;
-    });
-
-    const totalFilteredLogs = filteredLogs.length;
-    const totalPages = Math.ceil(totalFilteredLogs / pageSize) || 1;
+    const totalFilteredLogs = totalLogs;
     const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = Math.min(startIndex + pageSize, totalFilteredLogs);
-    const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
+    const endIndex = Math.min(startIndex + recentLogs.length, totalFilteredLogs);
+    const paginatedLogs = recentLogs;
 
     return (
       <div className="card full logs-card">
@@ -1114,6 +1157,48 @@ export function DashboardPage() {
   };
 
   const generateEmailHtml = () => {
+    let titleText = emailTitle;
+    let bodyHtml = `<p style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
+    let actionHtml = "";
+
+    if (activeTemplate === "welcome") {
+      titleText = "Welcome aboard";
+      bodyHtml = `
+        <p>Hi <strong>John Doe</strong>,</p>
+        <p>Your account is ready. We are happy to have you with ${brandName}.</p>
+        <p style="margin-top: 16px; color: #4b5563; font-style: italic; font-size: 13px;">Note: This is a preview of the Welcome Email template. You can trigger this template via the API.</p>
+      `;
+    } else if (activeTemplate === "otp") {
+      titleText = "Verification code";
+      bodyHtml = `
+        <p>Use this OTP for verification:</p>
+        <p style="font-size: 32px; letter-spacing: 6px; font-weight: 700; margin: 24px 0; text-align: center; color: ${colorButtonBg}; font-family: monospace;">482931</p>
+        <p>This code expires in 10 minutes.</p>
+      `;
+    } else if (activeTemplate === "forgot-password") {
+      titleText = "Password reset";
+      bodyHtml = `<p style="margin-bottom: 20px;">We received a request to reset your password for your account.</p>`;
+      actionHtml = `
+        <div style="text-align: center; margin: 24px 0 16px 0;">
+          <a href="https://app.example.com/reset" target="_blank" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Reset password</a>
+        </div>
+      `;
+    } else if (activeTemplate === "notification") {
+      titleText = emailTitle || "Notification Alert";
+      bodyHtml = `<p style="color: #374151; white-space: pre-line;">${emailMessage}</p>`;
+      actionHtml = "";
+    } else {
+      titleText = emailTitle;
+      bodyHtml = `<p style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
+      if (emailActionText) {
+        actionHtml = `
+          <div style="text-align: center; margin: 32px 0 16px 0;">
+            <a href="${emailActionUrl}" target="_blank" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText}</a>
+          </div>
+        `;
+      }
+    }
+
     return `
 <div style="font-family: Arial, sans-serif; background-color: ${colorBgLight}; padding: 30px; margin: 0; border-radius: 8px;">
   <div style="max-width: 580px; margin: auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
@@ -1121,19 +1206,53 @@ export function DashboardPage() {
       <h2 style="margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 0.5px; color: ${colorHeaderText} !important;">${brandName}</h2>
     </div>
     <div style="padding: 30px; color: #374151; line-height: 1.6; font-size: 15px;">
-      <h1 style="margin-top: 0; margin-bottom: 16px; font-size: 22px; color: #111827; font-weight: bold;">${emailTitle}</h1>
-      <p style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>
-      ${emailActionText ? `
-      <div style="text-align: center; margin: 32px 0 16px 0;">
-        <a href="${emailActionUrl}" target="_blank" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText}</a>
-      </div>
-      ` : ''}
+      <h1 style="margin-top: 0; margin-bottom: 16px; font-size: 22px; color: #111827; font-weight: bold;">${titleText}</h1>
+      ${bodyHtml}
+      ${actionHtml}
     </div>
     <div style="padding: 16px 30px; background-color: #f9fafb; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; text-align: center;">
       ${emailFooter}
     </div>
   </div>
 </div>`.trim();
+  };
+
+  const handleAiGenerate = async () => {
+    if (!aiPrompt.trim()) return;
+    setGeneratingAi(true);
+    setAiNote("");
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/ai/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          tone: aiTone,
+          type: aiType,
+          brandName: brandName
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEmailTitle(data.subject);
+        setEmailMessage(data.message);
+        setActiveTemplate(aiType);
+        if (data.isMock) {
+          setAiNote(data.note + ` (applied to ${aiType} preview)`);
+        } else {
+          setAiNote(`✨ AI generated and applied to the ${aiType} template successfully!`);
+        }
+      } else {
+        alert(data.error || "Failed to generate AI content");
+      }
+    } catch (error) {
+      alert("Error generating content: " + error.message);
+    } finally {
+      setGeneratingAi(false);
+    }
   };
 
   const handleSendTestEmail = async (e) => {
@@ -1155,7 +1274,10 @@ export function DashboardPage() {
         },
         body: JSON.stringify({
           to: testRecipient,
-          subject: emailTitle,
+          subject: activeTemplate === "welcome" ? `Welcome to ${brandName}`
+                   : activeTemplate === "otp" ? "Your verification OTP"
+                   : activeTemplate === "forgot-password" ? "Reset your password"
+                   : emailTitle,
           html: html
         })
       });
@@ -1335,6 +1457,92 @@ export function DashboardPage() {
             Customize the look and feel of your transactional emails. Styles will be compiled to responsive, inline HTML.
           </p>
 
+          {!showAiCard ? (
+            <div style={{ marginBottom: "20px" }}>
+              <button 
+                type="button" 
+                className="btn-ai-trigger-inline"
+                onClick={() => setShowAiCard(true)}
+              >
+                <Sparkles size={13} /> Write with AI Assistant
+              </button>
+            </div>
+          ) : (
+            <div className="ai-assistant-card">
+              <div className="ai-header-row">
+                <span className="ai-title">
+                  <Sparkles size={16} /> AI Email Writer
+                </span>
+                <button 
+                  type="button" 
+                  className="ai-close-btn"
+                  onClick={() => setShowAiCard(false)}
+                  title="Close AI Assistant"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="ai-form-group">
+                <label>What should this email be about?</label>
+                <textarea
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="e.g. Welcome users and offer them a 10% discount on their first purchase"
+                  className="ai-prompt-textarea"
+                />
+              </div>
+
+              <div className="ai-row">
+                <div className="ai-form-group">
+                  <label>Email Type</label>
+                  <select 
+                    value={aiType} 
+                    onChange={(e) => setAiType(e.target.value)}
+                    className="ai-select"
+                  >
+                    <option value="custom">Custom/Marketing</option>
+                    <option value="welcome">Welcome Email</option>
+                    <option value="otp">OTP / Verification</option>
+                    <option value="forgot-password">Password Reset</option>
+                    <option value="notification">Notification</option>
+                  </select>
+                </div>
+
+                <div className="ai-form-group">
+                  <label>Tone</label>
+                  <select 
+                    value={aiTone} 
+                    onChange={(e) => setAiTone(e.target.value)}
+                    className="ai-select"
+                  >
+                    <option value="Professional">Professional</option>
+                    <option value="Friendly">Friendly</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Urgent">Urgent</option>
+                    <option value="Persuasive">Persuasive</option>
+                  </select>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="btn-ai-generate"
+                onClick={handleAiGenerate}
+                disabled={generatingAi || !aiPrompt.trim()}
+              >
+                {generatingAi ? "Generating content..." : "✨ Generate & Apply Content"}
+              </button>
+
+              {aiNote && (
+                <div className="ai-banner-info">
+                  <AlertCircle size={14} style={{ flexShrink: 0, marginTop: "2px" }} />
+                  <span>{aiNote}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="global-toggle-wrapper">
             <div className="global-toggle-label-group">
               <span className="global-toggle-title">Apply one design to all API keys</span>
@@ -1379,6 +1587,22 @@ export function DashboardPage() {
           )}
 
           <div className="customizer-form">
+            <div className="form-group" style={{ marginBottom: "20px" }}>
+              <label className="customizer-field-label">Preview/Edit Template</label>
+              <select 
+                value={activeTemplate} 
+                onChange={(e) => setActiveTemplate(e.target.value)}
+                className="target-design-select"
+                style={{ width: "100%" }}
+              >
+                <option value="custom">Custom / Marketing Email</option>
+                <option value="welcome">Welcome Email</option>
+                <option value="otp">OTP / Verification Code</option>
+                <option value="forgot-password">Password Reset Flow</option>
+                <option value="notification">Notification / Alert</option>
+              </select>
+            </div>
+
             <div className="form-group">
               <label>Brand Name</label>
               <input 
@@ -1558,6 +1782,11 @@ export function DashboardPage() {
         <div className="card customizer-preview-card">
           <h2 style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
             <Eye size={20} /> Live Preview
+            {aiNote && aiNote.includes("applied") && (
+              <span className="log-style-badge" style={{ fontSize: "11px", background: "linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%)", color: "#c084fc", border: "1px solid rgba(168, 85, 247, 0.3)", marginLeft: "auto", textTransform: "none", letterSpacing: "normal" }}>
+                ✨ AI Generated
+              </span>
+            )}
           </h2>
 
           <div className="live-preview-workspace">
@@ -1569,7 +1798,13 @@ export function DashboardPage() {
               </div>
               <div className="inbox-subject">
                 <span className="subject-label">Subject:</span>
-                <span className="subject-text">{emailTitle || "(No Subject)"}</span>
+                <span className="subject-text">
+                  {activeTemplate === "welcome" ? `Welcome to ${brandName}`
+                    : activeTemplate === "otp" ? "Your verification OTP"
+                    : activeTemplate === "forgot-password" ? "Reset your password"
+                    : activeTemplate === "notification" ? (emailTitle || "Notification Alert")
+                    : emailTitle || "(No Subject)"}
+                </span>
               </div>
             </div>
             <div className="email-preview-scroll-wrapper">

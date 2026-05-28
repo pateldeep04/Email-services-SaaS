@@ -2623,6 +2623,228 @@ html.dark .smtp-actions-bar {
   border-top-color: rgba(255, 255, 255, 0.08);
 }
 
+/* AI Assistant Styles */
+.ai-assistant-card {
+  background: #fdfeff;
+  border: 1px dashed #c084fc;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(192, 132, 252, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-assistant-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #a855f7, #6366f1);
+}
+
+.ai-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ai-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #581c87;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ai-close-btn:hover {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.ai-form-group {
+  margin-bottom: 12px;
+}
+
+.ai-form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.ai-prompt-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 70px;
+  transition: border-color 0.2s ease;
+}
+
+.ai-prompt-textarea:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+.ai-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  background-color: #fff;
+}
+
+.ai-select:focus {
+  outline: none;
+  border-color: #a855f7;
+}
+
+.ai-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ai-row .ai-form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.btn-ai-generate {
+  width: 100%;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-ai-generate:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.btn-ai-generate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-banner-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: #faf5ff;
+  border: 1px solid #f3e8ff;
+  color: #6b21a8;
+  border-radius: 8px;
+  font-size: 11px;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+.btn-ai-trigger-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+  color: #7c3aed;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ai-trigger-inline:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(99, 102, 241, 0.18) 100%);
+  border-color: rgba(168, 85, 247, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Dark mode overrides for AI assistant */
+html.dark .ai-assistant-card {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.05);
+}
+
+html.dark .ai-title {
+  color: #c084fc;
+}
+
+html.dark .ai-close-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+}
+
+html.dark .ai-form-group label {
+  color: #94a3b8;
+}
+
+html.dark .ai-prompt-textarea {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+html.dark .ai-prompt-textarea:focus {
+  border-color: #a855f7 !important;
+}
+
+html.dark .ai-select {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+html.dark .ai-select option {
+  background-color: #0f172a !important;
+}
+
+html.dark .ai-banner-info {
+  background-color: rgba(168, 85, 247, 0.08) !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
+  color: #d8b4fe !important;
+}
+
+
 
 
 

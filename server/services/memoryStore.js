@@ -24,6 +24,27 @@ export const memoryStore = {
     return emailLogs.slice(0, limit);
   },
 
+  async getPaginatedLogs(userId, { page = 1, limit = 10, search = "", status = "all", type = "all" }) {
+    let filtered = emailLogs.filter(log => String(log.userId) === String(userId));
+    if (status !== "all") {
+      filtered = filtered.filter(log => log.status === status);
+    }
+    if (type !== "all") {
+      filtered = filtered.filter(log => log.type === type);
+    }
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      filtered = filtered.filter(log => 
+        log.to.toLowerCase().includes(lowerSearch) || 
+        (log.subject && log.subject.toLowerCase().includes(lowerSearch))
+      );
+    }
+    const totalLogs = filtered.length;
+    const totalPages = Math.ceil(totalLogs / limit) || 1;
+    const logs = filtered.slice((page - 1) * limit, page * limit);
+    return { logs, totalLogs, totalPages };
+  },
+
   async createOtp(token) {
     otpTokens.unshift({
       _id: crypto.randomUUID(),
