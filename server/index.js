@@ -20,7 +20,13 @@ app.use(cors({
       process.env.CLIENT_URL
     ].filter(Boolean);
     
-    if (!origin || origin === "null" || allowedOrigins.includes(origin)) {
+    if (
+      !origin || 
+      origin === "null" || 
+      allowedOrigins.includes(origin) || 
+      origin.endsWith(".onrender.com") || 
+      origin.includes("loca.lt")
+    ) {
       callback(null, true);
     } else {
       callback(new Error("CORS not allowed"));
