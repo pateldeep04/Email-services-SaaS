@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { API_URL } from "../config.js";
 import { Link, useLocation } from "react-router-dom";
 import { Send, CheckCircle, AlertCircle, Mail, Copy, Plus, Trash2, Sparkles } from "lucide-react";
 import "../styles/Tester.css";
@@ -104,7 +105,7 @@ export function TesterPage() {
   }, [endpoints, selected.id, hasInitializedState, location.state]);
 
   const curl = useMemo(
-    () => `curl -X ${selected.method} http://localhost:5000${selected.path} \\
+    () => `curl -X ${selected.method} ${API_URL}${selected.path} \\
   -H "Content-Type: application/json" \\
   -H "x-api-key: ${apiKey || "your-api-key"}" \\
   -d '${payload.replace(/\n/g, "").replace(/'/g, "\\'")}'`,
@@ -172,7 +173,7 @@ export function TesterPage() {
       const brandName = user?.name || "MailBridge";
       const token = localStorage.getItem("mailbridge_token") || "";
 
-      const res = await fetch("http://localhost:5000/api/v1/ai/generate", {
+      const res = await fetch(`${API_URL}/api/v1/ai/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -230,7 +231,7 @@ export function TesterPage() {
     setResponseStatus(null);
     try {
       const parsed = JSON.parse(payload);
-      const res = await fetch(`http://localhost:5000${selected.path}`, {
+      const res = await fetch(`${API_URL}${selected.path}`, {
         method: selected.method,
         headers: {
           "Content-Type": "application/json",

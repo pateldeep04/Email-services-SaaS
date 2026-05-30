@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { 
-  Copy, 
-  CheckCircle, 
-  RotateCcw, 
-  LogOut, 
-  Trash2, 
-  Plus, 
-  AlertCircle, 
-  Key, 
-  ShieldAlert, 
-  Mail, 
-  BarChart2, 
+import { API_URL } from "../config.js";
+import {
+  Copy,
+  CheckCircle,
+  RotateCcw,
+  LogOut,
+  Trash2,
+  Plus,
+  AlertCircle,
+  Key,
+  ShieldAlert,
+  Mail,
+  BarChart2,
   ShieldCheck,
   ExternalLink,
   XCircle,
@@ -28,7 +29,7 @@ import "../styles/Dashboard.css";
 export function DashboardPage() {
   const { user, token, apiKey, setApiKey, logout, updateUserSettings, updateApiKeySettings } = useAuth();
   const navigate = useNavigate();
-  
+
   const [stats, setStats] = useState(null);
   const [smtpStatus, setSmtpStatus] = useState(null);
   const [recentLogs, setRecentLogs] = useState([]);
@@ -36,13 +37,13 @@ export function DashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [apiKeys, setApiKeys] = useState([]);
-  
+
   const [newKeyName, setNewKeyName] = useState("");
   const [loading, setLoading] = useState(true);
   const [creatingKey, setCreatingKey] = useState(false);
   const [copiedKeyId, setCopiedKeyId] = useState(null);
   const [visibleKeyId, setVisibleKeyId] = useState(null);
-  
+
   // Advanced Logs Filtering & Detail Modal States
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -56,14 +57,14 @@ export function DashboardPage() {
 
   // Email Template Customizer States
   const [activeTab, setActiveTab] = useState("overview"); // "overview" | "customizer"
-  
+
   // Styling States
   const [brandName, setBrandName] = useState("My Brand");
   const [colorHeaderBg, setColorHeaderBg] = useState("#0f766e");
   const [colorHeaderText, setColorHeaderText] = useState("#ffffff");
   const [colorButtonBg, setColorButtonBg] = useState("#0f766e");
   const [colorBgLight, setColorBgLight] = useState("#f1f5f9");
-  
+
   // Content States
   const [emailTitle, setEmailTitle] = useState("Welcome to MailBridge");
   const [emailMessage, setEmailMessage] = useState(
@@ -72,19 +73,19 @@ export function DashboardPage() {
   const [emailActionText, setEmailActionText] = useState("Get Started");
   const [emailActionUrl, setEmailActionUrl] = useState("https://mailbridge.io");
   const [emailFooter, setEmailFooter] = useState("© 2026 MailBridge. All rights reserved.");
-  
+
   // Testing States
   const [testRecipient, setTestRecipient] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
   const [testStatus, setTestStatus] = useState(null); // { success: boolean, message: string }
-  
+
   // Customizer styling persistence states
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // { success: boolean, message: string }
 
   // Target styling design selection state
   const [selectedTarget, setSelectedTarget] = useState("global");
-  
+
   // API Key creation configuration options
   const [inheritStyle, setInheritStyle] = useState(true);
 
@@ -104,7 +105,7 @@ export function DashboardPage() {
   const [smtpFromEmail, setSmtpFromEmail] = useState("");
   const [smtpFromName, setSmtpFromName] = useState("");
   const [hasSmtpPassSaved, setHasSmtpPassSaved] = useState(false);
-  
+
   const [testingSmtp, setTestingSmtp] = useState(false);
   const [smtpTestResult, setSmtpTestResult] = useState(null);
   const [savingSmtp, setSavingSmtp] = useState(false);
@@ -131,7 +132,7 @@ export function DashboardPage() {
     if (user) {
       setSenderName(user.senderName || "");
       setSenderEmail(user.senderEmail || "");
-      
+
       if (user.smtpSettings) {
         setSmtpEnabled(user.smtpSettings.enabled || false);
         setSmtpHost(user.smtpSettings.host || "");
@@ -150,7 +151,7 @@ export function DashboardPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, statusFilter, typeFilter]);
-  
+
   // Synchronize customizer states with currently selected styling target
   useEffect(() => {
     let settings = null;
@@ -220,7 +221,7 @@ export function DashboardPage() {
         senderName,
         senderEmail
       };
-      
+
       const success = await updateUserSettings(payload);
       if (success) {
         setSenderSaveResult({ success: true, message: "Sender Profile saved successfully!" });
@@ -235,12 +236,12 @@ export function DashboardPage() {
       setSavingSender(false);
     }
   };
-  
+
   const handleTestSmtpConnection = async () => {
     setTestingSmtp(true);
     setSmtpTestResult(null);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/smtp/test", {
+      const res = await fetch(`${API_URL}/api/v1/auth/smtp/test`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -301,7 +302,7 @@ export function DashboardPage() {
       setSavingSmtp(false);
     }
   };
-  
+
   const fetchLogs = async (pageVal = currentPage, limitVal = pageSize, searchVal = searchQuery, statusVal = statusFilter, typeVal = typeFilter) => {
     try {
       setLoadingLogs(true);
@@ -312,7 +313,7 @@ export function DashboardPage() {
         status: statusVal,
         type: typeVal
       });
-      const res = await fetch(`http://localhost:5000/api/v1/auth/logs?${params.toString()}`, {
+      const res = await fetch(`${API_URL}/api/v1/auth/logs?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -331,9 +332,9 @@ export function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // 1. Fetch stats
-      const statsRes = await fetch("http://localhost:5000/api/v1/auth/stats", {
+      const statsRes = await fetch(`${API_URL}/api/v1/auth/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const statsData = await statsRes.json();
@@ -346,7 +347,7 @@ export function DashboardPage() {
       await fetchLogs(currentPage, pageSize, searchQuery, statusFilter, typeFilter);
 
       // 2. Fetch api keys
-      const keysRes = await fetch("http://localhost:5000/api/v1/auth/keys", {
+      const keysRes = await fetch(`${API_URL}/api/v1/auth/keys`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const keysData = await keysRes.json();
@@ -396,7 +397,7 @@ export function DashboardPage() {
     if (!newKeyName.trim()) return;
     setCreatingKey(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/keys", {
+      const res = await fetch(`${API_URL}/api/v1/auth/keys`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -428,7 +429,7 @@ export function DashboardPage() {
   const handleDeleteKey = async (keyId) => {
     if (!confirm("Are you sure you want to revoke this API key? Applications using it will lose access immediately.")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/auth/keys/${keyId}`, {
+      const res = await fetch(`${API_URL}/api/v1/auth/keys/${keyId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -521,9 +522,9 @@ export function DashboardPage() {
               Your Gmail login credentials in your <code>.env</code> file are invalid. Google rejects connections that do not use a dedicated <strong>16-character App Password</strong> (NOT your normal account password).
             </p>
             <div className="smtp-banner-actions">
-              <a 
-                href="https://myaccount.google.com/apppasswords" 
-                target="_blank" 
+              <a
+                href="https://myaccount.google.com/apppasswords"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-sm btn-outline-danger"
               >
@@ -612,27 +613,27 @@ export function DashboardPage() {
               return (
                 <g key={d.name} className="chart-bar-group">
                   {/* Tooltip background & text on hover */}
-                  <rect 
-                    x={x + 5} 
-                    y={y - 25} 
-                    width="40" 
-                    height="18" 
-                    rx="3" 
-                    fill="#1f2937" 
-                    className="chart-tooltip-bg" 
+                  <rect
+                    x={x + 5}
+                    y={y - 25}
+                    width="40"
+                    height="18"
+                    rx="3"
+                    fill="#1f2937"
+                    className="chart-tooltip-bg"
                   />
-                  <text 
-                    x={x + 25} 
-                    y={y - 13} 
-                    textAnchor="middle" 
-                    fill="#ffffff" 
-                    fontSize="10" 
+                  <text
+                    x={x + 25}
+                    y={y - 13}
+                    textAnchor="middle"
+                    fill="#ffffff"
+                    fontSize="10"
                     fontWeight="bold"
                     className="chart-tooltip-text"
                   >
                     {d.value}
                   </text>
-                  
+
                   {/* The Bar */}
                   <rect
                     x={x + 10}
@@ -730,8 +731,8 @@ export function DashboardPage() {
               ) : (
                 apiKeys.map((key) => {
                   const isVisible = visibleKeyId === key._id;
-                  const maskedKey = isVisible 
-                    ? key.key 
+                  const maskedKey = isVisible
+                    ? key.key
                     : `${key.key.substring(0, 8)}...${key.key.substring(key.key.length - 4)}`;
 
                   return (
@@ -759,7 +760,7 @@ export function DashboardPage() {
                       </td>
                       <td>{new Date(key.createdAt).toLocaleDateString()}</td>
                       <td>
-                        {key.lastUsedAt 
+                        {key.lastUsedAt
                           ? new Date(key.lastUsedAt).toLocaleDateString() + " " + new Date(key.lastUsedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                           : "Never"}
                       </td>
@@ -842,29 +843,29 @@ export function DashboardPage() {
           </div>
 
           <div className="logs-status-tabs">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={`status-tab-btn ${statusFilter === "all" ? "active" : ""}`}
               onClick={() => setStatusFilter("all")}
             >
               All <span className="status-tab-count">{countAll}</span>
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={`status-tab-btn ${statusFilter === "sent" ? "active" : ""}`}
               onClick={() => setStatusFilter("sent")}
             >
               Sent <span className="status-tab-count">{countSent}</span>
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={`status-tab-btn ${statusFilter === "simulated" ? "active" : ""}`}
               onClick={() => setStatusFilter("simulated")}
             >
               Simulated <span className="status-tab-count">{countSimulated}</span>
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={`status-tab-btn ${statusFilter === "failed" ? "active" : ""}`}
               onClick={() => setStatusFilter("failed")}
             >
@@ -889,7 +890,7 @@ export function DashboardPage() {
               {paginatedLogs.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="empty-table-cell">
-                    {recentLogs.length === 0 
+                    {recentLogs.length === 0
                       ? "No email logs found. Run some API requests to see details here."
                       : "No delivery logs match your filter criteria."}
                   </td>
@@ -942,17 +943,17 @@ export function DashboardPage() {
               <option value={50}>50</option>
             </select>
           </div>
-          
+
           <div className="logs-page-nav">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="pagination-btn nav-btn"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             >
               Prev
             </button>
-            
+
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
               if (totalPages > 5) {
                 if (pageNum !== 1 && pageNum !== totalPages && Math.abs(pageNum - currentPage) > 1) {
@@ -961,7 +962,7 @@ export function DashboardPage() {
                   return null;
                 }
               }
-              
+
               return (
                 <button
                   key={pageNum}
@@ -973,9 +974,9 @@ export function DashboardPage() {
                 </button>
               );
             })}
-            
-            <button 
-              type="button" 
+
+            <button
+              type="button"
               className="pagination-btn nav-btn"
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
@@ -996,7 +997,7 @@ export function DashboardPage() {
 
   const renderLogDetailModal = () => {
     if (!selectedLog) return null;
-    
+
     let statusClass = "badge-simulated";
     if (selectedLog.status === "sent") statusClass = "badge-sent";
     if (selectedLog.status === "failed") statusClass = "badge-failed";
@@ -1010,7 +1011,7 @@ export function DashboardPage() {
               <X size={18} />
             </button>
           </div>
-          
+
           <div className="log-modal-body">
             {selectedLog.status === "failed" && selectedLog.error && (
               <div className="log-error-box">
@@ -1021,7 +1022,7 @@ export function DashboardPage() {
                 </div>
               </div>
             )}
-            
+
             <div className="log-details-grid">
               <div className="log-detail-item">
                 <label>Recipient Email</label>
@@ -1097,13 +1098,13 @@ export function DashboardPage() {
                 </div>
               )}
             </div>
-            
+
             {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
               <div className="log-payload-box">
                 <div className="log-payload-header">
                   <label>Request Body Payload</label>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="log-payload-copy-btn"
                     onClick={() => handleCopyPayload(selectedLog.metadata)}
                   >
@@ -1124,28 +1125,28 @@ export function DashboardPage() {
               </div>
             )}
           </div>
-          
+
           <div className="log-modal-footer">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn btn-primary"
               onClick={() => {
                 const type = selectedLog.type;
                 const metadata = selectedLog.metadata || {};
                 setSelectedLog(null);
-                navigate("/tester", { 
-                  state: { 
-                    initialTemplate: type, 
-                    initialPayload: metadata 
-                  } 
+                navigate("/tester", {
+                  state: {
+                    initialTemplate: type,
+                    initialPayload: metadata
+                  }
                 });
               }}
             >
               Test in API Tester
             </button>
-            <button 
-              type="button" 
-              className="btn btn-secondary" 
+            <button
+              type="button"
+              className="btn btn-secondary"
               onClick={() => setSelectedLog(null)}
             >
               Close
@@ -1222,7 +1223,7 @@ export function DashboardPage() {
     setGeneratingAi(true);
     setAiNote("");
     try {
-      const res = await fetch("http://localhost:5000/api/v1/ai/generate", {
+      const res = await fetch(`${API_URL}/api/v1/ai/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1266,7 +1267,7 @@ export function DashboardPage() {
 
     try {
       const html = generateEmailHtml();
-      const res = await fetch("http://localhost:5000/api/v1/emails/custom", {
+      const res = await fetch(`${API_URL}/api/v1/emails/custom`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1275,9 +1276,9 @@ export function DashboardPage() {
         body: JSON.stringify({
           to: testRecipient,
           subject: activeTemplate === "welcome" ? `Welcome to ${brandName}`
-                   : activeTemplate === "otp" ? "Your verification OTP"
-                   : activeTemplate === "forgot-password" ? "Reset your password"
-                   : emailTitle,
+            : activeTemplate === "otp" ? "Your verification OTP"
+              : activeTemplate === "forgot-password" ? "Reset your password"
+                : emailTitle,
           html: html
         })
       });
@@ -1314,10 +1315,10 @@ export function DashboardPage() {
               <p>When enabled, all emails sent via your API keys will use these SMTP settings instead of global defaults.</p>
             </div>
             <label className="switch">
-              <input 
-                type="checkbox" 
-                checked={smtpEnabled} 
-                onChange={(e) => setSmtpEnabled(e.target.checked)} 
+              <input
+                type="checkbox"
+                checked={smtpEnabled}
+                onChange={(e) => setSmtpEnabled(e.target.checked)}
               />
               <span className="slider round"></span>
             </label>
@@ -1326,10 +1327,10 @@ export function DashboardPage() {
           <div className={`smtp-fields-grid ${smtpEnabled ? "active" : "disabled"}`}>
             <div className="form-group">
               <label>SMTP Host</label>
-              <input 
-                type="text" 
-                placeholder="e.g. smtp.gmail.com" 
-                value={smtpHost} 
+              <input
+                type="text"
+                placeholder="e.g. smtp.gmail.com"
+                value={smtpHost}
                 onChange={(e) => setSmtpHost(e.target.value)}
                 disabled={!smtpEnabled}
                 required={smtpEnabled}
@@ -1338,10 +1339,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>SMTP Port</label>
-              <input 
-                type="number" 
-                placeholder="e.g. 587" 
-                value={smtpPort} 
+              <input
+                type="number"
+                placeholder="e.g. 587"
+                value={smtpPort}
                 onChange={(e) => setSmtpPort(Number(e.target.value))}
                 disabled={!smtpEnabled}
                 required={smtpEnabled}
@@ -1350,9 +1351,9 @@ export function DashboardPage() {
 
             <div className="form-group smtp-secure-checkbox">
               <label className="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  checked={smtpSecure} 
+                <input
+                  type="checkbox"
+                  checked={smtpSecure}
                   onChange={(e) => setSmtpSecure(e.target.checked)}
                   disabled={!smtpEnabled}
                 />
@@ -1362,10 +1363,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>SMTP Username / User Email</label>
-              <input 
-                type="text" 
-                placeholder="e.g. user@domain.com" 
-                value={smtpUser} 
+              <input
+                type="text"
+                placeholder="e.g. user@domain.com"
+                value={smtpUser}
                 onChange={(e) => setSmtpUser(e.target.value)}
                 disabled={!smtpEnabled}
                 required={smtpEnabled}
@@ -1374,10 +1375,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>SMTP Password</label>
-              <input 
-                type="password" 
-                placeholder={hasSmtpPassSaved ? "••••••••" : "Enter password or App password"} 
-                value={smtpPass} 
+              <input
+                type="password"
+                placeholder={hasSmtpPassSaved ? "••••••••" : "Enter password or App password"}
+                value={smtpPass}
                 onChange={(e) => setSmtpPass(e.target.value)}
                 disabled={!smtpEnabled}
                 required={smtpEnabled && !hasSmtpPassSaved}
@@ -1386,10 +1387,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>Default Sender Email (From Address)</label>
-              <input 
-                type="email" 
-                placeholder="e.g. no-reply@yourcompany.com" 
-                value={smtpFromEmail} 
+              <input
+                type="email"
+                placeholder="e.g. no-reply@yourcompany.com"
+                value={smtpFromEmail}
                 onChange={(e) => setSmtpFromEmail(e.target.value)}
                 disabled={!smtpEnabled}
                 required={smtpEnabled}
@@ -1398,10 +1399,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>Default Sender Name (From Name)</label>
-              <input 
-                type="text" 
-                placeholder="e.g. Acme Support" 
-                value={smtpFromName} 
+              <input
+                type="text"
+                placeholder="e.g. Acme Support"
+                value={smtpFromName}
                 onChange={(e) => setSmtpFromName(e.target.value)}
                 disabled={!smtpEnabled}
                 required={smtpEnabled}
@@ -1424,17 +1425,17 @@ export function DashboardPage() {
           )}
 
           <div className="smtp-actions-bar">
-            <button 
-              type="button" 
-              className="btn btn-secondary" 
+            <button
+              type="button"
+              className="btn btn-secondary"
               onClick={handleTestSmtpConnection}
               disabled={!smtpEnabled || testingSmtp}
             >
               {testingSmtp ? "Testing Connection..." : "Test Connection"}
             </button>
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
+            <button
+              type="submit"
+              className="btn btn-primary"
               disabled={savingSmtp || !smtpEnabled}
             >
               {savingSmtp ? "Saving Configuration..." : "Save Settings"}
@@ -1459,8 +1460,8 @@ export function DashboardPage() {
 
           {!showAiCard ? (
             <div style={{ marginBottom: "20px" }}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="btn-ai-trigger-inline"
                 onClick={() => setShowAiCard(true)}
               >
@@ -1473,8 +1474,8 @@ export function DashboardPage() {
                 <span className="ai-title">
                   <Sparkles size={16} /> AI Email Writer
                 </span>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="ai-close-btn"
                   onClick={() => setShowAiCard(false)}
                   title="Close AI Assistant"
@@ -1496,8 +1497,8 @@ export function DashboardPage() {
               <div className="ai-row">
                 <div className="ai-form-group">
                   <label>Email Type</label>
-                  <select 
-                    value={aiType} 
+                  <select
+                    value={aiType}
                     onChange={(e) => setAiType(e.target.value)}
                     className="ai-select"
                   >
@@ -1511,8 +1512,8 @@ export function DashboardPage() {
 
                 <div className="ai-form-group">
                   <label>Tone</label>
-                  <select 
-                    value={aiTone} 
+                  <select
+                    value={aiTone}
                     onChange={(e) => setAiTone(e.target.value)}
                     className="ai-select"
                   >
@@ -1549,9 +1550,9 @@ export function DashboardPage() {
               <p className="global-toggle-desc">When enabled, all API keys will use the global template design. When disabled, you can customize each key's styling individually.</p>
             </div>
             <label className="switch">
-              <input 
-                type="checkbox" 
-                checked={user.useGlobalTemplateSettings !== false} 
+              <input
+                type="checkbox"
+                checked={user.useGlobalTemplateSettings !== false}
                 onChange={async (e) => {
                   const newValue = e.target.checked;
                   try {
@@ -1562,7 +1563,7 @@ export function DashboardPage() {
                   } catch (err) {
                     alert("Failed to update settings: " + err.message);
                   }
-                }} 
+                }}
               />
               <span className="slider round"></span>
             </label>
@@ -1571,8 +1572,8 @@ export function DashboardPage() {
           {user.useGlobalTemplateSettings === false && (
             <div className="form-group target-selector-group" style={{ marginBottom: "20px" }}>
               <label className="customizer-field-label">Edit Design For</label>
-              <select 
-                value={selectedTarget} 
+              <select
+                value={selectedTarget}
                 onChange={(e) => setSelectedTarget(e.target.value)}
                 className="target-design-select"
               >
@@ -1589,8 +1590,8 @@ export function DashboardPage() {
           <div className="customizer-form">
             <div className="form-group" style={{ marginBottom: "20px" }}>
               <label className="customizer-field-label">Preview/Edit Template</label>
-              <select 
-                value={activeTemplate} 
+              <select
+                value={activeTemplate}
                 onChange={(e) => setActiveTemplate(e.target.value)}
                 className="target-design-select"
                 style={{ width: "100%" }}
@@ -1605,10 +1606,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>Brand Name</label>
-              <input 
-                type="text" 
-                value={brandName} 
-                onChange={(e) => setBrandName(e.target.value)} 
+              <input
+                type="text"
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
                 placeholder="e.g. My Brand"
               />
             </div>
@@ -1617,10 +1618,10 @@ export function DashboardPage() {
               <div className="form-group color-picker-group">
                 <label>Header BG</label>
                 <div className="color-picker-wrapper">
-                  <input 
-                    type="color" 
-                    value={colorHeaderBg} 
-                    onChange={(e) => setColorHeaderBg(e.target.value)} 
+                  <input
+                    type="color"
+                    value={colorHeaderBg}
+                    onChange={(e) => setColorHeaderBg(e.target.value)}
                   />
                   <code>{colorHeaderBg}</code>
                 </div>
@@ -1629,10 +1630,10 @@ export function DashboardPage() {
               <div className="form-group color-picker-group">
                 <label>Header Text</label>
                 <div className="color-picker-wrapper">
-                  <input 
-                    type="color" 
-                    value={colorHeaderText} 
-                    onChange={(e) => setColorHeaderText(e.target.value)} 
+                  <input
+                    type="color"
+                    value={colorHeaderText}
+                    onChange={(e) => setColorHeaderText(e.target.value)}
                   />
                   <code>{colorHeaderText}</code>
                 </div>
@@ -1641,10 +1642,10 @@ export function DashboardPage() {
               <div className="form-group color-picker-group">
                 <label>Button BG</label>
                 <div className="color-picker-wrapper">
-                  <input 
-                    type="color" 
-                    value={colorButtonBg} 
-                    onChange={(e) => setColorButtonBg(e.target.value)} 
+                  <input
+                    type="color"
+                    value={colorButtonBg}
+                    onChange={(e) => setColorButtonBg(e.target.value)}
                   />
                   <code>{colorButtonBg}</code>
                 </div>
@@ -1653,10 +1654,10 @@ export function DashboardPage() {
               <div className="form-group color-picker-group">
                 <label>Canvas BG</label>
                 <div className="color-picker-wrapper">
-                  <input 
-                    type="color" 
-                    value={colorBgLight} 
-                    onChange={(e) => setColorBgLight(e.target.value)} 
+                  <input
+                    type="color"
+                    value={colorBgLight}
+                    onChange={(e) => setColorBgLight(e.target.value)}
                   />
                   <code>{colorBgLight}</code>
                 </div>
@@ -1665,19 +1666,19 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>Email Title / Subject</label>
-              <input 
-                type="text" 
-                value={emailTitle} 
-                onChange={(e) => setEmailTitle(e.target.value)} 
+              <input
+                type="text"
+                value={emailTitle}
+                onChange={(e) => setEmailTitle(e.target.value)}
                 placeholder="e.g. Welcome to MailBridge"
               />
             </div>
 
             <div className="form-group">
               <label>Email Message</label>
-              <textarea 
-                value={emailMessage} 
-                onChange={(e) => setEmailMessage(e.target.value)} 
+              <textarea
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
                 placeholder="Enter email message here..."
                 rows={4}
               />
@@ -1686,20 +1687,20 @@ export function DashboardPage() {
             <div className="row-inputs">
               <div className="form-group">
                 <label>Action Button Text</label>
-                <input 
-                  type="text" 
-                  value={emailActionText} 
-                  onChange={(e) => setEmailActionText(e.target.value)} 
+                <input
+                  type="text"
+                  value={emailActionText}
+                  onChange={(e) => setEmailActionText(e.target.value)}
                   placeholder="e.g. Verify Email"
                 />
               </div>
 
               <div className="form-group">
                 <label>Action Button URL</label>
-                <input 
-                  type="text" 
-                  value={emailActionUrl} 
-                  onChange={(e) => setEmailActionUrl(e.target.value)} 
+                <input
+                  type="text"
+                  value={emailActionUrl}
+                  onChange={(e) => setEmailActionUrl(e.target.value)}
                   placeholder="e.g. https://domain.com/verify"
                 />
               </div>
@@ -1707,10 +1708,10 @@ export function DashboardPage() {
 
             <div className="form-group">
               <label>Footer Text</label>
-              <input 
-                type="text" 
-                value={emailFooter} 
-                onChange={(e) => setEmailFooter(e.target.value)} 
+              <input
+                type="text"
+                value={emailFooter}
+                onChange={(e) => setEmailFooter(e.target.value)}
                 placeholder="Footer details, copyright, unsubscribe..."
               />
             </div>
@@ -1723,8 +1724,8 @@ export function DashboardPage() {
                 disabled={savingSettings}
                 style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "8px" }}
               >
-                {savingSettings 
-                  ? (selectedTarget === "global" ? "Saving Global Style..." : "Saving Key Style...") 
+                {savingSettings
+                  ? (selectedTarget === "global" ? "Saving Global Style..." : "Saving Key Style...")
                   : (selectedTarget === "global" ? "Save Global Style" : "Save Key Style")}
               </button>
               {saveStatus && (
@@ -1742,7 +1743,7 @@ export function DashboardPage() {
               <p className="test-desc">
                 Send this compiled HTML layout directly to your inbox using the active API key.
               </p>
-              
+
               {!apiKey && (
                 <div className="alert-message warning">
                   <AlertCircle size={16} />
@@ -1751,17 +1752,17 @@ export function DashboardPage() {
               )}
 
               <form onSubmit={handleSendTestEmail} className="test-send-form">
-                <input 
-                  type="email" 
-                  value={testRecipient} 
-                  onChange={(e) => setTestRecipient(e.target.value)} 
+                <input
+                  type="email"
+                  value={testRecipient}
+                  onChange={(e) => setTestRecipient(e.target.value)}
                   placeholder="your-email@domain.com"
                   required
                   disabled={!apiKey || sendingTest}
                 />
-                <button 
-                  type="submit" 
-                  className="btn btn-primary" 
+                <button
+                  type="submit"
+                  className="btn btn-primary"
                   disabled={!apiKey || sendingTest}
                 >
                   {sendingTest ? "Sending..." : "Send Test"}
@@ -1801,9 +1802,9 @@ export function DashboardPage() {
                 <span className="subject-text">
                   {activeTemplate === "welcome" ? `Welcome to ${brandName}`
                     : activeTemplate === "otp" ? "Your verification OTP"
-                    : activeTemplate === "forgot-password" ? "Reset your password"
-                    : activeTemplate === "notification" ? (emailTitle || "Notification Alert")
-                    : emailTitle || "(No Subject)"}
+                      : activeTemplate === "forgot-password" ? "Reset your password"
+                        : activeTemplate === "notification" ? (emailTitle || "Notification Alert")
+                          : emailTitle || "(No Subject)"}
                 </span>
               </div>
             </div>
@@ -1844,19 +1845,19 @@ export function DashboardPage() {
 
       {/* Dashboard Sub-navigation Tabs */}
       <div className="dashboard-tabs">
-        <button 
+        <button
           className={`dashboard-tab-btn ${activeTab === "overview" ? "active" : ""}`}
           onClick={() => setActiveTab("overview")}
         >
           <BarChart2 size={18} /> Overview & Analytics
         </button>
-        <button 
+        <button
           className={`dashboard-tab-btn ${activeTab === "customizer" ? "active" : ""}`}
           onClick={() => setActiveTab("customizer")}
         >
           <SparklesIcon size={18} /> Email Template Builder
         </button>
-        <button 
+        <button
           className={`dashboard-tab-btn ${activeTab === "smtp" ? "active" : ""}`}
           onClick={() => setActiveTab("smtp")}
         >
@@ -1953,21 +1954,21 @@ export function DashboardPage() {
 // Sparkles icon local definition to handle icon compatibility cleanly
 function SparklesIcon({ size }) {
   return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="lucide lucide-sparkles"
     >
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/>
-      <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/>
-      <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z"/>
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z" />
+      <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z" />
+      <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z" />
     </svg>
   );
 }

@@ -21,6 +21,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { API_URL } from "../config.js";
 import "../styles/Home.css";
 
 const features = [
@@ -103,7 +104,7 @@ export function HomePage() {
   };
 
   const getCodeSnippet = () => {
-    const endpoint = `http://localhost:5000/api/v1/emails/${templateType}`;
+    const endpoint = `${API_URL}/api/v1/emails/${templateType}`;
     const payload = getPayload();
     const payloadStr = JSON.stringify(payload, null, 2);
 
@@ -183,7 +184,7 @@ export function HomePage() {
     setExecutionDone(false);
     
     const lines = [
-      `$ curl -X POST "http://localhost:5000/api/v1/emails/${templateType}" \\`,
+      `$ curl -X POST "${API_URL}/api/v1/emails/${templateType}" \\`,
       `    -H "x-api-key: mb_live_8f0a213e4b..." \\`,
       `    -d '${JSON.stringify(getPayload())}'`,
       `[info] Resolving recipient: ${recipientEmail || "visitor@example.com"}...`,
@@ -236,7 +237,7 @@ export function HomePage() {
     setTerminalLines([`[info] Triggering REAL API request to local server...`]);
 
     try {
-      const activeKeyRes = await fetch("http://localhost:5000/api/v1/auth/keys", {
+      const activeKeyRes = await fetch(`${API_URL}/api/v1/auth/keys`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const keyData = await activeKeyRes.json();
@@ -253,7 +254,7 @@ export function HomePage() {
         ? "custom"
         : templateType;
 
-      const res = await fetch(`http://localhost:5000/api/v1/emails/${route}`, {
+      const res = await fetch(`${API_URL}/api/v1/emails/${route}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

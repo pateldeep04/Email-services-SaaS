@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { API_URL } from "../config.js";
 
 const AuthContext = createContext();
 
@@ -19,7 +20,7 @@ export function AuthProvider({ children }) {
 
   async function fetchProfile() {
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/me", {
+      const res = await fetch(`${API_URL}/api/v1/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch profile");
@@ -36,7 +37,7 @@ export function AuthProvider({ children }) {
   async function register(email, name, password) {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/register", {
+      const res = await fetch(`${API_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password })
@@ -60,7 +61,7 @@ export function AuthProvider({ children }) {
   async function login(email, password) {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+      const res = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -83,7 +84,7 @@ export function AuthProvider({ children }) {
 
   async function rotateKey() {
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/rotate", {
+      const res = await fetch(`${API_URL}/api/v1/auth/rotate`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -99,7 +100,7 @@ export function AuthProvider({ children }) {
 
   async function updateUserSettings(payload) {
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/settings", {
+      const res = await fetch(`${API_URL}/api/v1/auth/settings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +128,7 @@ export function AuthProvider({ children }) {
 
   async function updateApiKeySettings(keyId, newSettings) {
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/auth/keys/${keyId}/settings`, {
+      const res = await fetch(`${API_URL}/api/v1/auth/keys/${keyId}/settings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
