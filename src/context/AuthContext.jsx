@@ -144,13 +144,18 @@ export function AuthProvider({ children }) {
     }
   }
 
-  function logout() {
+  async function logout() {
     setUser(null);
     setToken("");
     setApiKey("");
     localStorage.removeItem("mailbridge_user");
     localStorage.removeItem("mailbridge_token");
     localStorage.removeItem("mailbridge_api_key");
+    try {
+      await fetch(`${API_URL}/api/v1/auth/logout`, { method: "POST" });
+    } catch (error) {
+      console.error("Server logout failed:", error);
+    }
   }
 
   return (

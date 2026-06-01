@@ -101,6 +101,11 @@ router.post("/register", async (req, res, next) => {
 
     const token = createJwtToken(user);
 
+    // Save token in session
+    if (req.session) {
+      req.session.token = token;
+    }
+
     res.status(201).json({
       user: formatUserResponse(user),
       apiKey: user.apiKey,
@@ -129,6 +134,11 @@ router.post("/login", async (req, res, next) => {
     }
 
     const token = createJwtToken(user);
+    
+    // Save token in session
+    if (req.session) {
+      req.session.token = token;
+    }
     
     let activeKey = "";
     if (hasMongo()) {
@@ -170,6 +180,21 @@ router.post("/login", async (req, res, next) => {
     next(error);
   }
 });
+
+router.post("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to log out." });
+      }
+      res.clearCookie("connect.sid");
+      res.json({ success: true, message: "Logged out successfully." });
+    });
+  } else {
+    res.json({ success: true, message: "Logged out successfully." });
+  }
+});
+
 
 router.get("/me", requireAuth, async (req, res, next) => {
   try {
