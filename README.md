@@ -5,6 +5,7 @@ MailBridge is a sellable email service platform built as a MERN college project.
 ## Features
 
 - User registration and login for client accounts
+- **Google Authentication** (Sign in with Google / Register with Google)
 - Automatic API key generation per client
 - Secure API key validation for email endpoints
 - Gmail SMTP delivery using Google App Passwords
@@ -35,7 +36,24 @@ JWT_SECRET=supersecretkey
 GMAIL_USER=yourgmail@gmail.com
 GMAIL_APP_PASSWORD=your_16_character_app_password
 FROM_NAME=MailBridge
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
+
+## Google OAuth Setup
+
+To enable Google Authentication:
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a project and navigate to **APIs & Services** > **OAuth consent screen**.
+3. Create an **External** application.
+4. Go to **Credentials**, click **Create Credentials** > **OAuth client ID**.
+5. Select **Web application** and add the following:
+   - **Authorized JavaScript origins**: `http://localhost:5173`
+   - **Authorized redirect URIs**: `http://localhost:5173`
+6. Copy the Client ID and Client Secret into your `.env` file.
 
 ## API documentation
 
@@ -43,6 +61,7 @@ FROM_NAME=MailBridge
 
 - `POST /api/v1/auth/register`
 - `POST /api/v1/auth/login`
+- `POST /api/v1/auth/google` (Google OAuth ID Token verification)
 - `GET /api/v1/auth/me`
 - `POST /api/v1/auth/rotate`
 
