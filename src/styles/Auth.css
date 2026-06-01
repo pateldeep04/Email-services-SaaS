@@ -231,3 +231,61 @@ html.dark .auth-footer {
 html.dark .auth-footer a {
   color: #2dd4bf;
 }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.auth-divider:not(:empty)::before {
+  margin-right: 12px;
+}
+
+.auth-divider:not(:empty)::after {
+  margin-left: 12px;
+}
+
+html.dark .auth-divider::before,
+html.dark .auth-divider::after {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.google-btn-container {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  min-height: 40px;
+}
+
+.google-placeholder-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+html.dark .google-placeholder-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e7eb !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+

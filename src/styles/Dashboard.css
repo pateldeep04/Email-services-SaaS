@@ -1312,6 +1312,9 @@ tr:last-child td {
   flex-direction: column;
   padding: 24px;
   min-height: 500px;
+  position: sticky;
+  top: 90px;
+  align-self: start;
 }
 
 .preview-tabs {
@@ -1451,6 +1454,9 @@ tr:last-child td {
 @media (max-width: 992px) {
   .customizer-container {
     grid-template-columns: 1fr;
+  }
+  .customizer-preview-card {
+    position: static;
   }
 }
 

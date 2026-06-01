@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
+import crypto from "crypto";
 import User from "../models/User.js";
 import ApiKey from "../models/ApiKey.js";
 import EmailLog from "../models/EmailLog.js";
@@ -175,6 +176,115 @@ router.post("/login", async (req, res, next) => {
       user: formatUserResponse(user), 
       apiKey: activeKey, 
       token 
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/google", async (req, res, next) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ error: "Google ID token (credential) is required." });
+    }
+
+    // Call Google's tokeninfo endpoint to verify token
+    const tokenInfoUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
+    const verifyRes = await fetch(tokenInfoUrl);
+    
+    if (!verifyRes.ok) {
+      const errorText = await verifyRes.text();
+      console.error("Google token verification failed:", errorText);
+      return res.status(401).json({ error: "Invalid Google ID token." });
+    }
+
+    const payload = await verifyRes.json();
+
+    // Verify audience matches process.env.GOOGLE_CLIENT_ID if it is set and not a placeholder
+    const expectedClientId = process.env.GOOGLE_CLIENT_ID;
+    if (expectedClientId && expectedClientId !== "google-client-id-placeholder") {
+      if (payload.aud !== expectedClientId) {
+        return res.status(401).json({ error: "Google client ID mismatch. Unauthorized request." });
+      }
+    }
+
+    const { email, name } = payload;
+    if (!email) {
+      return res.status(400).json({ error: "Google account does not expose email." });
+    }
+
+    // Find user by email
+    let user = await findUserByEmail(email);
+
+    if (!user) {
+      // If user does not exist, register them
+      // Since passwordHash is a required Mongoose field, we generate a secure random password hash
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const passwordHash = await hashPassword(randomPassword);
+      const apiKey = createApiKey();
+      
+      user = await createUser({
+        email,
+        name: name || email.split("@")[0],
+        passwordHash,
+        apiKey
+      });
+
+      // Register the default key in the ApiKey collection for MongoDB users
+      if (hasMongo()) {
+        await ApiKey.create({
+          name: "Default Key",
+          key: apiKey,
+          userId: user._id,
+          templateSettings: user.templateSettings
+        }).catch(err => console.error("Error creating default ApiKey on Google signup:", err));
+      }
+    }
+
+    // Let's get the active key to return, just like normal login does
+    let activeKey = "";
+    if (hasMongo()) {
+      const count = await ApiKey.countDocuments({ userId: user._id });
+      if (count === 0 && user.apiKey) {
+        await ApiKey.create({
+          name: "Default Key",
+          key: user.apiKey,
+          userId: user._id,
+          templateSettings: user.templateSettings
+        }).catch(err => console.error("Error backfilling Google key on login:", err));
+        activeKey = user.apiKey;
+      } else {
+        const firstKeyDoc = await ApiKey.findOne({ userId: user._id }).sort({ createdAt: -1 });
+        if (firstKeyDoc) {
+          activeKey = firstKeyDoc.key;
+        }
+      }
+    } else {
+      const keys = await memoryStore.listApiKeys(user._id);
+      if (keys.length > 0) {
+        activeKey = keys[0].key;
+      } else if (user.apiKey) {
+        await memoryStore.createApiKey(user._id, "Default Key", user.apiKey);
+        activeKey = user.apiKey;
+      }
+    }
+
+    if (user.apiKey !== activeKey) {
+      await updateUserKey(user, activeKey);
+    }
+
+    const token = createJwtToken(user);
+
+    // Save token in session
+    if (req.session) {
+      req.session.token = token;
+    }
+
+    res.json({
+      user: formatUserResponse(user),
+      apiKey: activeKey,
+      token
     });
   } catch (error) {
     next(error);

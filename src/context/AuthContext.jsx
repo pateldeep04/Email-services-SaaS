@@ -82,6 +82,30 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function loginWithGoogle(credential) {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Google login failed");
+      setToken(data.token);
+      setUser(data.user);
+      setApiKey(data.apiKey);
+      localStorage.setItem("mailbridge_token", data.token);
+      localStorage.setItem("mailbridge_user", JSON.stringify(data.user));
+      localStorage.setItem("mailbridge_api_key", data.apiKey);
+      return true;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function rotateKey() {
     try {
       const res = await fetch(`${API_URL}/api/v1/auth/rotate`, {
@@ -159,7 +183,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, apiKey, setApiKey, loading, register, login, logout, rotateKey, updateUserSettings, updateApiKeySettings }}>
+    <AuthContext.Provider value={{ user, token, apiKey, setApiKey, loading, register, login, logout, rotateKey, updateUserSettings, updateApiKeySettings, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );
