@@ -60,6 +60,8 @@ export function DashboardPage() {
 
   // Styling States
   const [brandName, setBrandName] = useState("My Brand");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoWarning, setLogoWarning] = useState("");
   const [colorHeaderBg, setColorHeaderBg] = useState("#0f766e");
   const [colorHeaderText, setColorHeaderText] = useState("#ffffff");
   const [colorButtonBg, setColorButtonBg] = useState("#0f766e");
@@ -168,6 +170,7 @@ export function DashboardPage() {
 
     if (settings) {
       if (settings.brandName !== undefined) setBrandName(settings.brandName);
+      if (settings.logoUrl !== undefined) setLogoUrl(settings.logoUrl || "");
       if (settings.colorHeaderBg !== undefined) setColorHeaderBg(settings.colorHeaderBg);
       if (settings.colorHeaderText !== undefined) setColorHeaderText(settings.colorHeaderText);
       if (settings.colorButtonBg !== undefined) setColorButtonBg(settings.colorButtonBg);
@@ -189,6 +192,7 @@ export function DashboardPage() {
     try {
       const payload = {
         brandName,
+        logoUrl,
         colorHeaderBg,
         colorHeaderText,
         colorButtonBg,
@@ -1159,14 +1163,14 @@ export function DashboardPage() {
 
   const generateEmailHtml = () => {
     let titleText = emailTitle;
-    let bodyHtml = `<p style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
+    let bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
     let actionHtml = "";
 
     if (activeTemplate === "welcome") {
       titleText = "Welcome aboard";
       bodyHtml = `
         <p>Hi <strong>John Doe</strong>,</p>
-        <p>Your account is ready. We are happy to have you with ${brandName}.</p>
+        <p>Your account is ready. We are happy to have you with <span data-field="brandName" contenteditable="true" style="font-weight: bold;">${brandName}</span>.</p>
         <p style="margin-top: 16px; color: #4b5563; font-style: italic; font-size: 13px;">Note: This is a preview of the Welcome Email template. You can trigger this template via the API.</p>
       `;
     } else if (activeTemplate === "otp") {
@@ -1186,36 +1190,77 @@ export function DashboardPage() {
       `;
     } else if (activeTemplate === "notification") {
       titleText = emailTitle || "Notification Alert";
-      bodyHtml = `<p style="color: #374151; white-space: pre-line;">${emailMessage}</p>`;
+      bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="color: #374151; white-space: pre-line;">${emailMessage}</p>`;
       actionHtml = "";
     } else {
       titleText = emailTitle;
-      bodyHtml = `<p style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
+      bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
       if (emailActionText) {
         actionHtml = `
           <div style="text-align: center; margin: 32px 0 16px 0;">
-            <a href="${emailActionUrl}" target="_blank" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText}</a>
+            <a href="${emailActionUrl}" target="_blank" data-field="emailActionText" contenteditable="true" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText}</a>
           </div>
         `;
       }
+    }
+
+    let logoHtml = "";
+    if (logoUrl) {
+      logoHtml = `<div style="margin-bottom: 12px;"><img src="${logoUrl}" alt="Logo" style="max-height: 48px; max-width: 180px; object-fit: contain; display: inline-block; vertical-align: middle;" /></div>`;
     }
 
     return `
 <div style="font-family: Arial, sans-serif; background-color: ${colorBgLight}; padding: 30px; margin: 0; border-radius: 8px;">
   <div style="max-width: 580px; margin: auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
     <div style="background-color: ${colorHeaderBg}; color: ${colorHeaderText}; padding: 24px; text-align: center;">
-      <h2 style="margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 0.5px; color: ${colorHeaderText} !important;">${brandName}</h2>
+      ${logoHtml}
+      <h2 data-field="brandName" contenteditable="true" style="margin: 0; font-size: ${logoUrl ? '15px' : '20px'}; font-weight: bold; letter-spacing: 0.5px; color: ${colorHeaderText} !important; display: inline-block; opacity: ${logoUrl ? 0.9 : 1};">${brandName}</h2>
     </div>
     <div style="padding: 30px; color: #374151; line-height: 1.6; font-size: 15px;">
-      <h1 style="margin-top: 0; margin-bottom: 16px; font-size: 22px; color: #111827; font-weight: bold;">${titleText}</h1>
+      <h1 data-field="emailTitle" contenteditable="${activeTemplate === 'custom' || activeTemplate === 'notification' ? 'true' : 'false'}" style="margin-top: 0; margin-bottom: 16px; font-size: 22px; color: #111827; font-weight: bold; display: inline-block; width: 100%;">${titleText}</h1>
       ${bodyHtml}
       ${actionHtml}
     </div>
-    <div style="padding: 16px 30px; background-color: #f9fafb; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; text-align: center;">
+    <div data-field="emailFooter" contenteditable="true" style="padding: 16px 30px; background-color: #f9fafb; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; text-align: center;">
       ${emailFooter}
     </div>
   </div>
 </div>`.trim();
+  };
+
+  const handlePreviewBlur = (e) => {
+    const field = e.target.getAttribute("data-field");
+    if (!field) return;
+    const value = e.target.innerText;
+    
+    if (field === "brandName") setBrandName(value);
+    else if (field === "emailTitle") setEmailTitle(value);
+    else if (field === "emailMessage") setEmailMessage(value);
+    else if (field === "emailActionText") setEmailActionText(value);
+    else if (field === "emailFooter") setEmailFooter(value);
+  };
+
+  const handlePreviewKeyDown = (e) => {
+    const field = e.target.getAttribute("data-field");
+    if (!field) return;
+    if (e.key === "Enter" && field !== "emailMessage") {
+      e.preventDefault();
+      e.target.blur();
+    }
+  };
+
+  const handleLogoUrlChange = (url) => {
+    setLogoUrl(url);
+  };
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setLogoUrl(event.target.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAiGenerate = async () => {
@@ -1241,16 +1286,58 @@ export function DashboardPage() {
         setEmailTitle(data.subject);
         setEmailMessage(data.message);
         setActiveTemplate(aiType);
+        
+        if (data.theme) {
+          if (data.theme.colorHeaderBg) setColorHeaderBg(data.theme.colorHeaderBg);
+          if (data.theme.colorHeaderText) setColorHeaderText(data.theme.colorHeaderText);
+          if (data.theme.colorButtonBg) setColorButtonBg(data.theme.colorButtonBg);
+          if (data.theme.colorBgLight) setColorBgLight(data.theme.colorBgLight);
+        }
+
         if (data.isMock) {
-          setAiNote(data.note + ` (applied to ${aiType} preview)`);
+          setAiNote(data.note + ` (applied content & color theme to preview)`);
         } else {
-          setAiNote(`✨ AI generated and applied to the ${aiType} template successfully!`);
+          setAiNote(`✨ AI generated content and color theme applied to ${aiType} template successfully!`);
         }
       } else {
         alert(data.error || "Failed to generate AI content");
       }
     } catch (error) {
       alert("Error generating content: " + error.message);
+    } finally {
+      setGeneratingAi(false);
+    }
+  };
+
+  const handleAiTheme = async () => {
+    setGeneratingAi(true);
+    setAiNote("");
+    try {
+      const res = await fetch(`${API_URL}/api/v1/ai/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          prompt: `Analyze the brand and suggest a matching professional color palette for: ${brandName}`,
+          tone: "Professional",
+          type: "custom",
+          brandName: brandName
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.theme) {
+        if (data.theme.colorHeaderBg) setColorHeaderBg(data.theme.colorHeaderBg);
+        if (data.theme.colorHeaderText) setColorHeaderText(data.theme.colorHeaderText);
+        if (data.theme.colorButtonBg) setColorButtonBg(data.theme.colorButtonBg);
+        if (data.theme.colorBgLight) setColorBgLight(data.theme.colorBgLight);
+        setAiNote(`🎨 AI theme suggestions successfully applied for "${brandName}"!`);
+      } else {
+        alert("Failed to suggest brand colors. Make sure you set a Brand Name first!");
+      }
+    } catch (error) {
+      alert("Error: " + error.message);
     } finally {
       setGeneratingAi(false);
     }
@@ -1436,7 +1523,7 @@ export function DashboardPage() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={savingSmtp || !smtpEnabled}
+              disabled={savingSmtp}
             >
               {savingSmtp ? "Saving Configuration..." : "Save Settings"}
             </button>
@@ -1604,13 +1691,80 @@ export function DashboardPage() {
               </select>
             </div>
 
+            <div className="logo-themer-section" style={{ background: "rgba(15, 118, 110, 0.03)", border: "1px dashed rgba(15, 118, 110, 0.2)", borderRadius: "8px", padding: "16px", marginBottom: "20px" }}>
+              <h4 style={{ display: "flex", alignItems: "center", gap: "8px", margin: "0 0 8px 0", fontSize: "14px", fontWeight: "bold", color: "#0f766e" }}>
+                <Mail size={16} /> Brand Logo (Optional)
+              </h4>
+              <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "12px", lineHeight: "1.4" }}>
+                Add your company logo to render in the email header.
+              </p>
+              
+              <div className="form-group" style={{ marginBottom: "12px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600 }}>Paste Logo URL</label>
+                <input
+                  type="text"
+                  placeholder="https://company.com/logo.png"
+                  value={logoUrl.startsWith("data:") ? "" : logoUrl}
+                  onChange={(e) => handleLogoUrlChange(e.target.value)}
+                  style={{ fontSize: "13px", padding: "8px" }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: logoUrl ? "12px" : "0" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600 }}>Or Upload Logo Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  style={{ fontSize: "12px", border: "none", padding: "4px 0", background: "none" }}
+                />
+              </div>
+
+              {logoUrl && (
+                <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "12px", background: "#ffffff", padding: "8px", borderRadius: "6px", border: "1px solid #e5e7eb" }}>
+                  <img src={logoUrl} alt="Brand Logo Preview" style={{ maxHeight: "32px", maxWidth: "80px", objectFit: "contain" }} />
+                  <span style={{ fontSize: "11px", color: "#4b5563" }}>Logo active</span>
+                  <button
+                    type="button"
+                    onClick={() => setLogoUrl("")}
+                    style={{ marginLeft: "auto", background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "11px", fontWeight: "bold" }}
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="form-group">
-              <label>Brand Name</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <label style={{ margin: 0 }}>Brand Name</label>
+                <button
+                  type="button"
+                  onClick={handleAiTheme}
+                  disabled={generatingAi || !brandName.trim()}
+                  style={{
+                    background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "4px 10px",
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    boxShadow: "0 2px 4px rgba(15, 118, 110, 0.2)"
+                  }}
+                >
+                  <SparklesIcon size={12} /> {generatingAi ? "Analyzing..." : "🎨 Auto-Theme with AI"}
+                </button>
+              </div>
               <input
                 type="text"
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
-                placeholder="e.g. My Brand"
+                placeholder="e.g. Gopal Namkeen"
               />
             </div>
 
@@ -1799,7 +1953,19 @@ export function DashboardPage() {
               </div>
               <div className="inbox-subject">
                 <span className="subject-label">Subject:</span>
-                <span className="subject-text">
+                <span 
+                  className="subject-text"
+                  contentEditable={activeTemplate === "custom" || activeTemplate === "notification"}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setEmailTitle(e.target.innerText)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      e.target.blur();
+                    }
+                  }}
+                  style={{ outline: "none", borderRadius: "3px" }}
+                >
                   {activeTemplate === "welcome" ? `Welcome to ${brandName}`
                     : activeTemplate === "otp" ? "Your verification OTP"
                       : activeTemplate === "forgot-password" ? "Reset your password"
@@ -1809,7 +1975,11 @@ export function DashboardPage() {
               </div>
             </div>
             <div className="email-preview-scroll-wrapper">
-              <div dangerouslySetInnerHTML={{ __html: html }} />
+              <div 
+                dangerouslySetInnerHTML={{ __html: html }} 
+                onBlur={handlePreviewBlur}
+                onKeyDown={handlePreviewKeyDown}
+              />
             </div>
           </div>
         </div>

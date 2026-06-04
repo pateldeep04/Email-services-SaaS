@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
     useGlobalTemplateSettings: { type: Boolean, default: true },
     templateSettings: {
       brandName: { type: String, default: "My Brand" },
+      logoUrl: { type: String, default: "" },
       colorHeaderBg: { type: String, default: "#0f766e" },
       colorHeaderText: { type: String, default: "#ffffff" },
       colorButtonBg: { type: String, default: "#0f766e" },

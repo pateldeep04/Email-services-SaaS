@@ -9,6 +9,7 @@ const apiKeySchema = new mongoose.Schema(
     styleType: { type: String, enum: ["global", "custom"], default: "global" },
     templateSettings: {
       brandName: { type: String, default: "My Brand" },
+      logoUrl: { type: String, default: "" },
       colorHeaderBg: { type: String, default: "#0f766e" },
       colorHeaderText: { type: String, default: "#ffffff" },
       colorButtonBg: { type: String, default: "#0f766e" },

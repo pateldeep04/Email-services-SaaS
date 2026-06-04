@@ -9,6 +9,13 @@ import { memoryStore } from "../services/memoryStore.js";
 import { createApiKey, createJwtToken, hashPassword, comparePassword } from "../services/authService.js";
 import { requireAuth } from "../middleware/auth.js";
 import { testSmtpConnection } from "../services/emailService.js";
+import { createRateLimiter } from "../middleware/rateLimiter.js";
+
+const authRateLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: "Too many authentication attempts, please try again after 15 minutes."
+});
 
 const router = express.Router();
 
@@ -74,7 +81,7 @@ async function updateUserKey(user, apiKey) {
   return memoryStore.updateUserApiKey(user, apiKey);
 }
 
-router.post("/register", async (req, res, next) => {
+router.post("/register", authRateLimiter, async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
     if (!email || !name || !password) {
@@ -117,7 +124,7 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", authRateLimiter, async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -182,7 +189,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/google", async (req, res, next) => {
+router.post("/google", authRateLimiter, async (req, res, next) => {
   try {
     const { credential } = req.body;
     if (!credential) {

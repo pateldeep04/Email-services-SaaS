@@ -7,6 +7,14 @@ import User from "../models/User.js";
 import { requireApiKey } from "../middleware/apiKey.js";
 import { sendEmail, testSmtpConnection } from "../services/emailService.js";
 import { memoryStore } from "../services/memoryStore.js";
+import { createRateLimiter } from "../middleware/rateLimiter.js";
+
+const emailRateLimiter = createRateLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // 30 requests per minute
+  message: "Too many email sending requests, please try again after a minute.",
+  keyGenerator: (req) => req.apiKeyUsed || req.ip || req.headers?.["x-forwarded-for"] || "anonymous"
+});
 import {
   forgotPasswordTemplate,
   notificationTemplate,
@@ -147,7 +155,7 @@ router.get("/smtp-status", async (req, res, next) => {
   }
 });
 
-router.post("/welcome", async (req, res, next) => {
+router.post("/welcome", emailRateLimiter, async (req, res, next) => {
   try {
     const { to, name = "there", company = "your company" } = req.body;
     validateEmail(to);
@@ -166,7 +174,7 @@ router.post("/welcome", async (req, res, next) => {
   }
 });
 
-router.post("/otp", async (req, res, next) => {
+router.post("/otp", emailRateLimiter, async (req, res, next) => {
   try {
     const { to, purpose = "login" } = req.body;
     validateEmail(to);
@@ -199,7 +207,7 @@ router.post("/otp", async (req, res, next) => {
   }
 });
 
-router.post("/verify-otp", async (req, res, next) => {
+router.post("/verify-otp", emailRateLimiter, async (req, res, next) => {
   try {
     const { to, code, purpose = "login" } = req.body;
     validateEmail(to);
@@ -239,7 +247,7 @@ router.post("/verify-otp", async (req, res, next) => {
   }
 });
 
-router.post("/forgot-password", async (req, res, next) => {
+router.post("/forgot-password", emailRateLimiter, async (req, res, next) => {
   try {
     const { to, resetUrl } = req.body;
     validateEmail(to);
@@ -260,7 +268,7 @@ router.post("/forgot-password", async (req, res, next) => {
   }
 });
 
-router.post("/custom", async (req, res, next) => {
+router.post("/custom", emailRateLimiter, async (req, res, next) => {
   try {
     const { to, subject, message, html } = req.body;
     validateEmail(to);
@@ -287,7 +295,7 @@ router.post("/custom", async (req, res, next) => {
   }
 });
 
-router.post("/notification", async (req, res, next) => {
+router.post("/notification", emailRateLimiter, async (req, res, next) => {
   try {
     const { to, title, message } = req.body;
     validateEmail(to);

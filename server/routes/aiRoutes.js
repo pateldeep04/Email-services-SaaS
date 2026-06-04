@@ -1,9 +1,16 @@
 import express from "express";
 import { requireAuth } from "../middleware/auth.js";
+import { createRateLimiter } from "../middleware/rateLimiter.js";
+
+const aiRateLimiter = createRateLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  max: 15, // 15 requests per minute
+  message: "Too many AI generation requests, please try again after a minute."
+});
 
 const router = express.Router();
 
-router.post("/generate", requireAuth, async (req, res, next) => {
+router.post("/generate", requireAuth, aiRateLimiter, async (req, res, next) => {
   try {
     const { prompt, tone = "Professional", type = "custom", brandName = "MailBridge" } = req.body;
     if (!prompt) {
@@ -15,10 +22,10 @@ router.post("/generate", requireAuth, async (req, res, next) => {
     if (geminiKey) {
       // call Gemini API using native fetch
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
-      
+
       const promptText = `
-You are an expert AI copywriter for transactional and marketing emails.
-Write a compelling email subject line and message body based on this prompt.
+You are an expert AI copywriter and visual brand designer for transactional and marketing emails.
+Write a compelling email subject line, a message body, and analyze the brand name to recommend a matching, professional email color theme.
 
 Input Parameters:
 - Brand Name: ${brandName}
@@ -30,7 +37,13 @@ Output format:
 Provide your output as a valid JSON object matching this schema exactly:
 {
   "subject": "The email subject line",
-  "message": "The email message body. Use newlines (\\n) for spacing where appropriate. Do NOT write HTML."
+  "message": "The email message body. Use newlines (\\n) for spacing where appropriate. Do NOT write HTML.",
+  "theme": {
+    "colorHeaderBg": "A hex color code (e.g., #0f766e) matching the brand/logo theme",
+    "colorHeaderText": "#ffffff or #111827 depending on which has better readability/contrast against the colorHeaderBg",
+    "colorButtonBg": "A hex color code (e.g., #0d9488) used for buttons/accent elements",
+    "colorBgLight": "A very light, soft background tint hex color code (e.g., #f0fdfa) matching the main theme"
+  }
 }
 
 Do NOT wrap the JSON in markdown code blocks or triple backticks. Return ONLY the raw JSON text.
@@ -74,6 +87,7 @@ Do NOT wrap the JSON in markdown code blocks or triple backticks. Return ONLY th
           success: true,
           subject: parsed.subject || `Update from ${brandName}`,
           message: parsed.message || prompt,
+          theme: parsed.theme || null,
           isMock: false
         });
       } catch (err) {
@@ -93,38 +107,73 @@ Do NOT wrap the JSON in markdown code blocks or triple backticks. Return ONLY th
 
       const lowerPrompt = prompt.toLowerCase();
       const brand = brandName || "MailBridge";
+      const lowerBrand = brand.toLowerCase();
+
+      // Analyze brand keywords to generate a mock color theme
+      let theme = {
+        colorHeaderBg: "#0f766e",
+        colorHeaderText: "#ffffff",
+        colorButtonBg: "#0f766e",
+        colorBgLight: "#f1f5f9"
+      };
+
+      if (lowerBrand.includes("gopal") || lowerBrand.includes("namkeen") || lowerBrand.includes("food") || lowerBrand.includes("sweet")) {
+        // Gopal Namkeen / warm food theme: deep warm reddish orange, warm amber button, soft warm cream background tint
+        theme = {
+          colorHeaderBg: "#c2410c",
+          colorHeaderText: "#ffffff",
+          colorButtonBg: "#d97706",
+          colorBgLight: "#fffbeb"
+        };
+      } else if (lowerBrand.includes("google") || lowerBrand.includes("tech") || lowerBrand.includes("dev")) {
+        // Tech theme: nice royal blue header, active blue button, soft blue tint canvas
+        theme = {
+          colorHeaderBg: "#1d4ed8",
+          colorHeaderText: "#ffffff",
+          colorButtonBg: "#3b82f6",
+          colorBgLight: "#f0f9ff"
+        };
+      } else if (lowerBrand.includes("eco") || lowerBrand.includes("green") || lowerBrand.includes("nature")) {
+        // Green nature theme
+        theme = {
+          colorHeaderBg: "#15803d",
+          colorHeaderText: "#ffffff",
+          colorButtonBg: "#16a34a",
+          colorBgLight: "#f0fdf4"
+        };
+      }
 
       // Formulate a very high-quality email template response based on tone and prompt
       if (type === "welcome" || lowerPrompt.includes("welcome") || lowerPrompt.includes("signup") || lowerPrompt.includes("sign up")) {
-        subject = tone === "Friendly" ? `Welcome to the ${brand} family! ✨` 
-                : tone === "Urgent" ? `Confirm your new account at ${brand} now`
-                : tone === "Persuasive" ? `You've made the right choice! Welcome to ${brand}`
-                : `Welcome to ${brand} - Let's get started`;
-        
+        subject = tone === "Friendly" ? `Welcome to the ${brand} family! ✨`
+          : tone === "Urgent" ? `Confirm your new account at ${brand} now`
+            : tone === "Persuasive" ? `You've made the right choice! Welcome to ${brand}`
+              : `Welcome to ${brand} - Let's get started`;
+
         message = `Hi there,\n\nWelcome to ${brand}! We're thrilled to have you join us.\n\nYour account has been set up successfully. Based on your details ("${prompt}"), we want to make sure you get the most out of your experience.\n\nIf you have any questions or need help, just reply to this email. Our support team is always here for you.\n\nBest regards,\nThe ${brand} Team`;
       } else if (type === "forgot-password" || lowerPrompt.includes("reset") || lowerPrompt.includes("password")) {
         subject = tone === "Urgent" ? `Action Required: Reset your ${brand} password`
-                : `Reset your ${brand} account password`;
-        
+          : `Reset your ${brand} account password`;
+
         message = `Hello,\n\nWe received a request to reset the password for your ${brand} account.\n\nTo reset your password, please use the button below or follow the link provided in your app. If you didn't request this, you can safely ignore this email.\n\nThis password reset link will expire in 2 hours for security reasons.\n\nBest regards,\n${brand} Security Team`;
       } else if (type === "otp" || lowerPrompt.includes("code") || lowerPrompt.includes("verification") || lowerPrompt.includes("otp")) {
         subject = tone === "Urgent" ? `URGENT: Your ${brand} Verification Code`
-                : `Your ${brand} security code`;
-        
+          : `Your ${brand} security code`;
+
         message = `Hello,\n\nYour security verification code for ${brand} is below. Please enter this code to verify your identity.\n\nVerification Code: 482931\n\nThis code will expire in 10 minutes. If you did not make this request, please contact support immediately.\n\nBest regards,\n${brand} Team`;
       } else if (type === "notification" || lowerPrompt.includes("alert") || lowerPrompt.includes("notify") || lowerPrompt.includes("maintenance")) {
         subject = tone === "Urgent" ? `IMPORTANT: Update regarding your ${brand} service`
-                : tone === "Friendly" ? `Quick heads-up from ${brand}`
-                : `Notification from ${brand}`;
-        
+          : tone === "Friendly" ? `Quick heads-up from ${brand}`
+            : `Notification from ${brand}`;
+
         message = `Hello,\n\nThis is an automated notification from ${brand} regarding your account or services.\n\nSummary of update:\n${prompt}\n\nNo immediate action is required unless specified otherwise. We appreciate your partnership with us.\n\nBest regards,\nThe ${brand} Team`;
       } else {
         // Custom marketing or other email
         subject = tone === "Friendly" ? `A quick message from ${brand} ✨`
-                : tone === "Urgent" ? `Important update: ${prompt.substring(0, 40)}...`
-                : tone === "Persuasive" ? `Why you don't want to miss this from ${brand}`
-                : `Update from ${brand}`;
-        
+          : tone === "Urgent" ? `Important update: ${prompt.substring(0, 40)}...`
+            : tone === "Persuasive" ? `Why you don't want to miss this from ${brand}`
+              : `Update from ${brand}`;
+
         message = `Hi there,\n\nWe wanted to reach out to you with an update from ${brand}.\n\nHere is what's new:\n${prompt}\n\nWe hope this information is helpful to you. Please let us know if you have any questions or feedback!\n\nBest regards,\nThe ${brand} Team`;
       }
 
@@ -132,6 +181,7 @@ Do NOT wrap the JSON in markdown code blocks or triple backticks. Return ONLY th
         success: true,
         subject,
         message,
+        theme,
         isMock: true,
         note: "Using mock AI. Please configure GEMINI_API_KEY in your .env file to enable live Gemini AI generation."
       });

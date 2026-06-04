@@ -74,6 +74,7 @@ export const memoryStore = {
       useGlobalTemplateSettings: true,
       templateSettings: {
         brandName: "My Brand",
+        logoUrl: "",
         colorHeaderBg: "#0f766e",
         colorHeaderText: "#ffffff",
         colorButtonBg: "#0f766e",
@@ -177,6 +178,7 @@ export const memoryStore = {
       styleType: "global",
       templateSettings: {
         brandName: "My Brand",
+        logoUrl: "",
         colorHeaderBg: "#0f766e",
         colorHeaderText: "#ffffff",
         colorButtonBg: "#0f766e",

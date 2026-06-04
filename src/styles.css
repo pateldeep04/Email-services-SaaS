@@ -48,3 +48,19 @@ code {
   flex-direction: column;
   min-height: 100vh;
 }
+
+/* ContentEditable styling in Email Preview */
+.live-preview-workspace [contenteditable="true"] {
+  outline: none;
+  transition: all 0.2s ease;
+}
+.live-preview-workspace [contenteditable="true"]:hover {
+  outline: 1.5px dashed #3b82f6 !important;
+  outline-offset: 2px;
+  cursor: text;
+}
+.live-preview-workspace [contenteditable="true"]:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px;
+}
+
