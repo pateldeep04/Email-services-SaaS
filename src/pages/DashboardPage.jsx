@@ -1167,25 +1167,25 @@ export function DashboardPage() {
     let actionHtml = "";
 
     if (activeTemplate === "welcome") {
-      titleText = "Welcome aboard";
+      titleText = emailTitle || "Welcome aboard";
       bodyHtml = `
         <p>Hi <strong>John Doe</strong>,</p>
-        <p>Your account is ready. We are happy to have you with <span data-field="brandName" contenteditable="true" style="font-weight: bold;">${brandName}</span>.</p>
+        <p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage || `Your account is ready. We are happy to have you with ${brandName}.`}</p>
         <p style="margin-top: 16px; color: #4b5563; font-style: italic; font-size: 13px;">Note: This is a preview of the Welcome Email template. You can trigger this template via the API.</p>
       `;
     } else if (activeTemplate === "otp") {
-      titleText = "Verification code";
+      titleText = emailTitle || "Verification code";
       bodyHtml = `
-        <p>Use this OTP for verification:</p>
+        <p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage || "Use this OTP for verification:"}</p>
         <p style="font-size: 32px; letter-spacing: 6px; font-weight: 700; margin: 24px 0; text-align: center; color: ${colorButtonBg}; font-family: monospace;">482931</p>
-        <p>This code expires in 10 minutes.</p>
+        <p style="color: #4b5563; font-style: italic; font-size: 13px;">This code expires in 10 minutes.</p>
       `;
     } else if (activeTemplate === "forgot-password") {
-      titleText = "Password reset";
-      bodyHtml = `<p style="margin-bottom: 20px;">We received a request to reset your password for your account.</p>`;
+      titleText = emailTitle || "Password reset";
+      bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage || "We received a request to reset your password for your account."}</p>`;
       actionHtml = `
         <div style="text-align: center; margin: 24px 0 16px 0;">
-          <a href="https://app.example.com/reset" target="_blank" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Reset password</a>
+          <a href="${emailActionUrl || 'https://app.example.com/reset'}" target="_blank" data-field="emailActionText" contenteditable="true" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText || 'Reset password'}</a>
         </div>
       `;
     } else if (activeTemplate === "notification") {
@@ -1217,7 +1217,7 @@ export function DashboardPage() {
       <h2 data-field="brandName" contenteditable="true" style="margin: 0; font-size: ${logoUrl ? '15px' : '20px'}; font-weight: bold; letter-spacing: 0.5px; color: ${colorHeaderText} !important; display: inline-block; opacity: ${logoUrl ? 0.9 : 1};">${brandName}</h2>
     </div>
     <div style="padding: 30px; color: #374151; line-height: 1.6; font-size: 15px;">
-      <h1 data-field="emailTitle" contenteditable="${activeTemplate === 'custom' || activeTemplate === 'notification' ? 'true' : 'false'}" style="margin-top: 0; margin-bottom: 16px; font-size: 22px; color: #111827; font-weight: bold; display: inline-block; width: 100%;">${titleText}</h1>
+      <h1 data-field="emailTitle" contenteditable="true" style="margin-top: 0; margin-bottom: 16px; font-size: 22px; color: #111827; font-weight: bold; display: inline-block; width: 100%;">${titleText}</h1>
       ${bodyHtml}
       ${actionHtml}
     </div>
@@ -1362,10 +1362,10 @@ export function DashboardPage() {
         },
         body: JSON.stringify({
           to: testRecipient,
-          subject: activeTemplate === "welcome" ? `Welcome to ${brandName}`
-            : activeTemplate === "otp" ? "Your verification OTP"
-              : activeTemplate === "forgot-password" ? "Reset your password"
-                : emailTitle,
+          subject: activeTemplate === "welcome" ? (emailTitle || `Welcome to ${brandName}`)
+            : activeTemplate === "otp" ? (emailTitle || "Your verification OTP")
+              : activeTemplate === "forgot-password" ? (emailTitle || "Reset your password")
+                : emailTitle || "(No Subject)",
           html: html
         })
       });
@@ -1955,7 +1955,7 @@ export function DashboardPage() {
                 <span className="subject-label">Subject:</span>
                 <span 
                   className="subject-text"
-                  contentEditable={activeTemplate === "custom" || activeTemplate === "notification"}
+                  contentEditable={true}
                   suppressContentEditableWarning={true}
                   onBlur={(e) => setEmailTitle(e.target.innerText)}
                   onKeyDown={(e) => {
@@ -1966,9 +1966,9 @@ export function DashboardPage() {
                   }}
                   style={{ outline: "none", borderRadius: "3px" }}
                 >
-                  {activeTemplate === "welcome" ? `Welcome to ${brandName}`
-                    : activeTemplate === "otp" ? "Your verification OTP"
-                      : activeTemplate === "forgot-password" ? "Reset your password"
+                  {activeTemplate === "welcome" ? (emailTitle || `Welcome to ${brandName}`)
+                    : activeTemplate === "otp" ? (emailTitle || "Your verification OTP")
+                      : activeTemplate === "forgot-password" ? (emailTitle || "Reset your password")
                         : activeTemplate === "notification" ? (emailTitle || "Notification Alert")
                           : emailTitle || "(No Subject)"}
                 </span>
