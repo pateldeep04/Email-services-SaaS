@@ -12,28 +12,41 @@ import { createRateLimiter } from "./middleware/rateLimiter.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
+function isAllowedCorsOrigin(origin) {
+  if (!origin || origin === "null") {
+    return true;
+  }
+
+  const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean);
+
+  if (allowedOrigins.includes(origin)) {
+    return true;
+  }
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+
+    return (
+      protocol === "file:" ||
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "[::1]" ||
+      hostname.endsWith(".onrender.com") ||
+      hostname.endsWith(".loca.lt") ||
+      hostname.endsWith(".devtunnels.ms")
+    );
+  } catch {
+    return false;
+  }
+}
+
 app.use(cors({
   credentials: true,
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-      process.env.CLIENT_URL
-    ].filter(Boolean);
-
-    if (
-      !origin ||
-      origin === "null" ||
-      allowedOrigins.includes(origin) ||
-      origin.endsWith(".onrender.com") ||
-      origin.includes("loca.lt") ||
-      origin.endsWith(".devtunnels.ms")
-    ) {
+    if (isAllowedCorsOrigin(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("CORS not allowed"));
+      callback(null, false);
     }
   }
 }));
