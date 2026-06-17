@@ -17,6 +17,16 @@ const authRateLimiter = createRateLimiter({
   message: "Too many authentication attempts, please try again after 15 minutes."
 });
 
+const emailRateLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: "Too many login/registration attempts for this email, please try again after 15 minutes.",
+  keyGenerator: (req) => {
+    const email = req.body?.email;
+    return email ? `email_${email.toLowerCase().trim()}` : (req.ip || "global");
+  }
+});
+
 const router = express.Router();
 
 const hasMongo = () => mongoose.connection.readyState === 1;
@@ -81,7 +91,7 @@ async function updateUserKey(user, apiKey) {
   return memoryStore.updateUserApiKey(user, apiKey);
 }
 
-router.post("/register", authRateLimiter, async (req, res, next) => {
+router.post("/register", authRateLimiter, emailRateLimiter, async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
     if (!email || !name || !password) {
@@ -124,7 +134,7 @@ router.post("/register", authRateLimiter, async (req, res, next) => {
   }
 });
 
-router.post("/login", authRateLimiter, async (req, res, next) => {
+router.post("/login", authRateLimiter, emailRateLimiter, async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -189,7 +199,7 @@ router.post("/login", authRateLimiter, async (req, res, next) => {
   }
 });
 
-router.post("/google", authRateLimiter, async (req, res, next) => {
+router.post("/google", authRateLimiter, emailRateLimiter, async (req, res, next) => {
   try {
     const { credential } = req.body;
     if (!credential) {
