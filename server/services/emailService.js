@@ -28,7 +28,7 @@ export async function testSmtpConnection() {
 }
 
 export async function sendEmail({ to, subject, html, text }, customSmtp = null, senderProfile = null) {
-  let transporter = null;
+  let transporter;
   let fromName = process.env.FROM_NAME || "MailBridge";
   let fromEmail = process.env.GMAIL_USER;
   let replyTo = undefined;

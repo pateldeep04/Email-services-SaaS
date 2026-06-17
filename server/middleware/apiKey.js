@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import User from "../models/User.js";
 import ApiKey from "../models/ApiKey.js";
 import { memoryStore } from "../services/memoryStore.js";
 
@@ -20,7 +19,7 @@ export async function requireApiKey(req, res, next) {
   const hasMongo = mongoose.connection.readyState === 1;
   let client = null;
 
-  let keyDoc = null;
+  let keyDoc;
 
   if (hasMongo) {
     // Authenticate strictly against active keys in the ApiKey collection

@@ -107,9 +107,13 @@ async function start() {
     }
   }
 
-  app.listen(port, () => {
-    console.log(`MailBridge API running on http://localhost:${port}`);
-  });
+  if (process.env.NODE_ENV !== "test") {
+    app.listen(port, () => {
+      console.log(`MailBridge API running on http://localhost:${port}`);
+    });
+  }
 }
 
 start();
+
+export default app;
