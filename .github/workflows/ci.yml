@@ -9,6 +9,9 @@ on:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: supersecretkey
+      NODE_ENV: test
 
     steps:
       - name: Checkout Repository

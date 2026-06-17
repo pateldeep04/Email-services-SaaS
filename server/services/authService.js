@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === "production" ? null : "supersecretkey");
 
 if (!JWT_SECRET) {
   throw new Error("FATAL: JWT_SECRET environment variable is not set. Please set it in your .env file.");
