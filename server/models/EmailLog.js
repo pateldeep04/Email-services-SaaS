@@ -4,7 +4,7 @@ const emailLogSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ["welcome", "otp", "forgot-password", "notification", "custom"],
+      enum: ["welcome", "otp", "forgot-password", "notification", "custom", "sms-otp"],
       required: true
     },
     to: { type: String, required: true },

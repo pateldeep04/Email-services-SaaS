@@ -35,6 +35,7 @@ function formatUserResponse(user) {
   return {
     email: user.email,
     name: user.name,
+    companyName: user.companyName || "",
     templateSettings: user.templateSettings,
     useGlobalTemplateSettings: user.useGlobalTemplateSettings,
     senderName: user.senderName || "",
@@ -57,6 +58,23 @@ function formatUserResponse(user) {
       fromEmail: "",
       fromName: "",
       hasPassword: false
+    },
+    smsSettings: user.smsSettings ? {
+      enabled: user.smsSettings.enabled || false,
+      phoneNumber: user.smsSettings.phoneNumber || "",
+      carrierGateway: user.smsSettings.carrierGateway || "",
+      simulationMode: user.smsSettings.simulationMode !== false,
+      gatewayUrl: user.smsSettings.gatewayUrl || "",
+      gatewayUser: user.smsSettings.gatewayUser || "",
+      gatewayPass: user.smsSettings.gatewayPass || ""
+    } : {
+      enabled: false,
+      phoneNumber: "",
+      carrierGateway: "",
+      simulationMode: true,
+      gatewayUrl: "",
+      gatewayUser: "",
+      gatewayPass: ""
     }
   };
 }
@@ -93,9 +111,9 @@ async function updateUserKey(user, apiKey) {
 
 router.post("/register", authRateLimiter, emailRateLimiter, async (req, res, next) => {
   try {
-    const { email, name, password } = req.body;
-    if (!email || !name || !password) {
-      return res.status(400).json({ error: "email, name, and password are required." });
+    const { email, name, password, companyName } = req.body;
+    if (!email || !name || !password || !companyName) {
+      return res.status(400).json({ error: "email, name, password, and company name are required." });
     }
 
     const existing = await findUserByEmail(email);
@@ -105,7 +123,23 @@ router.post("/register", authRateLimiter, emailRateLimiter, async (req, res, nex
 
     const passwordHash = await hashPassword(password);
     const apiKey = createApiKey();
-    const user = await createUser({ email, name, passwordHash, apiKey });
+    const user = await createUser({
+      email,
+      name,
+      companyName,
+      passwordHash,
+      apiKey,
+      senderName: companyName,
+      templateSettings: {
+        brandName: companyName,
+        logoUrl: "",
+        colorHeaderBg: "#0f766e",
+        colorHeaderText: "#ffffff",
+        colorButtonBg: "#0f766e",
+        colorBgLight: "#f1f5f9",
+        emailFooter: `© 2026 ${companyName}. All rights reserved.`
+      }
+    });
     
     // Register the default key in the ApiKey collection for MongoDB users
     if (hasMongo()) {
@@ -376,8 +410,18 @@ router.put("/settings", requireAuth, async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
-    const { templateSettings, useGlobalTemplateSettings, senderName, senderEmail, smtpSettings } = req.body;
+    const { companyName, templateSettings, useGlobalTemplateSettings, senderName, senderEmail, smtpSettings, smsSettings } = req.body;
     if (hasMongo()) {
+      if (companyName !== undefined) {
+        user.companyName = companyName;
+        // Also update defaults if they haven't set custom profiles yet
+        if (!user.senderName || user.senderName === user.companyName) {
+          user.senderName = companyName;
+        }
+        if (user.templateSettings) {
+          user.templateSettings.brandName = companyName;
+        }
+      }
       if (templateSettings !== undefined) {
         user.templateSettings = { ...user.templateSettings, ...templateSettings };
       }
@@ -407,8 +451,29 @@ router.put("/settings", requireAuth, async (req, res, next) => {
           fromName: smtpSettings.fromName !== undefined ? smtpSettings.fromName : existingSmtp.fromName
         };
       }
+      if (smsSettings !== undefined) {
+        const existingSms = user.smsSettings || {};
+        user.smsSettings = {
+          enabled: smsSettings.enabled !== undefined ? smsSettings.enabled : existingSms.enabled,
+          phoneNumber: smsSettings.phoneNumber !== undefined ? smsSettings.phoneNumber : existingSms.phoneNumber,
+          carrierGateway: smsSettings.carrierGateway !== undefined ? smsSettings.carrierGateway : existingSms.carrierGateway,
+          simulationMode: smsSettings.simulationMode !== undefined ? smsSettings.simulationMode : existingSms.simulationMode,
+          gatewayUrl: smsSettings.gatewayUrl !== undefined ? smsSettings.gatewayUrl : existingSms.gatewayUrl,
+          gatewayUser: smsSettings.gatewayUser !== undefined ? smsSettings.gatewayUser : existingSms.gatewayUser,
+          gatewayPass: smsSettings.gatewayPass !== undefined ? smsSettings.gatewayPass : existingSms.gatewayPass
+        };
+      }
       await user.save();
     } else {
+      if (companyName !== undefined) {
+        user.companyName = companyName;
+        if (!user.senderName || user.senderName === user.companyName) {
+          user.senderName = companyName;
+        }
+        if (user.templateSettings) {
+          user.templateSettings.brandName = companyName;
+        }
+      }
       if (templateSettings !== undefined) {
         user.templateSettings = { ...user.templateSettings, ...templateSettings };
       }
@@ -436,17 +501,31 @@ router.put("/settings", requireAuth, async (req, res, next) => {
           pass: newPass,
           fromEmail: smtpSettings.fromEmail !== undefined ? smtpSettings.fromEmail : existingSmtp.fromEmail,
           fromName: smtpSettings.fromName !== undefined ? smtpSettings.fromName : existingSmtp.fromName
+        };
+      }
+      if (smsSettings !== undefined) {
+        const existingSms = user.smsSettings || {};
+        user.smsSettings = {
+          enabled: smsSettings.enabled !== undefined ? smsSettings.enabled : existingSms.enabled,
+          phoneNumber: smsSettings.phoneNumber !== undefined ? smsSettings.phoneNumber : existingSms.phoneNumber,
+          carrierGateway: smsSettings.carrierGateway !== undefined ? smsSettings.carrierGateway : existingSms.carrierGateway,
+          simulationMode: smsSettings.simulationMode !== undefined ? smsSettings.simulationMode : existingSms.simulationMode,
+          gatewayUrl: smsSettings.gatewayUrl !== undefined ? smsSettings.gatewayUrl : existingSms.gatewayUrl,
+          gatewayUser: smsSettings.gatewayUser !== undefined ? smsSettings.gatewayUser : existingSms.gatewayUser,
+          gatewayPass: smsSettings.gatewayPass !== undefined ? smsSettings.gatewayPass : existingSms.gatewayPass
         };
       }
     }
     const formatted = formatUserResponse(user);
     res.json({ 
       success: true, 
+      companyName: formatted.companyName,
       templateSettings: formatted.templateSettings,
       useGlobalTemplateSettings: formatted.useGlobalTemplateSettings,
       senderName: formatted.senderName,
       senderEmail: formatted.senderEmail,
-      smtpSettings: formatted.smtpSettings
+      smtpSettings: formatted.smtpSettings,
+      smsSettings: formatted.smsSettings
     });
   } catch (error) {
     next(error);
@@ -658,7 +737,7 @@ router.get("/stats", requireAuth, async (req, res, next) => {
       const simulated = await EmailLog.countDocuments({ userId, status: "simulated" });
       const failed = await EmailLog.countDocuments({ userId, status: "failed" });
 
-      const types = ["welcome", "otp", "forgot-password", "notification", "custom"];
+      const types = ["welcome", "otp", "forgot-password", "notification", "custom", "sms-otp"];
       const byType = {};
       for (const t of types) {
         byType[t] = await EmailLog.countDocuments({ userId, type: t });

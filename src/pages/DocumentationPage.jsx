@@ -37,6 +37,38 @@ const endpoints = [
   },
   {
     method: "POST",
+    path: "/api/v1/sms/otp",
+    title: "Send SMS OTP",
+    description: "Generate and send a 6-digit OTP code to a mobile phone number",
+    request: {
+      to: "+1234567890",
+      purpose: "sms-otp"
+    },
+    response: {
+      success: true,
+      status: "sent",
+      messageId: "...",
+      expiresInMinutes: 10,
+      note: "..."
+    }
+  },
+  {
+    method: "POST",
+    path: "/api/v1/sms/verify-otp",
+    title: "Verify SMS OTP",
+    description: "Verify a 6-digit SMS OTP code sent to a recipient's phone number",
+    request: {
+      to: "+1234567890",
+      code: "123456",
+      purpose: "sms-otp"
+    },
+    response: {
+      verified: true,
+      message: "SMS OTP verified successfully."
+    }
+  },
+  {
+    method: "POST",
     path: "/api/v1/emails/welcome",
     title: "Welcome Email",
     description: "Send onboarding email to new users",

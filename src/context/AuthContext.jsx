@@ -34,13 +34,13 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function register(email, name, password) {
+  async function register(email, name, password, companyName) {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, password })
+        body: JSON.stringify({ email, name, password, companyName })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
@@ -136,11 +136,13 @@ export function AuthProvider({ children }) {
       if (!res.ok) throw new Error(data.error || "Failed to update settings");
       const updatedUser = { 
         ...user, 
+        companyName: data.companyName !== undefined ? data.companyName : user.companyName,
         templateSettings: data.templateSettings,
         useGlobalTemplateSettings: data.useGlobalTemplateSettings,
         senderName: data.senderName,
         senderEmail: data.senderEmail,
-        smtpSettings: data.smtpSettings
+        smtpSettings: data.smtpSettings,
+        smsSettings: data.smsSettings
       };
       setUser(updatedUser);
       localStorage.setItem("mailbridge_user", JSON.stringify(updatedUser));

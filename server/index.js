@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 import authRoutes from "./routes/authRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
+import smsRoutes from "./routes/smsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import { createRateLimiter } from "./middleware/rateLimiter.js";
 
@@ -86,6 +87,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/emails", emailRoutes);
+app.use("/api/v1/sms", smsRoutes);
 app.use("/api/v1/ai", aiRoutes);
 
 app.use((err, _req, res, _next) => {

@@ -7,6 +7,7 @@ import "../styles/Auth.css";
 export function RegisterPage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -69,7 +70,7 @@ export function RegisterPage() {
     }
 
     try {
-      await register(email, name, password);
+      await register(email, name, password, companyName);
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -103,6 +104,18 @@ export function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="companyName">Company name</label>
+            <input
+              id="companyName"
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Your company / brand name"
               required
             />
           </div>

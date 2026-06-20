@@ -1,0 +1,3 @@
+{
+  "ignore": ["*.apk", "**/app-release.apk", "node_modules/", "client/"]
+}

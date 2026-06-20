@@ -1060,3 +1060,10 @@ html.light .tester-ai-note {
   color: #6d28d9;
 }
 
+@media (max-width: 576px) {
+  .tester-ai-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+

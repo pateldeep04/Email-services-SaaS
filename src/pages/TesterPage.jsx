@@ -26,6 +26,20 @@ export function TesterPage() {
       body: { to: user?.email || "test@example.com", code: "123456", purpose: "login" }
     },
     {
+      id: "sms-otp",
+      title: "SMS OTP",
+      method: "POST",
+      path: "/api/v1/sms/otp",
+      body: { to: user?.smsSettings?.phoneNumber || "+1234567890", purpose: "sms-otp" }
+    },
+    {
+      id: "sms-verify-otp",
+      title: "SMS Verify OTP",
+      method: "POST",
+      path: "/api/v1/sms/verify-otp",
+      body: { to: user?.smsSettings?.phoneNumber || "+1234567890", code: "123456", purpose: "sms-otp" }
+    },
+    {
       id: "welcome",
       title: "Welcome Email",
       method: "POST",
@@ -53,7 +67,7 @@ export function TesterPage() {
       path: "/api/v1/emails/custom",
       body: { to: user?.email || "test@example.com", subject: "Hello", message: "Custom message" }
     }
-  ], [user?.email, user?.name]);
+  ], [user?.email, user?.name, user?.smsSettings?.phoneNumber]);
 
   const [selected, setSelected] = useState(endpoints[0]);
   const [payload, setPayload] = useState(JSON.stringify(endpoints[0].body, null, 2));

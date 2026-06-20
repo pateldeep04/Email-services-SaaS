@@ -93,6 +93,15 @@ export const memoryStore = {
         fromEmail: "",
         fromName: ""
       },
+      smsSettings: {
+        enabled: false,
+        phoneNumber: "",
+        carrierGateway: "",
+        simulationMode: true,
+        gatewayUrl: "https://api.sms-gate.app/3rdparty/v1/messages",
+        gatewayUser: "",
+        gatewayPass: ""
+      },
       ...user,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -232,7 +241,8 @@ export const memoryStore = {
       otp: userLogs.filter(log => log.type === "otp").length,
       "forgot-password": userLogs.filter(log => log.type === "forgot-password").length,
       notification: userLogs.filter(log => log.type === "notification").length,
-      custom: userLogs.filter(log => log.type === "custom").length
+      custom: userLogs.filter(log => log.type === "custom").length,
+      "sms-otp": userLogs.filter(log => log.type === "sms-otp").length
     };
 
     return {

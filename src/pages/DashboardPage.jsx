@@ -22,13 +22,46 @@ import {
   X,
   Search,
   Settings,
-  Sparkles
+  Sparkles,
+  Smartphone
 } from "lucide-react";
 import "../styles/Dashboard.css";
+const isLocalIp = (url) => {
+  try {
+    const hostname = new URL(url).hostname;
+    return (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
+      hostname.startsWith("172.16.") ||
+      hostname.startsWith("172.17.") ||
+      hostname.startsWith("172.18.") ||
+      hostname.startsWith("172.19.") ||
+      hostname.startsWith("172.20.") ||
+      hostname.startsWith("172.21.") ||
+      hostname.startsWith("172.22.") ||
+      hostname.startsWith("172.23.") ||
+      hostname.startsWith("172.24.") ||
+      hostname.startsWith("172.25.") ||
+      hostname.startsWith("172.26.") ||
+      hostname.startsWith("172.27.") ||
+      hostname.startsWith("172.28.") ||
+      hostname.startsWith("172.29.") ||
+      hostname.startsWith("172.30.") ||
+      hostname.startsWith("172.31.")
+    );
+  } catch {
+    return false;
+  }
+};
 
 export function DashboardPage() {
   const { user, token, apiKey, setApiKey, logout, updateUserSettings, updateApiKeySettings } = useAuth();
   const navigate = useNavigate();
+  const isPublicDomain = typeof window !== "undefined" && 
+    window.location.hostname !== "localhost" && 
+    window.location.hostname !== "127.0.0.1";
 
   const [stats, setStats] = useState(null);
   const [smtpStatus, setSmtpStatus] = useState(null);
@@ -108,6 +141,10 @@ export function DashboardPage() {
   const [smtpFromName, setSmtpFromName] = useState("");
   const [hasSmtpPassSaved, setHasSmtpPassSaved] = useState(false);
 
+  const [isEditingCompany, setIsEditingCompany] = useState(false);
+  const [editCompanyName, setEditCompanyName] = useState("");
+  const [updatingCompany, setUpdatingCompany] = useState(false);
+
   const [testingSmtp, setTestingSmtp] = useState(false);
   const [smtpTestResult, setSmtpTestResult] = useState(null);
   const [savingSmtp, setSavingSmtp] = useState(false);
@@ -122,10 +159,34 @@ export function DashboardPage() {
   const [showAiCard, setShowAiCard] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState("custom");
 
+  // SMS settings states
+  const [smsEnabled, setSmsEnabled] = useState(false);
+  const [smsPhoneNumber, setSmsPhoneNumber] = useState("");
+  const [smsCarrierGateway, setSmsCarrierGateway] = useState("");
+  const [smsSimulationMode, setSmsSimulationMode] = useState(true);
+  const [smsCustomGateway, setSmsCustomGateway] = useState("");
+  const [smsGatewayUrl, setSmsGatewayUrl] = useState("https://api.sms-gate.app/3rdparty/v1/messages");
+  const [smsGatewayUser, setSmsGatewayUser] = useState("");
+  const [smsGatewayPass, setSmsGatewayPass] = useState("");
+  const [savingSms, setSavingSms] = useState(false);
+  const [smsSaveResult, setSmsSaveResult] = useState(null);
+
+  // SMS Testing states
+  const [smsTestRecipient, setSmsTestRecipient] = useState("");
+  const [smsTestCode, setSmsTestCode] = useState("");
+  const [sendingSmsTest, setSendingSmsTest] = useState(false);
+  const [smsTestStatus, setSmsTestStatus] = useState(null);
+  const [smsVerificationCode, setSmsVerificationCode] = useState("");
+  const [verifyingSmsCode, setVerifyingSmsCode] = useState(false);
+  const [smsVerifyStatus, setSmsVerifyStatus] = useState(null);
+
   // Auto-fill test recipient when user loads
   useEffect(() => {
     if (user && !testRecipient) {
       setTestRecipient(user.email);
+    }
+    if (user && user.smsSettings && user.smsSettings.phoneNumber && !smsTestRecipient) {
+      setSmsTestRecipient(user.smsSettings.phoneNumber);
     }
   }, [user]);
 
@@ -145,6 +206,28 @@ export function DashboardPage() {
         setSmtpFromName(user.smtpSettings.fromName || "");
         setHasSmtpPassSaved(user.smtpSettings.hasPassword || false);
         setSmtpPass(""); // Clear password field for typing new password
+      }
+
+      if (user.smsSettings) {
+        setSmsEnabled(user.smsSettings.enabled || false);
+        setSmsPhoneNumber(user.smsSettings.phoneNumber || "");
+        setSmsSimulationMode(user.smsSettings.simulationMode !== false);
+        setSmsGatewayUrl(user.smsSettings.gatewayUrl || "https://api.sms-gate.app/3rdparty/v1/messages");
+        setSmsGatewayUser(user.smsSettings.gatewayUser || "");
+        setSmsGatewayPass(user.smsSettings.gatewayPass || "");
+        
+        const knownGateways = ["txt.att.net", "tmomail.net", "vtext.com", "messaging.sprintpcs.com", "sms.cricketwireless.net", "msg.fi.google.com", "sms.myboostmobile.com"];
+        const domain = user.smsSettings.carrierGateway || "";
+        if (knownGateways.includes(domain)) {
+          setSmsCarrierGateway(domain);
+          setSmsCustomGateway("");
+        } else if (domain) {
+          setSmsCarrierGateway("custom");
+          setSmsCustomGateway(domain);
+        } else {
+          setSmsCarrierGateway("");
+          setSmsCustomGateway("");
+        }
       }
     }
   }, [user]);
@@ -185,6 +268,25 @@ export function DashboardPage() {
       setSelectedTarget("global");
     }
   }, [apiKeys, selectedTarget]);
+
+  const handleStartEditCompany = () => {
+    setEditCompanyName(user.companyName || "");
+    setIsEditingCompany(true);
+  };
+
+  const handleSaveCompanyName = async (e) => {
+    if (e) e.preventDefault();
+    if (!editCompanyName.trim()) return;
+    setUpdatingCompany(true);
+    try {
+      await updateUserSettings({ companyName: editCompanyName.trim() });
+      setIsEditingCompany(false);
+    } catch (error) {
+      alert("Failed to update Company Name: " + error.message);
+    } finally {
+      setUpdatingCompany(false);
+    }
+  };
 
   const handleSaveSettings = async () => {
     setSavingSettings(true);
@@ -586,14 +688,15 @@ export function DashboardPage() {
       { name: "Welcome", value: stats?.byType?.welcome || 0, color: "#10b981" },
       { name: "Forgot Pw", value: stats?.byType?.["forgot-password"] || 0, color: "#f59e0b" },
       { name: "Notification", value: stats?.byType?.notification || 0, color: "#8b5cf6" },
-      { name: "Custom", value: stats?.byType?.custom || 0, color: "#ec4899" }
+      { name: "Custom", value: stats?.byType?.custom || 0, color: "#ec4899" },
+      { name: "SMS OTP", value: stats?.byType?.["sms-otp"] || 0, color: "#14b8a6" }
     ];
 
     const maxValue = Math.max(...chartData.map((d) => d.value), 5);
 
     return (
       <div className="card chart-card">
-        <h3>Emails by Template Type</h3>
+        <h3>Messages by Template Type</h3>
         <div className="svg-chart-wrapper">
           <svg viewBox="0 0 500 200" className="svg-chart">
             {/* Draw Y-axis grid lines */}
@@ -610,7 +713,7 @@ export function DashboardPage() {
 
             {/* Draw Bars */}
             {chartData.map((d, index) => {
-              const x = 50 + index * 85;
+              const x = 38 + index * 74;
               const barHeight = (d.value / maxValue) * 140;
               const y = 170 - barHeight;
 
@@ -843,6 +946,7 @@ export function DashboardPage() {
               <option value="forgot-password">Password Reset</option>
               <option value="notification">Notification</option>
               <option value="custom">Custom Email</option>
+              <option value="sms-otp">SMS OTP</option>
             </select>
           </div>
 
@@ -1382,6 +1486,418 @@ export function DashboardPage() {
     } finally {
       setSendingTest(false);
     }
+  };
+
+  const handleSaveSmsSettings = async (e) => {
+    if (e) e.preventDefault();
+    setSavingSms(true);
+    setSmsSaveResult(null);
+    try {
+      const finalGateway = smsCarrierGateway === "custom" ? smsCustomGateway : smsCarrierGateway;
+      const payload = {
+        smsSettings: {
+          enabled: smsEnabled,
+          phoneNumber: smsPhoneNumber,
+          carrierGateway: finalGateway,
+          simulationMode: smsSimulationMode,
+          gatewayUrl: smsGatewayUrl,
+          gatewayUser: smsGatewayUser,
+          gatewayPass: smsGatewayPass
+        }
+      };
+      const success = await updateUserSettings(payload);
+      if (success) {
+        setSmsSaveResult({ success: true, message: "SMS settings saved successfully!" });
+        setTimeout(() => setSmsSaveResult(null), 3000);
+      } else {
+        setSmsSaveResult({ success: false, message: "Failed to save SMS settings." });
+      }
+      fetchDashboardData();
+    } catch (error) {
+      setSmsSaveResult({ success: false, message: error.message || "Failed to save SMS settings." });
+    } finally {
+      setSavingSms(false);
+    }
+  };
+
+  const handleSendTestSms = async (e) => {
+    if (e) e.preventDefault();
+    if (!smsTestRecipient.trim()) {
+      setSmsTestStatus({ success: false, message: "Please enter a valid phone number." });
+      return;
+    }
+    setSendingSmsTest(true);
+    setSmsTestStatus(null);
+    setSmsVerifyStatus(null);
+    setSmsVerificationCode("");
+
+    try {
+      const res = await fetch(`${API_URL}/api/v1/sms/otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey
+        },
+        body: JSON.stringify({
+          to: smsTestRecipient,
+          purpose: "sms-otp-test"
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSmsTestStatus({
+          success: true,
+          message: data.note || "SMS OTP sent successfully!",
+          code: data.code
+        });
+        fetchDashboardData();
+      } else {
+        setSmsTestStatus({ success: false, message: data.error || "Failed to send SMS OTP." });
+      }
+    } catch (error) {
+      setSmsTestStatus({ success: false, message: "Error: " + error.message });
+    } finally {
+      setSendingSmsTest(false);
+    }
+  };
+
+  const handleVerifyTestSms = async (e) => {
+    if (e) e.preventDefault();
+    if (!smsVerificationCode.trim()) {
+      setSmsVerifyStatus({ success: false, message: "Please enter verification code." });
+      return;
+    }
+    setVerifyingSmsCode(true);
+    setSmsVerifyStatus(null);
+
+    try {
+      const res = await fetch(`${API_URL}/api/v1/sms/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey
+        },
+        body: JSON.stringify({
+          to: smsTestRecipient,
+          code: smsVerificationCode,
+          purpose: "sms-otp-test"
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.verified) {
+        setSmsVerifyStatus({ success: true, message: "SMS OTP verified successfully!" });
+      } else {
+        setSmsVerifyStatus({ success: false, message: data.error || "Failed to verify OTP." });
+      }
+    } catch (error) {
+      setSmsVerifyStatus({ success: false, message: "Error: " + error.message });
+    } finally {
+      setVerifyingSmsCode(false);
+    }
+  };
+
+  const renderSmsSettings = () => {
+    return (
+      <div className="smtp-settings-container card">
+        <div className="smtp-settings-header">
+          <h2>SMS OTP Configuration</h2>
+          <p className="smtp-settings-subtitle">
+            Configure your SMS OTP delivery settings using carrier email-to-sms gateways, your custom Android Local SMS Gateway app, or simulation mode.
+          </p>
+        </div>
+
+        <div className="apk-download-banner" style={{
+          background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+          border: "1px solid #bfdbfe",
+          borderRadius: "12px",
+          padding: "20px",
+          marginBottom: "24px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "16px",
+          flexWrap: "wrap"
+        }}>
+          <div>
+            <h3 style={{ margin: 0, color: "#1e40af", fontSize: "16px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
+              <Smartphone size={20} /> Download SMS Gateway Android App
+            </h3>
+            <p style={{ margin: "6px 0 0 0", color: "#1e3a8a", fontSize: "13px", lineHeight: "1.5" }}>
+              Install our official SMS Gateway APK on your Android device to send SMS verification codes directly from your own mobile number.
+            </p>
+          </div>
+          <a
+            href="/app-release.apk"
+            download="SMS-Gateway-MailBridge.apk"
+            className="btn btn-primary"
+            style={{
+              whiteSpace: "nowrap",
+              background: "#2563eb",
+              borderColor: "#2563eb",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 20px"
+            }}
+          >
+            Download APK
+          </a>
+        </div>
+
+        <form onSubmit={handleSaveSmsSettings} className="smtp-settings-form">
+          <div className="smtp-toggle-section">
+            <div className="smtp-toggle-info">
+              <h4>Enable SMS OTP Gateway</h4>
+              <p>When enabled, you can request SMS OTP codes via API calls using your keys.</p>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={smsEnabled}
+                onChange={(e) => setSmsEnabled(e.target.checked)}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+
+          <div className="smtp-toggle-section" style={{ borderTop: "1px solid var(--border-color)", paddingTop: "20px", marginTop: "10px" }}>
+            <div className="smtp-toggle-info">
+              <h4>Simulation Mode</h4>
+              <p>When enabled, SMS OTPs will be simulated in the console/logs. When disabled, they will be sent as actual messages to your gateway.</p>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={smsSimulationMode}
+                onChange={(e) => setSmsSimulationMode(e.target.checked)}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+
+          <div className={`smtp-fields-grid ${smsEnabled ? "active" : "disabled"}`}>
+            <div className="form-group">
+              <label>My Phone Number</label>
+              <input
+                type="tel"
+                placeholder="e.g. 1234567890 (numbers only)"
+                value={smsPhoneNumber}
+                onChange={(e) => setSmsPhoneNumber(e.target.value.replace(/\D/g, ""))}
+                disabled={!smsEnabled}
+                required={smsEnabled}
+              />
+              <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                This is your primary testing phone number where SMS codes will be delivered.
+              </p>
+            </div>
+
+            <div className="form-group">
+              <label>Cellular Carrier Gateway (Email-to-SMS)</label>
+              <select
+                value={smsCarrierGateway}
+                onChange={(e) => setSmsCarrierGateway(e.target.value)}
+                disabled={!smsEnabled || smsSimulationMode}
+                required={smsEnabled && !smsSimulationMode && !smsGatewayUrl}
+                style={{
+                  width: "100%",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid var(--border-color)",
+                  outline: "none",
+                  fontSize: "14px",
+                  background: "#ffffff"
+                }}
+              >
+                <option value="">-- Select Carrier (Optional if using Local Gateway) --</option>
+                <option value="txt.att.net">AT&T (@txt.att.net)</option>
+                <option value="tmomail.net">T-Mobile (@tmomail.net)</option>
+                <option value="vtext.com">Verizon (@vtext.com)</option>
+                <option value="messaging.sprintpcs.com">Sprint (@messaging.sprintpcs.com)</option>
+                <option value="sms.cricketwireless.net">Cricket (@sms.cricketwireless.net)</option>
+                <option value="msg.fi.google.com">Google Fi (@msg.fi.google.com)</option>
+                <option value="sms.myboostmobile.com">Boost Mobile (@sms.myboostmobile.com)</option>
+                <option value="custom">Custom Gateway Domain...</option>
+              </select>
+            </div>
+
+            {smsCarrierGateway === "custom" && (
+              <div className="form-group">
+                <label>Custom Carrier Gateway Domain</label>
+                <input
+                  type="text"
+                  placeholder="e.g. sms.customcarrier.com"
+                  value={smsCustomGateway}
+                  onChange={(e) => setSmsCustomGateway(e.target.value)}
+                  disabled={!smsEnabled || smsSimulationMode}
+                  required={smsEnabled && !smsSimulationMode}
+                />
+              </div>
+            )}
+
+            <div className="form-group" style={{ gridColumn: "span 2", marginTop: "12px", borderTop: "1px dashed var(--border-color)", paddingTop: "16px" }}>
+              <h4 style={{ margin: 0, color: "var(--text-main)", fontSize: "15px" }}>Custom Android Local SMS Gateway (SimpApp / SMS Gateway)</h4>
+              <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: "var(--text-muted)" }}>
+                Fill this if you are using our companion APK app or SimpApp. This routes the SMS via your phone's Wi-Fi or Cloud server.
+              </p>
+            </div>
+
+            <div className="form-group" style={{ gridColumn: "span 2" }}>
+              <label>Gateway API URL (Local Address or Cloud URL)</label>
+              <input
+                type="url"
+                placeholder="e.g. http://192.168.1.6:8080/messages or https://..."
+                value={smsGatewayUrl}
+                onChange={(e) => setSmsGatewayUrl(e.target.value)}
+                disabled={!smsEnabled || smsSimulationMode}
+              />
+              {isPublicDomain && isLocalIp(smsGatewayUrl) && (
+                <div style={{
+                  marginTop: "8px",
+                  padding: "10px 14px",
+                  background: "#fffbeb",
+                  border: "1px solid #fef3c7",
+                  borderRadius: "6px",
+                  color: "#b45309",
+                  fontSize: "12px",
+                  display: "flex",
+                  gap: "8px",
+                  alignItems: "center"
+                }}>
+                  <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                  <span>
+                    <strong>Local address detected on a public server!</strong> Since this website is hosted publicly, it cannot connect to local addresses like <code>192.168.x.x</code> or <code>localhost</code>. To resolve this, toggle <strong>"Cloud server"</strong> ON in your phone's Android app and use the generated public HTTPS link.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Gateway Username / API Key</label>
+              <input
+                type="text"
+                placeholder="Username or API Key"
+                value={smsGatewayUser}
+                onChange={(e) => setSmsGatewayUser(e.target.value)}
+                disabled={!smsEnabled || smsSimulationMode}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Gateway Password (If using basic auth)</label>
+              <input
+                type="password"
+                placeholder="Password (optional)"
+                value={smsGatewayPass}
+                onChange={(e) => setSmsGatewayPass(e.target.value)}
+                disabled={!smsEnabled || smsSimulationMode}
+              />
+            </div>
+          </div>
+
+          {smsSaveResult && (
+            <div className={`smtp-result-banner ${smsSaveResult.success ? "success" : "error"}`}>
+              {smsSaveResult.success ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+              <span>{smsSaveResult.message}</span>
+            </div>
+          )}
+
+          <div className="smtp-actions-bar" style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={savingSms}
+            >
+              {savingSms ? "Saving Settings..." : "Save SMS Settings"}
+            </button>
+          </div>
+        </form>
+
+        <hr className="customizer-divider" style={{ margin: "32px 0" }} />
+
+        <div className="test-send-box">
+          <h3>Test SMS OTP Delivery</h3>
+          <p className="test-desc">
+            Trigger a 6-digit random code and send it to the phone number.
+          </p>
+
+          {!apiKey && (
+            <div className="alert-message warning">
+              <AlertCircle size={16} />
+              <span>No active API key. Please generate a key in the Overview tab to send tests.</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSendTestSms} className="test-send-form" style={{ gap: "12px", display: "flex", flexWrap: "wrap" }}>
+            <input
+              type="tel"
+              value={smsTestRecipient}
+              onChange={(e) => setSmsTestRecipient(e.target.value.replace(/\D/g, ""))}
+              placeholder="e.g. 1234567890"
+              required
+              disabled={!apiKey || sendingSmsTest}
+              style={{ flex: 1, minWidth: "200px" }}
+            />
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!apiKey || sendingSmsTest}
+            >
+              {sendingSmsTest ? "Sending OTP..." : "Send Test SMS OTP"}
+            </button>
+          </form>
+
+          {smsTestStatus && (
+            <div className={`test-status-banner ${smsTestStatus.success ? "success" : "failed"}`}>
+              {smsTestStatus.success ? <CheckCircle size={16} /> : <XCircle size={16} />}
+              <span>
+                {smsTestStatus.message}
+                {smsTestStatus.code && (
+                  <strong style={{ marginLeft: "8px", background: "#dbeafe", padding: "2px 6px", borderRadius: "4px", color: "#1e40af" }}>
+                    Simulated Code: {smsTestStatus.code}
+                  </strong>
+                )}
+              </span>
+            </div>
+          )}
+
+          {smsTestStatus && smsTestStatus.success && (
+            <div style={{ marginTop: "24px", background: "#f8fafc", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+              <h4>Verify OTP Code</h4>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "12px" }}>
+                Input the 6-digit code received on your phone or console to verify correctness.
+              </p>
+              <form onSubmit={handleVerifyTestSms} style={{ display: "flex", gap: "12px" }}>
+                <input
+                  type="text"
+                  className="otp-verify-input"
+                  maxLength={6}
+                  value={smsVerificationCode}
+                  onChange={(e) => setSmsVerificationCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Enter 6-digit code"
+                  required
+                  disabled={verifyingSmsCode}
+                />
+                <button
+                  type="submit"
+                  className="btn btn-secondary"
+                  disabled={verifyingSmsCode || smsVerificationCode.length !== 6}
+                >
+                  {verifyingSmsCode ? "Verifying..." : "Verify OTP Code"}
+                </button>
+              </form>
+              {smsVerifyStatus && (
+                <div className={`test-status-banner ${smsVerifyStatus.success ? "success" : "failed"}`} style={{ marginTop: "12px" }}>
+                  {smsVerifyStatus.success ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                  <span>{smsVerifyStatus.message}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   const renderSmtpSettings = () => {
@@ -2007,9 +2523,6 @@ export function DashboardPage() {
           <button className="btn btn-outline" onClick={() => fetchDashboardData()}>
             <RotateCcw size={16} /> Refresh
           </button>
-          <button className="btn btn-danger-outline" onClick={handleLogout}>
-            <LogOut size={16} /> Logout
-          </button>
         </div>
       </div>
 
@@ -2032,6 +2545,12 @@ export function DashboardPage() {
           onClick={() => setActiveTab("smtp")}
         >
           <Settings size={18} /> SMTP Configuration
+        </button>
+        <button
+          className={`dashboard-tab-btn ${activeTab === "sms" ? "active" : ""}`}
+          onClick={() => setActiveTab("sms")}
+        >
+          <Smartphone size={18} /> SMS OTP Configuration
         </button>
       </div>
 
@@ -2087,10 +2606,52 @@ export function DashboardPage() {
             {renderChart()}
 
             <div className="card account-card">
-              <h2>Account Details</h2>
+              <h2>User Profile</h2>
               <div className="info-group">
                 <label>Full Name</label>
                 <p className="info-value">{user.name}</p>
+              </div>
+              <div className="info-group">
+                <label>Company Name</label>
+                {isEditingCompany ? (
+                  <form onSubmit={handleSaveCompanyName} className="inline-edit-company-form" style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+                    <input
+                      type="text"
+                      value={editCompanyName}
+                      onChange={(e) => setEditCompanyName(e.target.value)}
+                      required
+                      disabled={updatingCompany}
+                      style={{
+                        flex: 1,
+                        padding: "6px 10px",
+                        borderRadius: "6px",
+                        border: "1px solid var(--border-color)",
+                        fontSize: "14px",
+                        background: "var(--bg-card)"
+                      }}
+                      placeholder="Company Name"
+                      autoFocus
+                    />
+                    <button type="submit" className="btn btn-sm btn-primary" disabled={updatingCompany} style={{ padding: "6px 12px", fontSize: "12px" }}>
+                      {updatingCompany ? "Saving..." : "Save"}
+                    </button>
+                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setIsEditingCompany(false)} disabled={updatingCompany} style={{ padding: "6px 12px", fontSize: "12px" }}>
+                      Cancel
+                    </button>
+                  </form>
+                ) : (
+                  <div className="company-display-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "4px" }}>
+                    <p className="info-value" style={{ margin: 0 }}>{user.companyName || "Not Provided"}</p>
+                    <button 
+                      type="button" 
+                      className="btn btn-sm btn-outline" 
+                      onClick={handleStartEditCompany} 
+                      style={{ padding: "4px 8px", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px" }}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="info-group">
                 <label>Email Address</label>
@@ -2100,9 +2661,14 @@ export function DashboardPage() {
                 <label>Active Keys Count</label>
                 <p className="info-value">{apiKeys.length}</p>
               </div>
-              <div className="dashboard-shortcuts">
-                <a href="/tester" className="btn btn-primary">Try API Tester</a>
-                <a href="/docs" className="btn btn-secondary">Read Docs</a>
+              <div className="dashboard-shortcuts" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "16px" }}>
+                <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+                  <a href="/tester" className="btn btn-primary" style={{ flex: 1, textAlign: "center" }}>Try API Tester</a>
+                  <a href="/docs" className="btn btn-secondary" style={{ flex: 1, textAlign: "center" }}>Read Docs</a>
+                </div>
+                <button className="btn btn-danger-outline" onClick={handleLogout} style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
+                  <LogOut size={16} /> Logout from Account
+                </button>
               </div>
             </div>
 
@@ -2115,6 +2681,8 @@ export function DashboardPage() {
       {activeTab === "customizer" && renderCustomizer()}
 
       {activeTab === "smtp" && renderSmtpSettings()}
+
+      {activeTab === "sms" && renderSmsSettings()}
 
       {selectedLog && renderLogDetailModal()}
     </div>

@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
+    companyName: { type: String, default: "" },
     passwordHash: { type: String, required: true },
     apiKey: { type: String, sparse: true, unique: true },
     role: { type: String, default: "client" },
@@ -28,6 +29,15 @@ const userSchema = new mongoose.Schema(
       pass: { type: String, default: "" },
       fromEmail: { type: String, default: "" },
       fromName: { type: String, default: "" }
+    },
+    smsSettings: {
+      enabled: { type: Boolean, default: false },
+      phoneNumber: { type: String, default: "" },
+      carrierGateway: { type: String, default: "" },
+      simulationMode: { type: Boolean, default: true },
+      gatewayUrl: { type: String, default: "https://api.sms-gate.app/3rdparty/v1/messages" },
+      gatewayUser: { type: String, default: "" },
+      gatewayPass: { type: String, default: "" }
     }
   },
   { timestamps: true }

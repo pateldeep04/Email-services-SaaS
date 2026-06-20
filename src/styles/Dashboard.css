@@ -2850,6 +2850,190 @@ html.dark .ai-banner-info {
   color: #d8b4fe !important;
 }
 
+/* OTP Verification Input Styles */
+.otp-verify-input {
+  width: 180px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 1px;
+  outline: none;
+  background: #ffffff;
+  color: var(--text-main, #1f2937);
+  transition: all 0.2s ease;
+}
+
+.otp-verify-input:focus {
+  border-color: var(--primary-color, #0f766e);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+
+/* Dark mode compatibility */
+html.dark .otp-verify-input {
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+html.dark .otp-verify-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+/* ==========================================
+   Mobile Responsive Layout Improvements
+   ========================================== */
+
+/* Fix horizontal scrolling on the dashboard page container */
+.dashboard-page {
+  overflow-x: hidden;
+}
+
+@media (max-width: 992px) {
+  /* Ensure dashboard-grid columns stack vertically */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Sizing / spacing reductions for mobile viewport space savings */
+  .dashboard-page {
+    padding: 24px 16px;
+  }
+  .card {
+    padding: 20px 16px;
+  }
+  .customizer-preview-card {
+    padding: 20px 16px;
+    min-height: auto;
+  }
+  .email-preview-scroll-wrapper {
+    padding: 10px;
+  }
+
+  /* Horizontal touch-swipe scroll list for dashboard navigation tabs */
+  .dashboard-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .dashboard-tabs::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Webkit */
+  }
+  
+  .dashboard-tab-btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* Form columns grid stacking in template customizer editor */
+  .row-inputs {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .test-send-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .test-send-form input,
+  .test-send-form button {
+    width: 100%;
+  }
+
+  /* SMTP Configuration Fields stack */
+  .smtp-fields-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Logs Filter spacing stack */
+  .logs-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .logs-search-wrapper {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .logs-select-filter {
+    width: 100%;
+  }
+  
+  .logs-select-filter select {
+    width: 100%;
+  }
+
+  /* Scrollable logs status sub-tabs */
+  .logs-status-tabs {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+  
+  .logs-status-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .status-tab-btn {
+    flex-shrink: 0;
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* SMTP Configuration button bar layout */
+  .smtp-actions-bar {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 10px;
+    padding-top: 16px;
+  }
+  
+  .smtp-actions-bar button {
+    width: 100%;
+  }
+
+  /* Details grids in Modal */
+  .log-details-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Customizer colors panel grid stack */
+  .colors-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* AI Assistant rows stack */
+  .ai-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
 
 
 
