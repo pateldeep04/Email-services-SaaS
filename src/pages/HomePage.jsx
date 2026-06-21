@@ -455,9 +455,9 @@ export function HomePage() {
                   </defs>
                   
                   {/* Grid Lines */}
-                  <line x1="30" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
-                  <line x1="30" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
-                  <line x1="30" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
+                  <line x1="30" y1="20" x2="380" y2="20" className="graph-grid-line" strokeDasharray="3 3" />
+                  <line x1="30" y1="70" x2="380" y2="70" className="graph-grid-line" strokeDasharray="3 3" />
+                  <line x1="30" y1="120" x2="380" y2="120" className="graph-grid-line" strokeDasharray="3 3" />
                   
                   {/* Values plotting based on active tab selection */}
                   {activeMetricTab === "sent" && (
@@ -465,26 +465,35 @@ export function HomePage() {
                       <path d="M 30 110 Q 90 70, 150 90 T 270 40 T 380 30 L 380 140 L 30 140 Z" fill="url(#gradient-area)" />
                       <path d="M 30 110 Q 90 70, 150 90 T 270 40 T 380 30" fill="none" stroke="#14b8a6" strokeWidth="3" />
                       <circle cx="270" cy="40" r="5" fill="#14b8a6" stroke="#fff" strokeWidth="2" />
-                      <text x="270" y="24" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">1,124 sent</text>
+                      <g className="graph-tooltip">
+                        <rect x="236" y="11" width="68" height="17" rx="4" className="graph-tooltip-bg" />
+                        <text x="270" y="23" className="graph-tooltip-text text-sent" fontSize="10" fontWeight="bold" textAnchor="middle">1,124 sent</text>
+                      </g>
                     </>
                   )}
                   {activeMetricTab === "failed" && (
                     <>
                       <path d="M 30 135 L 90 132 L 150 128 L 210 133 L 270 120 L 380 138" fill="none" stroke="#ef4444" strokeWidth="3" />
                       <circle cx="270" cy="120" r="5" fill="#ef4444" stroke="#fff" strokeWidth="2" />
-                      <text x="270" y="105" fill="#ef4444" fontSize="10" fontWeight="bold" textAnchor="middle">12 failed</text>
+                      <g className="graph-tooltip">
+                        <rect x="238" y="92" width="64" height="17" rx="4" className="graph-tooltip-bg" />
+                        <text x="270" y="104" className="graph-tooltip-text text-failed" fontSize="10" fontWeight="bold" textAnchor="middle">12 failed</text>
+                      </g>
                     </>
                   )}
                   {activeMetricTab === "rate" && (
                     <>
                       <path d="M 30 50 L 90 52 L 150 48 L 210 49 L 270 44 L 380 43" fill="none" stroke="#10b981" strokeWidth="3" />
                       <circle cx="270" cy="44" r="5" fill="#10b981" stroke="#fff" strokeWidth="2" />
-                      <text x="270" y="29" fill="#10b981" fontSize="10" fontWeight="bold" textAnchor="middle">99.2% rate</text>
+                      <g className="graph-tooltip">
+                        <rect x="236" y="16" width="68" height="17" rx="4" className="graph-tooltip-bg" />
+                        <text x="270" y="28" className="graph-tooltip-text text-rate" fontSize="10" fontWeight="bold" textAnchor="middle">99.2% rate</text>
+                      </g>
                     </>
                   )}
                   
                   {/* Axis */}
-                  <line x1="30" y1="140" x2="380" y2="140" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+                  <line x1="30" y1="140" x2="380" y2="140" className="graph-axis-line" strokeWidth="2" />
                   <text x="30" y="154" fill="#64748b" fontSize="9">Mon</text>
                   <text x="150" y="154" fill="#64748b" fontSize="9">Wed</text>
                   <text x="270" y="154" fill="#64748b" fontSize="9">Fri</text>

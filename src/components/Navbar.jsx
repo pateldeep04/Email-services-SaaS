@@ -5,6 +5,34 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import "../styles/Navbar.css";
 
+function MailBridgeLogo({ size = 24, className }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={{ display: "inline-block", verticalAlign: "middle" }}
+    >
+      {/* Bridge Arch */}
+      <path d="M 4 19 C 7 13.5, 17 13.5, 20 19" />
+      {/* Pillars */}
+      <path d="M 8 16 L 8 19" opacity="0.6" />
+      <path d="M 12 14.5 L 12 19" opacity="0.6" />
+      <path d="M 16 16 L 16 19" opacity="0.6" />
+      {/* Floating Envelope */}
+      <rect x="6" y="4" width="12" height="8" rx="1.5" />
+      {/* Flap */}
+      <path d="M 6 4 L 12 8 L 18 4" />
+    </svg>
+  );
+}
+
 export function Navbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -16,7 +44,7 @@ export function Navbar() {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-brand">
-          <Mail size={24} />
+          <MailBridgeLogo size={24} />
           <span>MailBridge</span>
         </Link>
         

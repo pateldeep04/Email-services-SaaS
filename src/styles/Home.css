@@ -1692,4 +1692,64 @@ html.light .phone-speaker {
   }
 }
 
+/* Theme-aware SVG graph rules */
+.graph-grid-line {
+  stroke: rgba(255, 255, 255, 0.05);
+}
+
+.graph-axis-line {
+  stroke: rgba(255, 255, 255, 0.15);
+}
+
+.graph-tooltip-bg {
+  fill: #1e293b;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.graph-tooltip-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  user-select: none;
+}
+
+.graph-tooltip-text.text-sent {
+  fill: #ffffff;
+}
+
+.graph-tooltip-text.text-failed {
+  fill: #ef4444;
+}
+
+.graph-tooltip-text.text-rate {
+  fill: #10b981;
+}
+
+/* Light mode graph overrides */
+html.light .graph-grid-line {
+  stroke: rgba(0, 0, 0, 0.06);
+}
+
+html.light .graph-axis-line {
+  stroke: rgba(0, 0, 0, 0.12);
+}
+
+html.light .graph-tooltip-bg {
+  fill: #ffffff;
+  stroke: rgba(0, 0, 0, 0.08);
+  stroke-width: 1px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.05));
+}
+
+html.light .graph-tooltip-text.text-sent {
+  fill: #0f766e;
+}
+
+html.light .graph-tooltip-text.text-failed {
+  fill: #b91c1c;
+}
+
+html.light .graph-tooltip-text.text-rate {
+  fill: #047857;
+}
+
+
 
