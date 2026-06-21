@@ -2049,6 +2049,43 @@ export function DashboardPage() {
     );
   };
 
+  const renderOnboardingModal = () => {
+    return (
+      <div className="onboarding-modal-overlay">
+        <div className="onboarding-modal-card">
+          <div className="onboarding-modal-icon">
+            <Sparkles size={32} style={{ color: "#14b8a6" }} />
+          </div>
+          <h2>Welcome to MailBridge!</h2>
+          <p>Please provide your company or brand name to initialize your dashboard workspace.</p>
+          
+          <form onSubmit={handleSaveCompanyName} className="onboarding-modal-form">
+            <div className="form-group">
+              <label>Company / Brand Name</label>
+              <input
+                type="text"
+                value={editCompanyName}
+                onChange={(e) => setEditCompanyName(e.target.value)}
+                placeholder="e.g. Acme Inc"
+                required
+                disabled={updatingCompany}
+                autoFocus
+              />
+            </div>
+            
+            <button
+              type="submit"
+              className="btn btn-primary onboarding-submit-btn"
+              disabled={updatingCompany || !editCompanyName.trim()}
+            >
+              {updatingCompany ? "Setting Company Name..." : "Get Started"}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   const renderCustomizer = () => {
     const html = generateEmailHtml();
 
@@ -2514,6 +2551,7 @@ export function DashboardPage() {
 
   return (
     <div className="dashboard-page">
+      {(!user.companyName || user.companyName.trim() === "") && renderOnboardingModal()}
       <div className="dashboard-header">
         <div>
           <h1>Dashboard</h1>
