@@ -18,7 +18,10 @@ import {
   ChevronRight,
   Laptop,
   Check,
-  ExternalLink
+  ExternalLink,
+  Phone,
+  Cpu,
+  Smartphone
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { API_URL } from "../config.js";
@@ -40,6 +43,21 @@ const features = [
     title: "Live Analytics", 
     desc: "Track total deliveries, open rates, failed dispatches, and simulated runs in real-time." 
   },
+  {
+    icon: Phone,
+    title: "Multi-Mode SMS Relay",
+    desc: "Send OTP verifications using USB ADB debugging, local HTTP Android gateways, or carrier SMTP gateways."
+  },
+  {
+    icon: Sparkles,
+    title: "Gemini AI Design Engine",
+    desc: "Generate professional visual style palettes and persuasive copywriting automatically using AI."
+  },
+  {
+    icon: Cpu,
+    title: "Local Emulator Mode",
+    desc: "Full in-memory database and sandbox environment for local testing without cellular or email costs."
+  }
 ];
 
 export function HomePage() {
@@ -51,10 +69,12 @@ export function HomePage() {
   const [headerColor, setHeaderColor] = useState("#0f766e");
   const [headerTextColor, setHeaderTextColor] = useState("#ffffff");
   const [recipientEmail, setRecipientEmail] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("+919876543210");
   const [customSubject, setCustomSubject] = useState("Welcome to Acme!");
   const [activeLang, setActiveLang] = useState("curl");
   const [activePane, setActivePane] = useState("preview"); // "preview" | "code" | "terminal"
   const [copiedCode, setCopiedCode] = useState(false);
+  const [activeServiceTab, setActiveServiceTab] = useState("email");
   
   // Terminal Simulation State
   const [terminalLines, setTerminalLines] = useState([
@@ -87,6 +107,9 @@ export function HomePage() {
 
   // Handle Dynamic Code Generation
   const getPayload = () => {
+    if (templateType === "sms-otp") {
+      return { to: recipientPhone || "+919876543210", purpose: "sms-otp" };
+    }
     const to = recipientEmail || "visitor@example.com";
     if (templateType === "otp") {
       return { to, purpose: "login" };
@@ -104,7 +127,9 @@ export function HomePage() {
   };
 
   const getCodeSnippet = () => {
-    const endpoint = `${API_URL}/api/v1/emails/${templateType}`;
+    const endpoint = templateType === "sms-otp"
+      ? `${API_URL}/api/v1/sms/otp`
+      : `${API_URL}/api/v1/emails/${templateType}`;
     const payload = getPayload();
     const payloadStr = JSON.stringify(payload, null, 2);
 
@@ -182,7 +207,54 @@ export function HomePage() {
     setActivePane("terminal");
     setIsExecuting(true);
     setExecutionDone(false);
-    
+
+    if (templateType === "sms-otp") {
+      const lines = [
+        `$ curl -X POST "${API_URL}/api/v1/sms/otp" \\`,
+        `    -H "x-api-key: mb_live_8f0a213e4b..." \\`,
+        `    -d '${JSON.stringify(getPayload())}'`,
+        `[info] Resolving recipient phone number: ${recipientPhone || "+919876543210"}...`,
+        `[info] Loading client service settings...`,
+      ];
+      setTerminalLines(lines);
+
+      setTimeout(() => {
+        setTerminalLines(prev => [
+          ...prev,
+          `[info] Delivery Mode Detected: "USB ADB Debugging" (Free local routing)`,
+          `[info] Command: adb shell cmd phone sms send-text ${recipientPhone || "+919876543210"} "Your ${brandName || "Acme Corp"} OTP is: 549301. It expires in 10 minutes."`,
+          `[info] Triggering ADB cellular packet transmission...`,
+        ]);
+      }, 800);
+
+      setTimeout(() => {
+        setTerminalLines(prev => [
+          ...prev,
+          `[info] ADB process returned exit code 0`,
+          `[info] Message queued on device successfully`,
+          `HTTP/1.1 201 Created`,
+          `Content-Type: application/json`,
+          `Response Payload:`,
+          JSON.stringify({
+            success: true,
+            status: "simulated",
+            messageId: "simulated-sms-" + Date.now(),
+            note: "SMS dispatched successfully over simulated local ADB gateway. Register phone connection settings to send real cellular texts."
+          }, null, 2)
+        ]);
+        setIsExecuting(false);
+        setExecutionDone(true);
+        
+        // Bump statistics dynamically on sandbox success!
+        setMetricStats(prev => ({
+          ...prev,
+          sent: prev.sent + 1,
+          rate: parseFloat(((prev.sent + 1) / (prev.sent + 13) * 100).toFixed(1))
+        }));
+      }, 1800);
+      return;
+    }
+
     const lines = [
       `$ curl -X POST "${API_URL}/api/v1/emails/${templateType}" \\`,
       `    -H "x-api-key: mb_live_8f0a213e4b..." \\`,
@@ -247,14 +319,12 @@ export function HomePage() {
       }
       const clientApiKey = keysList[0].key;
       
-      // Update template style globally or for this specific key
-      // Dispatch email
       const payload = getPayload();
-      const route = templateType === "custom" 
-        ? "custom"
-        : templateType;
+      const endpoint = templateType === "sms-otp"
+        ? `${API_URL}/api/v1/sms/otp`
+        : `${API_URL}/api/v1/emails/${templateType === "custom" ? "custom" : templateType}`;
 
-      const res = await fetch(`${API_URL}/api/v1/emails/${route}`, {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -270,11 +340,11 @@ export function HomePage() {
           `HTTP/1.1 201 Created`,
           `Response:`,
           JSON.stringify(data, null, 2),
-          `[success] Real email delivered to ${payload.to}!`
+          `[success] Real message delivered to ${payload.to}!`
         ]);
-        setRealSendResult({ success: true, message: "Real email sent successfully!" });
+        setRealSendResult({ success: true, message: "Real message sent successfully!" });
       } else {
-        throw new Error(data.error || "Failed to dispatch email.");
+        throw new Error(data.error || "Failed to dispatch message.");
       }
     } catch (err) {
       setTerminalLines(prev => [
@@ -441,6 +511,190 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* Interactive Services Hub */}
+      <section className="services-hub-section">
+        <div className="section-title-wrapper text-center">
+          <h2>Our Core Platform Services</h2>
+          <p>Discover how MailBridge bridges developers with robust communications layers.</p>
+        </div>
+
+        <div className="services-hub-tabs">
+          <button 
+            type="button"
+            className={`services-tab-btn ${activeServiceTab === "email" ? "active" : ""}`}
+            onClick={() => setActiveServiceTab("email")}
+          >
+            <Mail size={18} />
+            <span>Email Services</span>
+          </button>
+          <button 
+            type="button"
+            className={`services-tab-btn ${activeServiceTab === "sms" ? "active" : ""}`}
+            onClick={() => setActiveServiceTab("sms")}
+          >
+            <Phone size={18} />
+            <span>SMS OTP Gateway</span>
+          </button>
+          <button 
+            type="button"
+            className={`services-tab-btn ${activeServiceTab === "ai" ? "active" : ""}`}
+            onClick={() => setActiveServiceTab("ai")}
+          >
+            <Sparkles size={18} />
+            <span>AI Copy & Styling</span>
+          </button>
+        </div>
+
+        <div className="services-tab-content">
+          {activeServiceTab === "email" && (
+            <div className="service-detail-grid">
+              <div className="service-detail-info">
+                <p className="service-tagline">Transactional Email Gateway</p>
+                <h3>Deliver beautiful, styled emails with zero vendor lock-in.</h3>
+                <p className="service-desc">
+                  Route your transactional emails directly through secure Gmail SMTP servers or custom SMTP gateways. Use pre-built, premium-designed HTML email layouts for onboarding, security codes, and notification alerts.
+                </p>
+                <div className="service-features-list">
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Dynamic Templates</h4>
+                      <p>Built-in responsive designs for OTPs, welcomes, passwords, and custom branding.</p>
+                    </div>
+                  </div>
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Secure HTTPS Endpoint</h4>
+                      <p>Authenticate requests cleanly using secure client API keys over TLS/HTTPS.</p>
+                    </div>
+                  </div>
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Relay Latency Under 100ms</h4>
+                      <p>Queue and dispatch message packets instantly to keep user friction low.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="service-detail-graphic">
+                <div className="services-visual-card">
+                  <div className="services-visual-header">
+                    <span className="visual-badge">SMTP Config</span>
+                    <span className="visual-title">Active</span>
+                  </div>
+                  <div className="visual-content">
+                    <div className="visual-line accent"></div>
+                    <div className="visual-line w-80"></div>
+                    <div className="visual-line w-60"></div>
+                    <div className="visual-line w-80"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeServiceTab === "sms" && (
+            <div className="service-detail-grid">
+              <div className="service-detail-info">
+                <p className="service-tagline">Cost-Effective Cellular OTPs</p>
+                <h3>Direct SMS verification. Completely free using your own device.</h3>
+                <p className="service-desc">
+                  Send cellular text message verifications without paid Twilio subscriptions. Leverage modern ADB USB debugging, local Android HTTP endpoints, or SMTP carrier gateways to send cellular texts globally.
+                </p>
+                <div className="service-features-list">
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>USB Android Debugging (ADB)</h4>
+                      <p>Connect your phone, type your API key, and dispatch free texts via your mobile SIM.</p>
+                    </div>
+                  </div>
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>HTTP Gateway Interface</h4>
+                      <p>Integrate local mobile gateway apps utilizing standard header token verification.</p>
+                    </div>
+                  </div>
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Carrier SMTP Routing</h4>
+                      <p>Relay SMS packets via carrier-specific Email-to-SMS domains seamlessly.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="service-detail-graphic">
+                <div className="services-visual-card">
+                  <div className="services-visual-header">
+                    <span className="visual-badge">ADB Relay</span>
+                    <span className="visual-title">Connected</span>
+                  </div>
+                  <div className="visual-content">
+                    <div className="visual-line accent"></div>
+                    <div className="visual-line w-60"></div>
+                    <div className="visual-line w-80"></div>
+                    <div className="visual-line w-80"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeServiceTab === "ai" && (
+            <div className="service-detail-grid">
+              <div className="service-detail-info">
+                <p className="service-tagline">Gemini AI copywriter & style generator</p>
+                <h3>Write perfect communication copy and match brand colors in one click.</h3>
+                <p className="service-desc">
+                  Powered by advanced Google Gemini models. Enter custom prompts to draft highly persuasive, urgent, or friendly copy and receive accessible, brand-compliant visual themes.
+                </p>
+                <div className="service-features-list">
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Semantic Color Recommender</h4>
+                      <p>Generates brand palette selections based on business text analysis.</p>
+                    </div>
+                  </div>
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Diverse Tone Profiles</h4>
+                      <p>Switch message vibes instantly among Friendly, Professional, Urgent, or Persuasive.</p>
+                    </div>
+                  </div>
+                  <div className="service-feature-item">
+                    <CheckCircle2 className="feature-check-icon" size={18} />
+                    <div>
+                      <h4>Auto Heuristic Fallbacks</h4>
+                      <p>Maintains robust layout capabilities even if the AI API keys are missing.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="service-detail-graphic">
+                <div className="services-visual-card">
+                  <div className="services-visual-header">
+                    <span className="visual-badge">Gemini Flash</span>
+                    <span className="visual-title">Optimized</span>
+                  </div>
+                  <div className="visual-content">
+                    <div className="visual-line accent"></div>
+                    <div className="visual-line w-80"></div>
+                    <div className="visual-line w-60"></div>
+                    <div className="visual-line w-80"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Interactive API Sandbox Section */}
       <section className="sandbox-playground-section">
         <div className="section-title-wrapper">
@@ -459,12 +713,14 @@ export function HomePage() {
               <div className="template-selectors-pills">
                 {[
                   { id: "otp", label: "OTP" },
+                  { id: "sms-otp", label: "SMS OTP (New)" },
                   { id: "welcome", label: "Welcome" },
                   { id: "forgot-password", label: "Reset Password" },
                   { id: "notification", label: "Alert Notify" },
                   { id: "custom", label: "Custom Layout" }
                 ].map(t => (
                   <button 
+                    type="button"
                     key={t.id}
                     className={`template-pill-btn ${templateType === t.id ? "active" : ""}`}
                     onClick={() => setTemplateType(t.id)}
@@ -487,39 +743,55 @@ export function HomePage() {
                 />
               </div>
 
-              <div className="sandbox-control-group">
-                <label className="control-label">Header BG Theme</label>
-                <div className="color-picker-control">
-                  <input 
-                    type="color" 
-                    value={headerColor}
-                    onChange={(e) => setHeaderColor(e.target.value)}
-                  />
-                  <code>{headerColor}</code>
-                </div>
-              </div>
+              {templateType !== "sms-otp" && (
+                <>
+                  <div className="sandbox-control-group">
+                    <label className="control-label">Header BG Theme</label>
+                    <div className="color-picker-control">
+                      <input 
+                        type="color" 
+                        value={headerColor}
+                        onChange={(e) => setHeaderColor(e.target.value)}
+                      />
+                      <code>{headerColor}</code>
+                    </div>
+                  </div>
 
-              <div className="sandbox-control-group">
-                <label className="control-label">Header Text Theme</label>
-                <div className="color-picker-control">
-                  <input 
-                    type="color" 
-                    value={headerTextColor}
-                    onChange={(e) => setHeaderTextColor(e.target.value)}
-                  />
-                  <code>{headerTextColor}</code>
-                </div>
-              </div>
+                  <div className="sandbox-control-group">
+                    <label className="control-label">Header Text Theme</label>
+                    <div className="color-picker-control">
+                      <input 
+                        type="color" 
+                        value={headerTextColor}
+                        onChange={(e) => setHeaderTextColor(e.target.value)}
+                      />
+                      <code>{headerTextColor}</code>
+                    </div>
+                  </div>
+                </>
+              )}
 
-              <div className="sandbox-control-group full-width">
-                <label className="control-label">Recipient Email</label>
-                <input 
-                  type="email" 
-                  value={recipientEmail}
-                  onChange={(e) => setRecipientEmail(e.target.value)}
-                  placeholder="email@domain.com"
-                />
-              </div>
+              {templateType === "sms-otp" ? (
+                <div className="sandbox-control-group full-width">
+                  <label className="control-label">Recipient Phone Number</label>
+                  <input 
+                    type="text" 
+                    value={recipientPhone}
+                    onChange={(e) => setRecipientPhone(e.target.value)}
+                    placeholder="+919876543210"
+                  />
+                </div>
+              ) : (
+                <div className="sandbox-control-group full-width">
+                  <label className="control-label">Recipient Email</label>
+                  <input 
+                    type="email" 
+                    value={recipientEmail}
+                    onChange={(e) => setRecipientEmail(e.target.value)}
+                    placeholder="email@domain.com"
+                  />
+                </div>
+              )}
 
               {templateType === "custom" && (
                 <div className="sandbox-control-group full-width">
@@ -569,18 +841,21 @@ export function HomePage() {
             {/* Viewer Headers */}
             <div className="viewer-tabs-header">
               <button 
+                type="button"
                 className={`viewer-tab-btn ${activePane === "preview" ? "active" : ""}`}
                 onClick={() => setActivePane("preview")}
               >
-                <Eye size={14} /> Live Email Preview
+                <Eye size={14} /> {templateType === "sms-otp" ? "Live SMS Preview" : "Live Email Preview"}
               </button>
               <button 
+                type="button"
                 className={`viewer-tab-btn ${activePane === "code" ? "active" : ""}`}
                 onClick={() => setActivePane("code")}
               >
                 <Code size={14} /> Code Integration
               </button>
               <button 
+                type="button"
                 className={`viewer-tab-btn ${activePane === "terminal" ? "active" : ""}`}
                 onClick={() => setActivePane("terminal")}
               >
@@ -594,19 +869,52 @@ export function HomePage() {
               {/* Tab 1: Live Preview */}
               {activePane === "preview" && (
                 <div className="sandbox-preview-inbox">
-                  <div className="preview-browser-bar">
-                    <div className="browser-dots">
-                      <span></span>
-                      <span></span>
-                      <span></span>
+                  {templateType === "sms-otp" ? (
+                    <div style={{ padding: "20px", display: "flex", justifyContent: "center", alignItems: "center", width: "100%", height: "100%" }}>
+                      <div className="phone-mockup-frame">
+                        <div className="phone-speaker"></div>
+                        <div className="phone-screen">
+                          <div className="phone-status-bar">
+                            <span>08:47 AM</span>
+                            <span>LTE 📶 🔋 100%</span>
+                          </div>
+                          
+                          <div className="phone-header">
+                            <div className="phone-avatar">MB</div>
+                            <span className="phone-name">{brandName || "MailBridge"}</span>
+                          </div>
+
+                          <div className="phone-messages-container">
+                            <div className="sms-bubble">
+                              Your {brandName || "MailBridge"} OTP is: <strong>549301</strong>. It expires in 10 minutes.
+                              <span className="sms-timestamp">08:47 AM</span>
+                            </div>
+                          </div>
+
+                          <div className="phone-input-bar">
+                            <span>Text Message</span>
+                            <span>⬆️</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="browser-location">
-                      <code>recipient: {recipientEmail || "visitor@example.com"}</code>
-                    </div>
-                  </div>
-                  <div className="preview-body-email-scroller">
-                    <div dangerouslySetInnerHTML={{ __html: generateEmailHtml() }} />
-                  </div>
+                  ) : (
+                    <>
+                      <div className="preview-browser-bar">
+                        <div className="browser-dots">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                        <div className="browser-location">
+                          <code>recipient: {recipientEmail || "visitor@example.com"}</code>
+                        </div>
+                      </div>
+                      <div className="preview-body-email-scroller">
+                        <div dangerouslySetInnerHTML={{ __html: generateEmailHtml() }} />
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -616,6 +924,7 @@ export function HomePage() {
                   <div className="code-language-selector">
                     {["curl", "js", "python", "go"].map(lang => (
                       <button 
+                        type="button"
                         key={lang}
                         className={`lang-btn ${activeLang === lang ? "active" : ""}`}
                         onClick={() => setActiveLang(lang)}
