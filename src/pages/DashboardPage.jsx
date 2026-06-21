@@ -579,7 +579,7 @@ export function DashboardPage() {
   const sent = stats?.sent || 0;
   const simulated = stats?.simulated || 0;
   const failed = stats?.failed || 0;
-  const successRate = total > 0 ? Math.round(((sent + simulated) / total) * 100) : 0;
+  const successRate = total > 0 ? Math.round(((sent + simulated) / total) * 100) : 100;
 
   const renderSmtpBanner = () => {
     if (user && user.smtpSettings && user.smtpSettings.enabled) {
@@ -1449,7 +1449,9 @@ export function DashboardPage() {
 
   const handleSendTestEmail = async (e) => {
     e.preventDefault();
-    if (!testRecipient.trim()) {
+    const trimmedRecipient = testRecipient.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmedRecipient || !emailRegex.test(trimmedRecipient)) {
       setTestStatus({ success: false, message: "Please enter a valid recipient email address." });
       return;
     }
@@ -1465,7 +1467,7 @@ export function DashboardPage() {
           "x-api-key": apiKey
         },
         body: JSON.stringify({
-          to: testRecipient,
+          to: trimmedRecipient,
           subject: activeTemplate === "welcome" ? (emailTitle || `Welcome to ${brandName}`)
             : activeTemplate === "otp" ? (emailTitle || "Your verification OTP")
               : activeTemplate === "forgot-password" ? (emailTitle || "Reset your password")

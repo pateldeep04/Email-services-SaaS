@@ -91,7 +91,9 @@ app.use("/api/v1/sms", smsRoutes);
 app.use("/api/v1/ai", aiRoutes);
 
 app.use((err, _req, res, _next) => {
-  console.error(err);
+  if (!err.status || err.status >= 500) {
+    console.error(err);
+  }
   res.status(err.status || 500).json({
     error: err.message || "Something went wrong",
     details: err.details
