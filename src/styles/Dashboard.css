@@ -2889,7 +2889,7 @@ html.dark .otp-verify-input:focus {
 
 /* Fix horizontal scrolling on the dashboard page container */
 .dashboard-page {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 @media (max-width: 992px) {
