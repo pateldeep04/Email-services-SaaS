@@ -12,7 +12,7 @@ const hasMongo = () => mongoose.connection.readyState === 1;
  * If user has simulationMode enabled or is missing settings, it simulates delivery.
  * Otherwise, it sends an email via SMTP to the carrier's gateway (e.g. phone@vtext.com).
  */
-export async function sendSms({ userId, to, code, purpose, apiKey, keyStyle }) {
+export async function sendSms({ userId, to, code, purpose, apiKey, keyStyle, deviceId }) {
   // Format phone number to E.164 (ensure '+' prefix)
   let cleanPhone = to.trim();
   if (!cleanPhone.startsWith("+")) {
@@ -55,7 +55,10 @@ export async function sendSms({ userId, to, code, purpose, apiKey, keyStyle }) {
       : (process.env.SMS_GATEWAY_USER || ""),
     gatewayPass: hasUserSmsConfig && user.smsSettings.gatewayPass
       ? user.smsSettings.gatewayPass
-      : (process.env.SMS_GATEWAY_PASS || "")
+      : (process.env.SMS_GATEWAY_PASS || ""),
+    deviceId: deviceId || (hasUserSmsConfig && user.smsSettings.deviceId
+      ? user.smsSettings.deviceId
+      : (process.env.SMS_DEVICE_ID || ""))
   };
   const brandName = user?.templateSettings?.brandName || "MailBridge";
 
@@ -117,6 +120,9 @@ export async function sendSms({ userId, to, code, purpose, apiKey, keyStyle }) {
               text: messageText
             }
           };
+          if (smsSettings.deviceId) {
+            payload.deviceId = smsSettings.deviceId;
+          }
         } else {
           // Standard key-based gateway
           payload = {
@@ -182,8 +188,12 @@ export async function sendSms({ userId, to, code, purpose, apiKey, keyStyle }) {
       }
     } catch (err) {
       resultStatus = "failed";
-      errorMsg = err.message;
-      note = `Failed to deliver SMS: ${err.message}`;
+      let detail = err.message;
+      if (err.cause) {
+        detail += ` (Reason: ${err.cause.message || err.cause.code || err.cause})`;
+      }
+      errorMsg = detail;
+      note = `Failed to deliver SMS: ${detail}`;
     }
   }
 

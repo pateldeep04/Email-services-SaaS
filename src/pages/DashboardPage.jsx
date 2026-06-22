@@ -168,6 +168,7 @@ export function DashboardPage() {
   const [smsGatewayUrl, setSmsGatewayUrl] = useState("https://api.sms-gate.app/3rdparty/v1/messages");
   const [smsGatewayUser, setSmsGatewayUser] = useState("");
   const [smsGatewayPass, setSmsGatewayPass] = useState("");
+  const [smsDeviceId, setSmsDeviceId] = useState("");
   const [savingSms, setSavingSms] = useState(false);
   const [smsSaveResult, setSmsSaveResult] = useState(null);
 
@@ -215,6 +216,7 @@ export function DashboardPage() {
         setSmsGatewayUrl(user.smsSettings.gatewayUrl || "https://api.sms-gate.app/3rdparty/v1/messages");
         setSmsGatewayUser(user.smsSettings.gatewayUser || "");
         setSmsGatewayPass(user.smsSettings.gatewayPass || "");
+        setSmsDeviceId(user.smsSettings.deviceId || "");
         
         const knownGateways = ["txt.att.net", "tmomail.net", "vtext.com", "messaging.sprintpcs.com", "sms.cricketwireless.net", "msg.fi.google.com", "sms.myboostmobile.com"];
         const domain = user.smsSettings.carrierGateway || "";
@@ -1504,7 +1506,8 @@ export function DashboardPage() {
           simulationMode: smsSimulationMode,
           gatewayUrl: smsGatewayUrl,
           gatewayUser: smsGatewayUser,
-          gatewayPass: smsGatewayPass
+          gatewayPass: smsGatewayPass,
+          deviceId: smsDeviceId
         }
       };
       const success = await updateUserSettings(payload);
@@ -1542,7 +1545,8 @@ export function DashboardPage() {
         },
         body: JSON.stringify({
           to: smsTestRecipient,
-          purpose: "sms-otp-test"
+          purpose: "sms-otp-test",
+          deviceId: smsDeviceId
         })
       });
 
@@ -1795,6 +1799,20 @@ export function DashboardPage() {
                 onChange={(e) => setSmsGatewayPass(e.target.value)}
                 disabled={!smsEnabled || smsSimulationMode}
               />
+            </div>
+
+            <div className="form-group" style={{ gridColumn: "span 2" }}>
+              <label>Gateway Device ID (For Cloud Routing)</label>
+              <input
+                type="text"
+                placeholder="e.g. qdN6g5Sxekr_XVF2gQK8s"
+                value={smsDeviceId}
+                onChange={(e) => setSmsDeviceId(e.target.value)}
+                disabled={!smsEnabled || smsSimulationMode}
+              />
+              <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                Required when using the Cloud server to target a specific mobile device.
+              </p>
             </div>
           </div>
 

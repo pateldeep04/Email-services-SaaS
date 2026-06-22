@@ -28,7 +28,7 @@ const hasMongo = () => mongoose.connection.readyState === 1;
  */
 router.post("/otp", smsRateLimiter, async (req, res, next) => {
   try {
-    const { to, purpose = "sms-otp" } = req.body;
+    const { to, purpose = "sms-otp", deviceId } = req.body;
     if (!to) {
       return res.status(400).json({ error: "Recipient phone number (to) is required." });
     }
@@ -57,11 +57,13 @@ router.post("/otp", smsRateLimiter, async (req, res, next) => {
       code,
       purpose,
       apiKey,
-      keyStyle
+      keyStyle,
+      deviceId
     });
 
-    res.status(201).json({
-      success: true,
+    const isSuccess = result.status !== "failed";
+    res.status(isSuccess ? 201 : 502).json({
+      success: isSuccess,
       status: result.status,
       messageId: result.messageId,
       expiresInMinutes: 10,

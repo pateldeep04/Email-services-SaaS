@@ -66,7 +66,8 @@ function formatUserResponse(user) {
       simulationMode: user.smsSettings.simulationMode !== false,
       gatewayUrl: user.smsSettings.gatewayUrl || "",
       gatewayUser: user.smsSettings.gatewayUser || "",
-      gatewayPass: user.smsSettings.gatewayPass || ""
+      gatewayPass: user.smsSettings.gatewayPass || "",
+      deviceId: user.smsSettings.deviceId || ""
     } : {
       enabled: false,
       phoneNumber: "",
@@ -74,7 +75,8 @@ function formatUserResponse(user) {
       simulationMode: true,
       gatewayUrl: "",
       gatewayUser: "",
-      gatewayPass: ""
+      gatewayPass: "",
+      deviceId: ""
     }
   };
 }
@@ -460,7 +462,8 @@ router.put("/settings", requireAuth, async (req, res, next) => {
           simulationMode: smsSettings.simulationMode !== undefined ? smsSettings.simulationMode : existingSms.simulationMode,
           gatewayUrl: smsSettings.gatewayUrl !== undefined ? smsSettings.gatewayUrl : existingSms.gatewayUrl,
           gatewayUser: smsSettings.gatewayUser !== undefined ? smsSettings.gatewayUser : existingSms.gatewayUser,
-          gatewayPass: smsSettings.gatewayPass !== undefined ? smsSettings.gatewayPass : existingSms.gatewayPass
+          gatewayPass: smsSettings.gatewayPass !== undefined ? smsSettings.gatewayPass : existingSms.gatewayPass,
+          deviceId: smsSettings.deviceId !== undefined ? smsSettings.deviceId : existingSms.deviceId
         };
       }
       await user.save();
@@ -512,7 +515,8 @@ router.put("/settings", requireAuth, async (req, res, next) => {
           simulationMode: smsSettings.simulationMode !== undefined ? smsSettings.simulationMode : existingSms.simulationMode,
           gatewayUrl: smsSettings.gatewayUrl !== undefined ? smsSettings.gatewayUrl : existingSms.gatewayUrl,
           gatewayUser: smsSettings.gatewayUser !== undefined ? smsSettings.gatewayUser : existingSms.gatewayUser,
-          gatewayPass: smsSettings.gatewayPass !== undefined ? smsSettings.gatewayPass : existingSms.gatewayPass
+          gatewayPass: smsSettings.gatewayPass !== undefined ? smsSettings.gatewayPass : existingSms.gatewayPass,
+          deviceId: smsSettings.deviceId !== undefined ? smsSettings.deviceId : existingSms.deviceId
         };
       }
     }

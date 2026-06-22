@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema(
       simulationMode: { type: Boolean, default: true },
       gatewayUrl: { type: String, default: "https://api.sms-gate.app/3rdparty/v1/messages" },
       gatewayUser: { type: String, default: "" },
-      gatewayPass: { type: String, default: "" }
+      gatewayPass: { type: String, default: "" },
+      deviceId: { type: String, default: "" }
     }
   },
   { timestamps: true }

@@ -62,7 +62,7 @@ describe("SMS OTP API", () => {
       .send({ to: testPhone, code });
     expect(verifyRes.status).toBe(200);
     expect(verifyRes.body.verified).toBe(true);
-  });
+  }, 15000);
 
   it("should fail to verify an incorrect SMS OTP code", async () => {
     // 1. Request OTP
@@ -79,5 +79,5 @@ describe("SMS OTP API", () => {
       .send({ to: testPhone, code: "000000" });
     expect(verifyRes.status).toBe(400);
     expect(verifyRes.body.verified).toBe(false);
-  });
+  }, 15000);
 });

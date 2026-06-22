@@ -60,10 +60,16 @@
           <p class="subtitle">Log in using a secure 6-digit OTP code</p>
         </div>
 
+        <!-- OTP Mode Toggle -->
+        <div class="preview-tabs" style="display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 16px;">
+          <button type="button" class="tab-btn active" id="otp-btn-email" style="flex: 1; padding: 8px; border: none; background: transparent; border-radius: 8px; color: var(--color-text-muted); cursor: pointer; font-weight: 600; font-family: var(--font-primary); font-size: 13px; transition: var(--transition-smooth);">Email OTP</button>
+          <button type="button" class="tab-btn" id="otp-btn-sms" style="flex: 1; padding: 8px; border: none; background: transparent; border-radius: 8px; color: var(--color-text-muted); cursor: pointer; font-weight: 600; font-family: var(--font-primary); font-size: 13px; transition: var(--transition-smooth);">SMS OTP</button>
+        </div>
+
         <!-- Step 1: Send OTP -->
         <form id="form-otp-send" class="auth-form">
           <div class="input-group">
-            <label for="otp-email">Email Address</label>
+            <label for="otp-email" id="otp-send-label">Email Address</label>
             <input type="email" id="otp-email" required placeholder="name@domain.com">
           </div>
           <button type="submit" class="btn-primary" id="btn-otp-send-submit">
@@ -75,8 +81,8 @@
         <!-- Step 2: Verify OTP (initially hidden) -->
         <form id="form-otp-verify" class="auth-form hidden">
           <div class="input-group">
-            <label>Recipient Email</label>
-            <input type="email" id="otp-verify-email-readonly" readonly style="opacity: 0.7; cursor: not-allowed; background: rgba(255, 255, 255, 0.02);">
+            <label id="otp-verify-label">Recipient Email</label>
+            <input type="text" id="otp-verify-email-readonly" readonly style="opacity: 0.7; cursor: not-allowed; background: rgba(255, 255, 255, 0.02);">
           </div>
           <div class="input-group">
             <label for="otp-code">6-Digit Verification Code</label>
@@ -87,7 +93,7 @@
             <span class="loader hidden"></span>
           </button>
           <button type="button" id="btn-otp-resend" class="btn-secondary" style="margin-top: -8px;">
-            <span class="btn-text">Change Email / Resend</span>
+            <span class="btn-text" id="otp-resend-text">Change Email / Resend</span>
           </button>
         </form>
 
@@ -115,6 +121,10 @@
           <div class="input-group">
             <label for="register-email">Email Address</label>
             <input type="email" id="register-email" required placeholder="name@domain.com">
+          </div>
+          <div class="input-group">
+            <label for="register-phone">Phone Number (For SMS OTP)</label>
+            <input type="tel" id="register-phone" placeholder="e.g. +15550199">
           </div>
           <div class="input-group">
             <label for="register-password">Password</label>
@@ -167,8 +177,8 @@
 
             <!-- API Playground Card -->
             <div class="db-card playground-card">
-              <h3>Trigger API Mailer Playground</h3>
-              <p class="card-desc" style="margin-bottom: 12px;">Select any MailBridge endpoint to test real email deliveries.</p>
+              <h3>Trigger API Playground</h3>
+              <p class="card-desc" style="margin-bottom: 12px;">Select any MailBridge endpoint to test real email or SMS deliveries.</p>
               
               <div class="input-group" style="margin-bottom: 12px;">
                 <label for="play-endpoint">Select API Endpoint</label>
@@ -179,6 +189,8 @@
                   <option value="forgot-password">Forgot Password (POST /emails/forgot-password)</option>
                   <option value="notification">Notification (POST /emails/notification)</option>
                   <option value="custom">Custom Email (POST /emails/custom)</option>
+                  <option value="sms-otp">Send SMS OTP (POST /sms/otp)</option>
+                  <option value="sms-verify-otp">Verify SMS OTP (POST /sms/verify-otp)</option>
                 </select>
               </div>
 
@@ -254,6 +266,30 @@
                   <div class="input-group">
                     <label for="play-custom-html">HTML Body (Optional)</label>
                     <textarea id="play-custom-html" rows="2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: var(--color-text-main); font-family: var(--font-primary); font-size: 14px; width: 100%; resize: vertical; outline: none;" placeholder="e.g. <div style='color:red;'>Custom html</div>"></textarea>
+                  </div>
+                </div>
+
+                <!-- sms-otp parameters -->
+                <div id="play-group-sms-otp" class="play-param-group hidden">
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-sms-otp-purpose">Purpose</label>
+                    <input type="text" id="play-sms-otp-purpose" value="sms-otp">
+                  </div>
+                  <div class="input-group">
+                    <label for="play-sms-otp-device">Device ID (Optional)</label>
+                    <input type="text" id="play-sms-otp-device" placeholder="e.g. qdN6g5Sxekr_XVF2gQK8s">
+                  </div>
+                </div>
+
+                <!-- sms-verify-otp parameters -->
+                <div id="play-group-sms-verify-otp" class="play-param-group hidden">
+                  <div class="input-group" style="margin-bottom: 8px;">
+                    <label for="play-sms-verify-code">6-Digit Code</label>
+                    <input type="text" id="play-sms-verify-code" placeholder="123456" maxlength="6">
+                  </div>
+                  <div class="input-group">
+                    <label for="play-sms-verify-purpose">Purpose</label>
+                    <input type="text" id="play-sms-verify-purpose" value="sms-otp">
                   </div>
                 </div>
 

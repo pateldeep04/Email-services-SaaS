@@ -4,6 +4,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
 import smsRoutes from "./routes/smsRoutes.js";
@@ -34,7 +36,8 @@ function isAllowedCorsOrigin(origin) {
       hostname === "[::1]" ||
       hostname.endsWith(".onrender.com") ||
       hostname.endsWith(".loca.lt") ||
-      hostname.endsWith(".devtunnels.ms")
+      hostname.endsWith(".devtunnels.ms") ||
+      hostname.endsWith(".trycloudflare.com")
     );
   } catch {
     return false;
@@ -90,6 +93,19 @@ app.use("/api/v1/emails", emailRoutes);
 app.use("/api/v1/sms", smsRoutes);
 app.use("/api/v1/ai", aiRoutes);
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../dist")));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api/")) {
+      return next();
+    }
+    res.sendFile(path.resolve(__dirname, "../dist", "index.html"));
+  });
+}
+
 app.use((err, _req, res, _next) => {
   if (!err.status || err.status >= 500) {
     console.error(err);
@@ -120,4 +136,5 @@ async function start() {
 
 start();
 
-export default app;
+export default app; // touch to restart for public IP choice 2
+

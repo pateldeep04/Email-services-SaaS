@@ -1,6 +1,17 @@
 const getApiUrl = () => {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
+    // If running in production (not localhost/LAN and not tunnel/dev services)
+    // and VITE_API_URL is not set, default to same-origin.
+    if (
+      hostname !== "localhost" &&
+      hostname !== "127.0.0.1" &&
+      hostname !== "192.168.1.12" &&
+      !hostname.includes("devtunnels.ms") &&
+      !hostname.includes("trycloudflare.com")
+    ) {
+      return import.meta.env.VITE_API_URL || window.location.origin;
+    }
     // Match something like "prefix-5173.something.devtunnels.ms"
     const match = hostname.match(/^(.+)-(517\d)\.(.+devtunnels\.ms)$/);
     if (match) {

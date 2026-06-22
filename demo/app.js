@@ -1,6 +1,6 @@
 // Configuration
 const API_URL = 'http://localhost:5000/api/v1';
-const DEFAULT_API_KEY = 'mb_52babc2aa868f0a36c562c241118fda6';
+const DEFAULT_API_KEY = 'mb_49a9db1a3fc66c39db900249af52ad5d';
 
 // DOM Pages
 const pageLogin = document.getElementById('page-login');
@@ -66,15 +66,16 @@ const toastContainer = document.getElementById('toast-container');
 
 // Session memory logs
 let sessionLogs = [];
+let otpMode = 'email';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   // Check login state
   checkSession();
-  
+
   // Set default API key
   apiKeyInput.value = DEFAULT_API_KEY;
-  
+
   // Event listeners for page switching
   linkToRegister.addEventListener('click', (e) => {
     e.preventDefault();
@@ -99,6 +100,35 @@ document.addEventListener('DOMContentLoaded', () => {
   linkOtpToRegister.addEventListener('click', (e) => {
     e.preventDefault();
     switchPage('register');
+  });
+
+  const otpBtnEmail = document.getElementById('otp-btn-email');
+  const otpBtnSms = document.getElementById('otp-btn-sms');
+
+  otpBtnEmail.addEventListener('click', () => {
+    otpBtnEmail.classList.add('active');
+    otpBtnSms.classList.remove('active');
+    otpMode = 'email';
+    document.getElementById('otp-send-label').textContent = 'Email Address';
+    document.getElementById('otp-verify-label').textContent = 'Recipient Email';
+    document.getElementById('otp-resend-text').textContent = 'Change Email / Resend';
+    const otpInput = document.getElementById('otp-email');
+    otpInput.type = 'email';
+    otpInput.placeholder = 'name@domain.com';
+    otpInput.value = '';
+  });
+
+  otpBtnSms.addEventListener('click', () => {
+    otpBtnSms.classList.add('active');
+    otpBtnEmail.classList.remove('active');
+    otpMode = 'sms';
+    document.getElementById('otp-send-label').textContent = 'Phone Number';
+    document.getElementById('otp-verify-label').textContent = 'Recipient Phone';
+    document.getElementById('otp-resend-text').textContent = 'Change Phone / Resend';
+    const otpInput = document.getElementById('otp-email');
+    otpInput.type = 'text';
+    otpInput.placeholder = '+15550199';
+    otpInput.value = '';
   });
 
   btnOtpResend.addEventListener('click', () => {
@@ -180,6 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetGroup = document.getElementById(`play-group-${selected}`);
     if (targetGroup) {
       targetGroup.classList.remove('hidden');
+    }
+
+    // Dynamic field labels and placeholders for SMS vs Email endpoints
+    const playToLabel = document.querySelector('label[for="play-to"]');
+    const playToInput = document.getElementById('play-to');
+    if (selected.startsWith('sms-')) {
+      playToLabel.textContent = 'Recipient Phone Number (to)';
+      playToInput.type = 'text';
+      playToInput.placeholder = '+15550199';
+    } else {
+      playToLabel.textContent = 'Recipient Email (to)';
+      playToInput.type = 'email';
+      playToInput.placeholder = 'recipient@domain.com';
     }
   });
 
@@ -268,18 +311,18 @@ function saveUser(user) {
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  
+
   let icon = 'ℹ️ ';
   if (type === 'success') icon = '✅ ';
   if (type === 'error') icon = '❌ ';
-  
+
   toast.textContent = `${icon}${message}`;
   toastContainer.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.classList.add('show');
   }, 10);
-  
+
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => {
@@ -305,7 +348,7 @@ function renderLogs() {
   logList.innerHTML = sessionLogs.map(log => `
     <div class="log-item ${log.type}">
       <div class="log-item-header">
-        <span>Email: ${log.type.toUpperCase()}</span>
+        <span>${log.type.startsWith('sms-') ? 'SMS' : 'Email'}: ${log.type.toUpperCase()}</span>
         <span style="color: ${log.success ? '#10b981' : '#ef4444'}">
           ${log.success ? 'Success' : 'Failed'}
         </span>
@@ -365,7 +408,7 @@ function updatePreview() {
   // Generate Integration Code snippet
   const escapedSubject = subject.replace(/'/g, "\\'");
   const escapedHtml = html.replace(/`/g, '\\`').replace(/\${/g, '\\${');
-  
+
   const codeSnippet = `fetch('${API_URL}/emails/custom', {
   method: 'POST',
   headers: {
@@ -388,11 +431,12 @@ function updatePreview() {
 // Register Handler
 async function handleRegister(e) {
   e.preventDefault();
-  
+
   const name = document.getElementById('register-name').value.trim();
   const email = document.getElementById('register-email').value.trim();
+  const phone = document.getElementById('register-phone').value.trim();
   const password = document.getElementById('register-password').value;
-  
+
   const users = getUsers();
   if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
     showToast('A user with that email already exists in this isolated demo.', 'error');
@@ -421,11 +465,11 @@ async function handleRegister(e) {
       throw new Error(data.error || 'Failed to send welcome email');
     }
 
-    saveUser({ name, email, password });
-    
+    saveUser({ name, email, phone, password });
+
     showToast('Registration successful! Welcome email triggered.', 'success');
     logAction('welcome', email, true, `Welcome email sent. MessageId: ${data.messageId || 'Simulated'}`);
-    
+
     formRegister.reset();
     switchPage('login');
 
@@ -440,13 +484,13 @@ async function handleRegister(e) {
 // Login Handler
 async function handleLogin(e) {
   e.preventDefault();
-  
+
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
-  
+
   const users = getUsers();
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-  
+
   if (!user) {
     showToast('Invalid email or password in this isolated sandbox.', 'error');
     return;
@@ -476,10 +520,10 @@ async function handleLogin(e) {
 
     showToast('Login successful! Security alert email sent.', 'success');
     logAction('custom', email, true, `Custom login alert email sent. MessageId: ${data.messageId || 'Simulated'}`);
-    
+
     sessionStorage.setItem('mailbridge_demo_current_user', JSON.stringify({ name: user.name, email: user.email }));
     setupDashboard(user);
-    
+
     formLogin.reset();
     switchPage('home');
 
@@ -539,7 +583,7 @@ async function handleSendTest() {
 function setLoading(button, isLoading) {
   const textEl = button.querySelector('.btn-text');
   const loaderEl = button.querySelector('.loader');
-  
+
   if (isLoading) {
     button.disabled = true;
     textEl.style.opacity = '0.3';
@@ -552,30 +596,37 @@ function setLoading(button, isLoading) {
 }
 
 // OTP Send Handler
+// OTP Send Handler
 async function handleOtpSend(e) {
   e.preventDefault();
-  const email = document.getElementById('otp-email').value.trim();
+  const inputVal = document.getElementById('otp-email').value.trim();
 
   // Validate that user exists in localStorage
   const users = getUsers();
-  const userExists = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  let userExists;
+  if (otpMode === 'sms') {
+    userExists = users.find(u => u.phone && u.phone.trim() === inputVal);
+  } else {
+    userExists = users.find(u => u.email.toLowerCase() === inputVal.toLowerCase());
+  }
 
   if (!userExists) {
-    showToast('Email not registered. Please sign up first.', 'error');
+    showToast(otpMode === 'sms' ? 'Phone number not registered. Please sign up first.' : 'Email not registered. Please sign up first.', 'error');
     return;
   }
 
   setLoading(btnOtpSendSubmit, true);
 
   try {
-    const response = await fetch(`${API_URL}/emails/otp`, {
+    const endpointPath = otpMode === 'sms' ? 'sms/otp' : 'emails/otp';
+    const response = await fetch(`${API_URL}/${endpointPath}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKeyInput.value
       },
       body: JSON.stringify({
-        to: email,
+        to: inputVal,
         purpose: 'login'
       })
     });
@@ -586,18 +637,18 @@ async function handleOtpSend(e) {
       throw new Error(data.error || 'Failed to send OTP code');
     }
 
-    showToast('OTP sent successfully! Check your email.', 'success');
-    logAction('otp', email, true, `OTP code generated and sent. MessageId: ${data.messageId || 'Simulated'}`);
+    showToast(otpMode === 'sms' ? 'OTP sent successfully! Check your SMS gateway/console.' : 'OTP sent successfully! Check your email.', 'success');
+    logAction(otpMode === 'sms' ? 'sms-otp' : 'otp', inputVal, true, `OTP code generated and sent. MessageId: ${data.messageId || 'Simulated'}. Code: ${data.code || 'Check console'}`);
 
     // Transition to Step 2
-    document.getElementById('otp-verify-email-readonly').value = email;
+    document.getElementById('otp-verify-email-readonly').value = inputVal;
     formOtpSend.classList.add('hidden');
     formOtpVerify.classList.remove('hidden');
     document.getElementById('otp-code').focus();
 
   } catch (error) {
     showToast(error.message, 'error');
-    logAction('otp', email, false, error.message);
+    logAction(otpMode === 'sms' ? 'sms-otp' : 'otp', inputVal, false, error.message);
   } finally {
     setLoading(btnOtpSendSubmit, false);
   }
@@ -606,20 +657,21 @@ async function handleOtpSend(e) {
 // OTP Verify Handler
 async function handleOtpVerify(e) {
   e.preventDefault();
-  const email = document.getElementById('otp-verify-email-readonly').value.trim();
+  const inputVal = document.getElementById('otp-verify-email-readonly').value.trim();
   const code = document.getElementById('otp-code').value.trim();
 
   setLoading(btnOtpVerifySubmit, true);
 
   try {
-    const response = await fetch(`${API_URL}/emails/verify-otp`, {
+    const endpointPath = otpMode === 'sms' ? 'sms/verify-otp' : 'emails/verify-otp';
+    const response = await fetch(`${API_URL}/${endpointPath}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKeyInput.value
       },
       body: JSON.stringify({
-        to: email,
+        to: inputVal,
         code: code,
         purpose: 'login'
       })
@@ -633,10 +685,15 @@ async function handleOtpVerify(e) {
 
     if (data.verified) {
       showToast('OTP verified successfully! Welcome back.', 'success');
-      logAction('verify-otp', email, true, `OTP successfully verified.`);
+      logAction(otpMode === 'sms' ? 'sms-verify-otp' : 'verify-otp', inputVal, true, `OTP successfully verified.`);
 
       const users = getUsers();
-      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      let user;
+      if (otpMode === 'sms') {
+        user = users.find(u => u.phone && u.phone.trim() === inputVal);
+      } else {
+        user = users.find(u => u.email.toLowerCase() === inputVal.toLowerCase());
+      }
 
       sessionStorage.setItem('mailbridge_demo_current_user', JSON.stringify({ name: user.name, email: user.email }));
       setupDashboard(user);
@@ -650,7 +707,7 @@ async function handleOtpVerify(e) {
 
   } catch (error) {
     showToast(error.message, 'error');
-    logAction('verify-otp', email, false, error.message);
+    logAction(otpMode === 'sms' ? 'sms-verify-otp' : 'verify-otp', inputVal, false, error.message);
   } finally {
     setLoading(btnOtpVerifySubmit, false);
   }
@@ -659,7 +716,7 @@ async function handleOtpVerify(e) {
 // Playground API Request Handler
 async function handlePlaygroundSubmit(e) {
   e.preventDefault();
-  
+
   const endpoint = document.getElementById('play-endpoint').value;
   const to = document.getElementById('play-to').value.trim();
   const btnPlaySubmit = document.getElementById('btn-play-submit');
@@ -692,6 +749,13 @@ async function handlePlaygroundSubmit(e) {
     if (plainMsg) body.message = plainMsg;
     const htmlMsg = document.getElementById('play-custom-html').value.trim();
     if (htmlMsg) body.html = htmlMsg;
+  } else if (endpoint === 'sms-otp') {
+    body.purpose = document.getElementById('play-sms-otp-purpose').value.trim();
+    const devId = document.getElementById('play-sms-otp-device').value.trim();
+    if (devId) body.deviceId = devId;
+  } else if (endpoint === 'sms-verify-otp') {
+    body.code = document.getElementById('play-sms-verify-code').value.trim();
+    body.purpose = document.getElementById('play-sms-verify-purpose').value.trim();
   }
 
   // Sender override options
@@ -704,7 +768,9 @@ async function handlePlaygroundSubmit(e) {
   }
 
   try {
-    const response = await fetch(`${API_URL}/emails/${endpoint}`, {
+    const isSms = endpoint.startsWith('sms-');
+    const path = isSms ? `sms/${endpoint.substring(4)}` : `emails/${endpoint}`;
+    const response = await fetch(`${API_URL}/${path}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -722,7 +788,7 @@ async function handlePlaygroundSubmit(e) {
       throw new Error(data.error || `Failed to execute ${endpoint} API call`);
     }
 
-    showToast(`API Call to /emails/${endpoint} executed successfully!`, 'success');
+    showToast(`API Call to /${isSms ? 'sms' : 'emails'}/${isSms ? endpoint.substring(4) : endpoint} executed successfully!`, 'success');
     logAction(endpoint, to, true, `API Executed. Response: ${data.messageId || JSON.stringify(data)}`);
   } catch (error) {
     showToast(error.message, 'error');

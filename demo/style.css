@@ -471,6 +471,11 @@ h1 {
   border-left-color: var(--color-secondary);
 }
 
+.log-item.sms-otp,
+.log-item.sms-verify-otp {
+  border-left-color: #fb923c; /* Orange accent for SMS */
+}
+
 .log-item-header {
   display: flex;
   justify-content: space-between;
