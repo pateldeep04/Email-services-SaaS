@@ -5,6 +5,7 @@
 @import url('./styles/Documentation.css');
 @import url('./styles/Dashboard.css');
 @import url('./styles/Tester.css');
+@import url('./styles/Footer.css');
 
 :root {
   --bg-main: #f9fafb;

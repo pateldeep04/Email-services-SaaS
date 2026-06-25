@@ -1,0 +1,86 @@
+/* Footer Styles */
+.footer {
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 24px 0;
+  margin-top: auto;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-text {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.footer-author {
+  font-weight: 600;
+  color: #0f766e;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-author:hover {
+  color: #0d9488;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-link {
+  font-size: 14px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #0f766e;
+}
+
+/* Dark Mode Overrides */
+html.dark .footer {
+  background: #090d16;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html.dark .footer-text {
+  color: #9ca3af;
+}
+
+html.dark .footer-author {
+  color: #14b8a6;
+}
+
+html.dark .footer-author:hover {
+  color: #2dd4bf;
+}
+
+html.dark .footer-link {
+  color: #9ca3af;
+}
+
+html.dark .footer-link:hover {
+  color: #2dd4bf;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+}

@@ -122,3 +122,10 @@ Use the Header `x-api-key: your_api_key` for client-facing endpoints.
 | :--- | :--- | :--- |
 | `POST` | `/api/v1/sms/otp` | Generate and dispatch a 6-digit SMS OTP. |
 | `POST` | `/api/v1/sms/verify-otp` | Verify an SMS OTP. |
+
+---
+
+## 👤 Author
+
+* **Deep Patel** - [GitHub Profile](https://github.com/pateldeep04)
+

@@ -2,6 +2,7 @@
   "name": "mailbridge-mern-email-service",
   "version": "1.0.0",
   "private": true,
+  "author": "Deep Patel",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
