@@ -10,7 +10,11 @@ const getApiUrl = () => {
       !hostname.includes("devtunnels.ms") &&
       !hostname.includes("trycloudflare.com")
     ) {
-      return import.meta.env.VITE_API_URL || window.location.origin;
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (apiUrl && (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1"))) {
+        return window.location.origin;
+      }
+      return apiUrl || window.location.origin;
     }
     // Match something like "prefix-5173.something.devtunnels.ms"
     const match = hostname.match(/^(.+)-(517\d)\.(.+devtunnels\.ms)$/);

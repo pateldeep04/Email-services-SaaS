@@ -1,5 +1,20 @@
 // Configuration
-const API_URL = 'http://localhost:5000/api/v1';
+const getApiUrl = () => {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (
+      hostname !== "localhost" &&
+      hostname !== "127.0.0.1" &&
+      hostname !== "192.168.1.12" &&
+      !hostname.includes("devtunnels.ms") &&
+      !hostname.includes("trycloudflare.com")
+    ) {
+      return `${window.location.origin}/api/v1`;
+    }
+  }
+  return 'http://localhost:5000/api/v1';
+};
+const API_URL = getApiUrl();
 const DEFAULT_API_KEY = 'mb_49a9db1a3fc66c39db900249af52ad5d';
 
 // DOM Pages
