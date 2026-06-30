@@ -10,6 +10,11 @@ export function RegisterPage() {
   const [companyName, setCompanyName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [companyNameError, setCompanyNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [error, setError] = useState("");
   const { register, loginWithGoogle, loading } = useAuth();
   const { theme } = useTheme();
@@ -58,16 +63,49 @@ export function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setEmailError("");
+    setNameError("");
+    setCompanyNameError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+    let isValid = true;
+
+    if (!email) {
+      setEmailError("Please fill in this field.");
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Please enter a valid email address.");
+      isValid = false;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
+    if (!name.trim()) {
+      setNameError("Please fill in this field.");
+      isValid = false;
     }
+
+    if (!companyName.trim()) {
+      setCompanyNameError("Please fill in this field.");
+      isValid = false;
+    }
+
+    if (!password) {
+      setPasswordError("Please fill in this field.");
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters.");
+      isValid = false;
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError("Please fill in this field.");
+      isValid = false;
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      isValid = false;
+    }
+
+    if (!isValid) return;
 
     try {
       await register(email, name, password, companyName);
@@ -83,17 +121,21 @@ export function RegisterPage() {
         <h1>Create account</h1>
         <p className="auth-subtitle">Join MailBridge to send transactional emails</p>
         
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="form-group">
             <label htmlFor="email">Email address</label>
             <input
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError("");
+              }}
               placeholder="you@example.com"
-              required
+              className={emailError ? "is-invalid" : email ? "is-valid" : ""}
             />
+            {emailError && <div className="invalid-feedback">{emailError}</div>}
           </div>
 
           <div className="form-group">
@@ -102,10 +144,14 @@ export function RegisterPage() {
               id="name"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (nameError) setNameError("");
+              }}
               placeholder="Your name"
-              required
+              className={nameError ? "is-invalid" : name ? "is-valid" : ""}
             />
+            {nameError && <div className="invalid-feedback">{nameError}</div>}
           </div>
 
           <div className="form-group">
@@ -114,10 +160,14 @@ export function RegisterPage() {
               id="companyName"
               type="text"
               value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
+              onChange={(e) => {
+                setCompanyName(e.target.value);
+                if (companyNameError) setCompanyNameError("");
+              }}
               placeholder="Your company / brand name"
-              required
+              className={companyNameError ? "is-invalid" : companyName ? "is-valid" : ""}
             />
+            {companyNameError && <div className="invalid-feedback">{companyNameError}</div>}
           </div>
 
           <div className="form-group">
@@ -126,10 +176,14 @@ export function RegisterPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (passwordError) setPasswordError("");
+              }}
               placeholder="••••••••"
-              required
+              className={passwordError ? "is-invalid" : password ? "is-valid" : ""}
             />
+            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
           </div>
 
           <div className="form-group">
@@ -138,10 +192,14 @@ export function RegisterPage() {
               id="confirmPassword"
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                if (confirmPasswordError) setConfirmPasswordError("");
+              }}
               placeholder="••••••••"
-              required
+              className={confirmPasswordError ? "is-invalid" : confirmPassword ? "is-valid" : ""}
             />
+            {confirmPasswordError && <div className="invalid-feedback">{confirmPasswordError}</div>}
           </div>
 
           {error && <div className="auth-error">{error}</div>}

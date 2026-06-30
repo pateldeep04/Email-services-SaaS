@@ -7,6 +7,8 @@ import "../styles/Auth.css";
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const { login, loginWithGoogle, loading } = useAuth();
   const { theme } = useTheme();
@@ -55,6 +57,26 @@ export function LoginPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setEmailError("");
+    setPasswordError("");
+
+    let isValid = true;
+
+    if (!email) {
+      setEmailError("Please fill in this field.");
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Please enter a valid email address.");
+      isValid = false;
+    }
+
+    if (!password) {
+      setPasswordError("Please fill in this field.");
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
     try {
       await login(email, password);
       navigate("/dashboard");
@@ -69,17 +91,21 @@ export function LoginPage() {
         <h1>Welcome back</h1>
         <p className="auth-subtitle">Login to your MailBridge account</p>
         
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="form-group">
             <label htmlFor="email">Email address</label>
             <input
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError("");
+              }}
               placeholder="you@example.com"
-              required
+              className={emailError ? "is-invalid" : email ? "is-valid" : ""}
             />
+            {emailError && <div className="invalid-feedback">{emailError}</div>}
           </div>
 
           <div className="form-group">
@@ -88,10 +114,14 @@ export function LoginPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (passwordError) setPasswordError("");
+              }}
               placeholder="••••••••"
-              required
+              className={passwordError ? "is-invalid" : password ? "is-valid" : ""}
             />
+            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
           </div>
 
           {error && <div className="auth-error">{error}</div>}
