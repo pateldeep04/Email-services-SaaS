@@ -21,6 +21,10 @@ const getApiUrl = () => {
     if (match) {
       return `${window.location.protocol}//${match[1]}-5000.${match[3]}`;
     }
+
+    if (window.location.port && window.location.port.startsWith("517")) {
+      return `${window.location.protocol}//${hostname}:5000`;
+    }
   }
   return import.meta.env.VITE_API_URL || "http://localhost:5000";
 };

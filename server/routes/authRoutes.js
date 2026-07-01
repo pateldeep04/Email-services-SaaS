@@ -27,6 +27,12 @@ const emailRateLimiter = createRateLimiter({
   }
 });
 
+const googleRateLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: "Too many Google authentication attempts, please try again after 15 minutes."
+});
+
 const router = express.Router();
 
 const hasMongo = () => mongoose.connection.readyState === 1;
@@ -274,7 +280,7 @@ router.post("/login", authRateLimiter, emailRateLimiter, async (req, res, next) 
   }
 });
 
-router.post("/google", authRateLimiter, emailRateLimiter, async (req, res, next) => {
+router.post("/google", authRateLimiter, googleRateLimiter, async (req, res, next) => {
   try {
     const { credential } = req.body;
     if (!credential) {
@@ -283,7 +289,13 @@ router.post("/google", authRateLimiter, emailRateLimiter, async (req, res, next)
 
     // Call Google's tokeninfo endpoint to verify token
     const tokenInfoUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
-    const verifyRes = await fetch(tokenInfoUrl);
+    let verifyRes;
+    try {
+      verifyRes = await fetch(tokenInfoUrl);
+    } catch (error) {
+      console.error("Google token verification request failed:", error);
+      return res.status(502).json({ error: "Unable to verify Google login right now. Please try again or use email login." });
+    }
     
     if (!verifyRes.ok) {
       const errorText = await verifyRes.text();
@@ -293,9 +305,14 @@ router.post("/google", authRateLimiter, emailRateLimiter, async (req, res, next)
 
     const payload = await verifyRes.json();
 
-    // Verify audience matches process.env.GOOGLE_CLIENT_ID if it is set and not a placeholder
-    const expectedClientId = process.env.GOOGLE_CLIENT_ID;
-    if (expectedClientId && expectedClientId !== "google-client-id-placeholder") {
+    // Verify audience matches the configured web client id. VITE_GOOGLE_CLIENT_ID is used
+    // by the built frontend, so accept it as the server fallback for single-host EC2 deploys.
+    const expectedClientId = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
+    if (
+      expectedClientId &&
+      expectedClientId !== "google-client-id-placeholder" &&
+      expectedClientId !== "your_google_client_id_here"
+    ) {
       if (payload.aud !== expectedClientId) {
         return res.status(401).json({ error: "Google client ID mismatch. Unauthorized request." });
       }
