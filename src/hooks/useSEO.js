@@ -37,14 +37,14 @@ export function useSEO({
     // Open Graph / Facebook
     updateMeta("og:title", ogTitle || title, "property");
     updateMeta("og:description", ogDescription || description, "property");
-    updateMeta("og:image", ogImage || "https://mailbridge.io/og-image.png", "property");
+    updateMeta("og:image", ogImage || "https://mail-bridge.email/og-image.png", "property");
     updateMeta("og:url", ogUrl || window.location.href, "property");
     updateMeta("og:type", ogType, "property");
 
     // Twitter
     updateMeta("twitter:title", ogTitle || title);
     updateMeta("twitter:description", ogDescription || description);
-    updateMeta("twitter:image", ogImage || "https://mailbridge.io/og-image.png");
+    updateMeta("twitter:image", ogImage || "https://mail-bridge.email/og-image.png");
     updateMeta("twitter:url", ogUrl || window.location.href);
 
     // Canonical link tag

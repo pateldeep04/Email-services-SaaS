@@ -114,7 +114,7 @@ export function DashboardPage() {
     "We are thrilled to have you here! Customize this message to greet your users."
   );
   const [emailActionText, setEmailActionText] = useState("Get Started");
-  const [emailActionUrl, setEmailActionUrl] = useState("https://mailbridge.io");
+  const [emailActionUrl, setEmailActionUrl] = useState("https://mail-bridge.email");
   const [emailFooter, setEmailFooter] = useState("© 2026 MailBridge. All rights reserved.");
 
   // Testing States

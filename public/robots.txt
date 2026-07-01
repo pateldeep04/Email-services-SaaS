@@ -6,4 +6,4 @@ Allow: /register
 Disallow: /dashboard
 Disallow: /tester
 
-Sitemap: https://mailbridge.io/sitemap.xml
+Sitemap: https://mail-bridge.email/sitemap.xml
