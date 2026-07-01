@@ -1,5 +1,6 @@
 import React from "react";
 import { Code2, Copy, CheckCircle } from "lucide-react";
+import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Documentation.css";
 
 const endpoints = [
@@ -134,6 +135,12 @@ const endpoints = [
 
 export function DocumentationPage() {
   const [copied, setCopied] = React.useState(null);
+
+  useSEO({
+    title: "API Documentation | MailBridge",
+    description: "MailBridge API documentation. Learn how to configure endpoints for sending OTPs, verifications, welcome emails, password resets, and carrier SMS relays.",
+    keywords: "mailbridge docs, email api documentation, sms api docs, verify otp endpoint, free email relay docs"
+  });
 
   const copyToClipboard = (text, id) => {
     navigator.clipboard.writeText(text);

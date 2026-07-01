@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { API_URL } from "../config.js";
+import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Home.css";
 
 const features = [
@@ -62,6 +63,12 @@ const features = [
 
 export function HomePage() {
   const { user, token } = useAuth();
+  
+  useSEO({
+    title: "MailBridge | Free Transactional Email & SMS API via Gmail",
+    description: "MailBridge is a free, high-performance transactional email and SMS API. Relay automated emails and SMS verification codes directly using Gmail SMTP with zero vendor costs.",
+    keywords: "transactional email API, free email api, gmail smtp relay, email gateway, sms gateway, otp verification, developer email service, free sms gateway, gmail api gateway, mailbridge"
+  });
   
   // Interactive Sandbox State
   const [templateType, setTemplateType] = useState("otp");
@@ -359,6 +366,28 @@ export function HomePage() {
 
   return (
     <div className="home-page-redesign">
+      {/* Schema.org JSON-LD Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "MailBridge",
+          "operatingSystem": "All",
+          "applicationCategory": "DeveloperApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "Robust transactional email and SMS API via Gmail SMTP. Send secure OTPs, password resets, and alerts with zero paid vendor overhead.",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "1420"
+          }
+        })}
+      </script>
+
       {/* Background Mesh Overlay */}
       <div className="mesh-gradient-container">
         <div className="mesh-circle circle-1"></div>

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /docs
+Allow: /login
+Allow: /register
+Disallow: /dashboard
+Disallow: /tester
+
+Sitemap: https://mailbridge.io/sitemap.xml

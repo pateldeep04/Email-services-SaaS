@@ -25,6 +25,7 @@ import {
   Sparkles,
   Smartphone
 } from "lucide-react";
+import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Dashboard.css";
 const isLocalIp = (url) => {
   try {
@@ -59,6 +60,13 @@ const isLocalIp = (url) => {
 export function DashboardPage() {
   const { user, token, apiKey, setApiKey, logout, updateUserSettings, updateApiKeySettings } = useAuth();
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Dashboard | MailBridge",
+    description: "Manage your MailBridge transactional email and SMS API configurations, generate API keys, and monitor real-time delivery logs.",
+    noindex: true
+  });
+
   const isPublicDomain = typeof window !== "undefined" && 
     window.location.hostname !== "localhost" && 
     window.location.hostname !== "127.0.0.1";

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Auth.css";
 
 export function LoginPage() {
@@ -13,6 +14,12 @@ export function LoginPage() {
   const { login, loginWithGoogle, loading } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Login | MailBridge",
+    description: "Access your MailBridge account to manage your API keys, configure SMTP settings, view delivery logs, and set up your SMS gateway.",
+    keywords: "login mailbridge, email api login, mailbridge portal"
+  });
 
   const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== "google-client-id-placeholder";
 

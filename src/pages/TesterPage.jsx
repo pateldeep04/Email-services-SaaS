@@ -3,11 +3,19 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { API_URL } from "../config.js";
 import { Link, useLocation } from "react-router-dom";
 import { Send, CheckCircle, AlertCircle, Mail, Copy, Plus, Trash2, Sparkles } from "lucide-react";
+import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Tester.css";
 
 export function TesterPage() {
   const { apiKey, user } = useAuth();
   const location = useLocation();
+
+  useSEO({
+    title: "API Tester | MailBridge",
+    description: "Test MailBridge REST endpoints to send transactional emails and SMS messages directly from your browser.",
+    noindex: true
+  });
+
   const [hasInitializedState, setHasInitializedState] = useState(false);
 
   const endpoints = useMemo(() => [

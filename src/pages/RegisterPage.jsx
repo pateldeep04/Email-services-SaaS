@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Auth.css";
 
 export function RegisterPage() {
@@ -19,6 +20,12 @@ export function RegisterPage() {
   const { register, loginWithGoogle, loading } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Create Account | MailBridge",
+    description: "Sign up for MailBridge to start sending transactional emails and SMS verifications via Gmail SMTP with zero platform fees.",
+    keywords: "register mailbridge, create mailbridge account, email api signup"
+  });
 
   const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== "google-client-id-placeholder";
 
