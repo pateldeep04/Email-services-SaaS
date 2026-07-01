@@ -9,6 +9,8 @@ import "../styles/Tester.css";
 export function TesterPage() {
   const { apiKey, user } = useAuth();
   const location = useLocation();
+  const stateInitialTemplate = location.state?.initialTemplate;
+  const stateInitialPayload = location.state?.initialPayload;
 
   useSEO({
     title: "API Tester | MailBridge",
@@ -106,25 +108,25 @@ export function TesterPage() {
 
   // Initialize state from location.state if redirected from dashboard
   useEffect(() => {
-    if (location.state?.initialTemplate && !hasInitializedState) {
-      const ep = endpoints.find(e => e.id === location.state.initialTemplate);
+    if (stateInitialTemplate && !hasInitializedState) {
+      const ep = endpoints.find(e => e.id === stateInitialTemplate);
       if (ep) {
         setSelected(ep);
-        setPayload(JSON.stringify(location.state.initialPayload || ep.body, null, 2));
+        setPayload(JSON.stringify(stateInitialPayload || ep.body, null, 2));
         setHasInitializedState(true);
       }
     }
-  }, [location.state, endpoints, hasInitializedState]);
+  }, [stateInitialTemplate, stateInitialPayload, endpoints, hasInitializedState]);
 
   // Update payload when selected endpoint changes
   useEffect(() => {
-    if (location.state?.initialTemplate && !hasInitializedState) {
+    if (stateInitialTemplate && !hasInitializedState) {
       return;
     }
     const defaultEndpoint = endpoints.find(ep => ep.id === selected.id) || endpoints[0];
     setSelected(defaultEndpoint);
     setPayload(JSON.stringify(defaultEndpoint.body, null, 2));
-  }, [endpoints, selected.id, hasInitializedState, location.state]);
+  }, [endpoints, selected.id, hasInitializedState, stateInitialTemplate]);
 
   const curl = useMemo(
     () => `curl -X ${selected.method} ${API_URL}${selected.path} \\
