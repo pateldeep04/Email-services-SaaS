@@ -64,6 +64,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dns from "dns";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
@@ -117,7 +118,7 @@ app.use(cors({
 
 app.set("trust proxy", 1);
 
-app.use(session({
+const sessionConfig = {
   secret: process.env.JWT_SECRET || "supersecretkey",
   resave: false,
   saveUninitialized: false,
@@ -127,7 +128,18 @@ app.use(session({
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
-}));
+};
+
+// Use MongoDB-backed session store in production to avoid MemoryStore warnings
+if (process.env.MONGO_URI && process.env.NODE_ENV === "production") {
+  sessionConfig.store = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    touchAfter: 24 * 3600, // Lazy session update: only update every 24h unless changed
+    ttl: 24 * 60 * 60 // Session TTL: 24 hours
+  });
+}
+
+app.use(session(sessionConfig));
 
 app.use(express.json({ limit: "1mb" }));
 
