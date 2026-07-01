@@ -1,20 +1,36 @@
 const getApiUrl = () => {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
-    // If running in production (not localhost/LAN and not tunnel/dev services)
-    // and VITE_API_URL is not set, default to same-origin.
-    if (
+    const isProductionHost = (
       hostname !== "localhost" &&
       hostname !== "127.0.0.1" &&
       hostname !== "192.168.1.12" &&
       !hostname.includes("devtunnels.ms") &&
       !hostname.includes("trycloudflare.com")
-    ) {
+    );
+
+    // If running in production (not localhost/LAN and not tunnel/dev services)
+    // and VITE_API_URL is not set, default to same-origin.
+    if (isProductionHost) {
       const apiUrl = import.meta.env.VITE_API_URL;
-      if (apiUrl && (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1"))) {
+      if (!apiUrl) {
         return window.location.origin;
       }
-      return apiUrl || window.location.origin;
+
+      try {
+        const parsedApiUrl = new URL(apiUrl);
+        const pointsToLocalhost = parsedApiUrl.hostname === "localhost" || parsedApiUrl.hostname === "127.0.0.1";
+        const pointsToSameHostDifferentPort = parsedApiUrl.hostname === hostname && parsedApiUrl.port !== window.location.port;
+        const wouldDowngradeHttps = window.location.protocol === "https:" && parsedApiUrl.protocol === "http:";
+
+        if (pointsToLocalhost || pointsToSameHostDifferentPort || wouldDowngradeHttps) {
+          return window.location.origin;
+        }
+
+        return parsedApiUrl.origin;
+      } catch {
+        return window.location.origin;
+      }
     }
     // Match something like "prefix-5173.something.devtunnels.ms"
     const match = hostname.match(/^(.+)-(517\d)\.(.+devtunnels\.ms)$/);
