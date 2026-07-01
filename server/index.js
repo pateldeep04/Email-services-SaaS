@@ -1,5 +1,64 @@
 // Force nodemon restart to pick up new env variables
 import "dotenv/config";
+import https from "https";
+import http from "http";
+
+if (!global.fetch) {
+  global.fetch = function (url, options = {}) {
+    return new Promise((resolve, reject) => {
+      const client = url.startsWith("https") ? https : http;
+      const headers = { ...options.headers };
+      let bodyData = options.body || "";
+      
+      if (typeof bodyData === "object") {
+        bodyData = JSON.stringify(bodyData);
+        headers["Content-Type"] = headers["Content-Type"] || "application/json";
+      }
+      
+      if (bodyData) {
+        headers["Content-Length"] = Buffer.byteLength(bodyData);
+      }
+
+      const reqOptions = {
+        method: options.method || "GET",
+        headers: headers
+      };
+
+      const req = client.request(url, reqOptions, (res) => {
+        let rawData = "";
+        res.on("data", (chunk) => { rawData += chunk; });
+        res.on("end", () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            statusText: res.statusMessage,
+            headers: {
+              get: (headerName) => res.headers[headerName.toLowerCase()]
+            },
+            text: () => Promise.resolve(rawData),
+            json: () => {
+              try {
+                return Promise.resolve(JSON.parse(rawData));
+              } catch (e) {
+                return Promise.reject(new Error("Invalid JSON: " + rawData));
+              }
+            }
+          });
+        });
+      });
+
+      req.on("error", (err) => {
+        reject(err);
+      });
+
+      if (bodyData) {
+        req.write(bodyData);
+      }
+      req.end();
+    });
+  };
+}
+
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";

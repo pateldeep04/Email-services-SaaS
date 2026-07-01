@@ -71,6 +71,19 @@ export function TesterPage() {
       body: { to: user?.email || "test@example.com", title: "Order received", message: "Order #123 has been placed" }
     },
     {
+      id: "simple",
+      title: "Simple Email",
+      method: "POST",
+      path: "/api/v1/emails/simple",
+      body: { 
+        to: user?.email || "test@example.com", 
+        subject: "Important Account Update", 
+        message: "Please click the button below to verify your changes.",
+        buttonText: "Verify Now",
+        buttonUrl: "https://yourdomain.com/verify"
+      }
+    },
+    {
       id: "custom",
       title: "Custom Email",
       method: "POST",

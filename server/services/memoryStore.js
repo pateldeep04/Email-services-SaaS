@@ -79,7 +79,10 @@ export const memoryStore = {
         colorHeaderText: "#ffffff",
         colorButtonBg: "#0f766e",
         colorBgLight: "#f1f5f9",
-        emailFooter: "© 2026 MailBridge. All rights reserved."
+        emailFooter: "© 2026 MailBridge. All rights reserved.",
+        emailActionText: "Get Started",
+        emailActionUrl: "https://mail-bridge.email",
+        showButton: true
       },
       senderName: "",
       senderEmail: "",
@@ -192,7 +195,10 @@ export const memoryStore = {
         colorHeaderText: "#ffffff",
         colorButtonBg: "#0f766e",
         colorBgLight: "#f1f5f9",
-        emailFooter: "© 2026 MailBridge. All rights reserved."
+        emailFooter: "© 2026 MailBridge. All rights reserved.",
+        emailActionText: "Get Started",
+        emailActionUrl: "https://mail-bridge.email",
+        showButton: true
       },
       createdAt: new Date().toISOString()
     };

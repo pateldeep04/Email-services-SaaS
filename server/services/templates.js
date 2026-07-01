@@ -88,3 +88,23 @@ export function notificationTemplate({ title, message }, settings) {
     })
   };
 }
+
+export function simpleTemplate({ subject, message, buttonText, buttonUrl }, settings) {
+  const btnBg = settings?.colorButtonBg || "#0f766e";
+  const finalButtonText = buttonText || settings?.emailActionText || "Get Started";
+  const finalButtonUrl = buttonUrl || settings?.emailActionUrl;
+  const finalShowButton = settings?.showButton !== false;
+  const actionHtml = (finalShowButton && finalButtonText && finalButtonUrl)
+    ? `<a href="${finalButtonUrl}" style="background-color:${btnBg};color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">${finalButtonText}</a>`
+    : "";
+  return {
+    subject,
+    text: (finalShowButton && finalButtonUrl) ? `${message}\n\n${finalButtonText}: ${finalButtonUrl}` : message,
+    html: shell({
+      title: subject,
+      body: `<p style="white-space: pre-line;">${message}</p>`,
+      action: actionHtml,
+      settings
+    })
+  };
+}

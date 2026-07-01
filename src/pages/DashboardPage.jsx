@@ -107,6 +107,7 @@ export function DashboardPage() {
   const [colorHeaderText, setColorHeaderText] = useState("#ffffff");
   const [colorButtonBg, setColorButtonBg] = useState("#0f766e");
   const [colorBgLight, setColorBgLight] = useState("#f1f5f9");
+  const [showButton, setShowButton] = useState(true);
 
   // Content States
   const [emailTitle, setEmailTitle] = useState("Welcome to MailBridge");
@@ -269,6 +270,9 @@ export function DashboardPage() {
       if (settings.colorButtonBg !== undefined) setColorButtonBg(settings.colorButtonBg);
       if (settings.colorBgLight !== undefined) setColorBgLight(settings.colorBgLight);
       if (settings.emailFooter !== undefined) setEmailFooter(settings.emailFooter);
+      if (settings.emailActionText !== undefined) setEmailActionText(settings.emailActionText);
+      if (settings.emailActionUrl !== undefined) setEmailActionUrl(settings.emailActionUrl || "");
+      setShowButton(settings.showButton !== false);
     }
   }, [selectedTarget, user, apiKeys]);
 
@@ -309,7 +313,10 @@ export function DashboardPage() {
         colorHeaderText,
         colorButtonBg,
         colorBgLight,
-        emailFooter
+        emailFooter,
+        emailActionText,
+        emailActionUrl,
+        showButton
       };
       if (selectedTarget === "global") {
         await updateUserSettings({ templateSettings: payload });
@@ -1297,19 +1304,27 @@ export function DashboardPage() {
     } else if (activeTemplate === "forgot-password") {
       titleText = emailTitle || "Password reset";
       bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage || "We received a request to reset your password for your account."}</p>`;
-      actionHtml = `
+      actionHtml = showButton ? `
         <div style="text-align: center; margin: 24px 0 16px 0;">
           <a href="${emailActionUrl || 'https://app.example.com/reset'}" target="_blank" data-field="emailActionText" contenteditable="true" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText || 'Reset password'}</a>
         </div>
-      `;
+      ` : "";
     } else if (activeTemplate === "notification") {
       titleText = emailTitle || "Notification Alert";
       bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="color: #374151; white-space: pre-line;">${emailMessage}</p>`;
       actionHtml = "";
+    } else if (activeTemplate === "simple") {
+      titleText = emailTitle || "Simple Update";
+      bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage || "This is a simple message layout with a call-to-action button."}</p>`;
+      actionHtml = showButton ? `
+        <div style="text-align: center; margin: 24px 0 16px 0;">
+          <a href="${emailActionUrl || '#'}" target="_blank" data-field="emailActionText" contenteditable="true" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText || 'View Details'}</a>
+        </div>
+      ` : "";
     } else {
       titleText = emailTitle;
       bodyHtml = `<p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage}</p>`;
-      if (emailActionText) {
+      if (showButton && emailActionText) {
         actionHtml = `
           <div style="text-align: center; margin: 32px 0 16px 0;">
             <a href="${emailActionUrl}" target="_blank" data-field="emailActionText" contenteditable="true" style="background-color: ${colorButtonBg}; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">${emailActionText}</a>
@@ -1342,6 +1357,60 @@ export function DashboardPage() {
 </div>`.trim();
   };
 
+  const insertFormat = (tag) => {
+    const textarea = document.getElementById("emailMessageTextarea");
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selected = text.substring(start, end);
+    
+    const openTag = `<${tag}>`;
+    const closeTag = `</${tag}>`;
+    
+    let replacement;
+    let isWrapped = false;
+    
+    // Check if the selection itself is wrapped in the tag, e.g. "<b>text</b>"
+    if (selected.startsWith(openTag) && selected.endsWith(closeTag)) {
+      replacement = selected.substring(openTag.length, selected.length - closeTag.length);
+      isWrapped = true;
+    } 
+    // Check if the selection is surrounded by the tag in the context, e.g. "...<b>[selected]</b>..."
+    else if (
+      start >= openTag.length && 
+      end <= text.length - closeTag.length &&
+      text.substring(start - openTag.length, start) === openTag &&
+      text.substring(end, end + closeTag.length) === closeTag
+    ) {
+      const before = text.substring(0, start - openTag.length);
+      const after = text.substring(end + closeTag.length);
+      const newVal = before + selected + after;
+      setEmailMessage(newVal);
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start - openTag.length, start - openTag.length + selected.length);
+      }, 50);
+      return;
+    }
+    else {
+      // Normal wrapping
+      replacement = `${openTag}${selected || (tag === "b" ? "bold text" : "italic text")}${closeTag}`;
+    }
+    
+    const newVal = text.substring(0, start) + replacement + text.substring(end);
+    setEmailMessage(newVal);
+    
+    setTimeout(() => {
+      textarea.focus();
+      if (isWrapped) {
+        textarea.setSelectionRange(start, start + replacement.length);
+      } else {
+        textarea.setSelectionRange(start, start + replacement.length);
+      }
+    }, 50);
+  };
+
   const handlePreviewBlur = (e) => {
     const field = e.target.getAttribute("data-field");
     if (!field) return;
@@ -1349,7 +1418,7 @@ export function DashboardPage() {
     
     if (field === "brandName") setBrandName(value);
     else if (field === "emailTitle") setEmailTitle(value);
-    else if (field === "emailMessage") setEmailMessage(value);
+    else if (field === "emailMessage") setEmailMessage(e.target.innerHTML);
     else if (field === "emailActionText") setEmailActionText(value);
     else if (field === "emailFooter") setEmailFooter(value);
   };
@@ -2265,6 +2334,7 @@ export function DashboardPage() {
                 style={{ width: "100%" }}
               >
                 <option value="custom">Custom / Marketing Email</option>
+                <option value="simple">Simple Email (with Custom Button)</option>
                 <option value="welcome">Welcome Email</option>
                 <option value="otp">OTP / Verification Code</option>
                 <option value="forgot-password">Password Reset Flow</option>
@@ -2410,13 +2480,49 @@ export function DashboardPage() {
             </div>
 
             <div className="form-group">
-              <label>Email Message</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                <label style={{ margin: 0 }}>Email Message</label>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    type="button"
+                    onClick={() => insertFormat("b")}
+                    className="btn btn-secondary btn-xs"
+                    style={{ padding: "2px 8px", fontSize: "11px", borderRadius: "4px", minWidth: "24px" }}
+                    title="Bold"
+                  >
+                    <strong>B</strong>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertFormat("i")}
+                    className="btn btn-secondary btn-xs"
+                    style={{ padding: "2px 8px", fontSize: "11px", borderRadius: "4px", minWidth: "24px", fontStyle: "italic" }}
+                    title="Italic"
+                  >
+                    I
+                  </button>
+                </div>
+              </div>
               <textarea
+                id="emailMessageTextarea"
                 value={emailMessage}
                 onChange={(e) => setEmailMessage(e.target.value)}
-                placeholder="Enter email message here..."
+                placeholder="Enter email message here... You can use HTML like <b>bold</b> or <i>italic</i>"
                 rows={4}
               />
+            </div>
+
+            <div className="form-group checkbox-group" style={{ display: "flex", alignItems: "center", gap: "8px", margin: "12px 0 16px 0", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                id="showButtonCheckbox"
+                checked={showButton}
+                onChange={(e) => setShowButton(e.target.checked)}
+                style={{ width: "16px", height: "16px", cursor: "pointer" }}
+              />
+              <label htmlFor="showButtonCheckbox" style={{ margin: 0, fontWeight: "500", fontSize: "14px", cursor: "pointer", color: "var(--text-color, #1f2937)" }}>
+                Show Action Button in Emails
+              </label>
             </div>
 
             <div className="row-inputs">

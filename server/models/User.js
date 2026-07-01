@@ -16,7 +16,10 @@ const userSchema = new mongoose.Schema(
       colorHeaderText: { type: String, default: "#ffffff" },
       colorButtonBg: { type: String, default: "#0f766e" },
       colorBgLight: { type: String, default: "#f1f5f9" },
-      emailFooter: { type: String, default: "© 2026 MailBridge. All rights reserved." }
+      emailFooter: { type: String, default: "© 2026 MailBridge. All rights reserved." },
+      emailActionText: { type: String, default: "Get Started" },
+      emailActionUrl: { type: String, default: "https://mail-bridge.email" },
+      showButton: { type: Boolean, default: true }
     },
     senderName: { type: String, default: "" },
     senderEmail: { type: String, default: "" },

@@ -117,6 +117,24 @@ const endpoints = [
   },
   {
     method: "POST",
+    path: "/api/v1/emails/simple",
+    title: "Simple Email",
+    description: "Send standard text emails with an optional call-to-action button",
+    request: {
+      to: "user@example.com",
+      subject: "Important account update",
+      message: "Please click the button below to verify your changes.",
+      buttonText: "Verify Now",
+      buttonUrl: "https://yourdomain.com/verify"
+    },
+    response: {
+      success: true,
+      status: "sent",
+      messageId: "..."
+    }
+  },
+  {
+    method: "POST",
     path: "/api/v1/emails/custom",
     title: "Custom Email",
     description: "Send custom branded emails",

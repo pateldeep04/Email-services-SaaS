@@ -36,7 +36,29 @@ function formatUserResponse(user) {
     email: user.email,
     name: user.name,
     companyName: user.companyName || "",
-    templateSettings: user.templateSettings,
+    templateSettings: user.templateSettings ? {
+      brandName: user.templateSettings.brandName || "My Brand",
+      logoUrl: user.templateSettings.logoUrl || "",
+      colorHeaderBg: user.templateSettings.colorHeaderBg || "#0f766e",
+      colorHeaderText: user.templateSettings.colorHeaderText || "#ffffff",
+      colorButtonBg: user.templateSettings.colorButtonBg || "#0f766e",
+      colorBgLight: user.templateSettings.colorBgLight || "#f1f5f9",
+      emailFooter: user.templateSettings.emailFooter || "© 2026 MailBridge. All rights reserved.",
+      emailActionText: user.templateSettings.emailActionText || "Get Started",
+      emailActionUrl: user.templateSettings.emailActionUrl || "https://mail-bridge.email",
+      showButton: user.templateSettings.showButton !== false
+    } : {
+      brandName: "My Brand",
+      logoUrl: "",
+      colorHeaderBg: "#0f766e",
+      colorHeaderText: "#ffffff",
+      colorButtonBg: "#0f766e",
+      colorBgLight: "#f1f5f9",
+      emailFooter: "© 2026 MailBridge. All rights reserved.",
+      emailActionText: "Get Started",
+      emailActionUrl: "https://mail-bridge.email",
+      showButton: true
+    },
     useGlobalTemplateSettings: user.useGlobalTemplateSettings,
     senderName: user.senderName || "",
     senderEmail: user.senderEmail || "",
@@ -78,6 +100,23 @@ function formatUserResponse(user) {
       gatewayPass: "",
       deviceId: ""
     }
+  };
+}
+
+function mergeTemplateSettings(existing, updates) {
+  const ext = existing || {};
+  const upd = updates || {};
+  return {
+    brandName: upd.brandName !== undefined ? upd.brandName : (ext.brandName || "My Brand"),
+    logoUrl: upd.logoUrl !== undefined ? upd.logoUrl : (ext.logoUrl || ""),
+    colorHeaderBg: upd.colorHeaderBg !== undefined ? upd.colorHeaderBg : (ext.colorHeaderBg || "#0f766e"),
+    colorHeaderText: upd.colorHeaderText !== undefined ? upd.colorHeaderText : (ext.colorHeaderText || "#ffffff"),
+    colorButtonBg: upd.colorButtonBg !== undefined ? upd.colorButtonBg : (ext.colorButtonBg || "#0f766e"),
+    colorBgLight: upd.colorBgLight !== undefined ? upd.colorBgLight : (ext.colorBgLight || "#f1f5f9"),
+    emailFooter: upd.emailFooter !== undefined ? upd.emailFooter : (ext.emailFooter || "© 2026 MailBridge. All rights reserved."),
+    emailActionText: upd.emailActionText !== undefined ? upd.emailActionText : (ext.emailActionText || "Get Started"),
+    emailActionUrl: upd.emailActionUrl !== undefined ? upd.emailActionUrl : (ext.emailActionUrl || "https://mail-bridge.email"),
+    showButton: upd.showButton !== undefined ? upd.showButton : (ext.showButton !== false)
   };
 }
 
@@ -425,7 +464,7 @@ router.put("/settings", requireAuth, async (req, res, next) => {
         }
       }
       if (templateSettings !== undefined) {
-        user.templateSettings = { ...user.templateSettings, ...templateSettings };
+        user.templateSettings = mergeTemplateSettings(user.templateSettings, templateSettings);
       }
       if (useGlobalTemplateSettings !== undefined) {
         user.useGlobalTemplateSettings = useGlobalTemplateSettings;
@@ -478,7 +517,7 @@ router.put("/settings", requireAuth, async (req, res, next) => {
         }
       }
       if (templateSettings !== undefined) {
-        user.templateSettings = { ...user.templateSettings, ...templateSettings };
+        user.templateSettings = mergeTemplateSettings(user.templateSettings, templateSettings);
       }
       if (useGlobalTemplateSettings !== undefined) {
         user.useGlobalTemplateSettings = useGlobalTemplateSettings;
@@ -711,7 +750,7 @@ router.put("/keys/:id/settings", requireAuth, async (req, res, next) => {
       if (!keyDoc) {
         return res.status(404).json({ error: "API key not found." });
       }
-      keyDoc.templateSettings = { ...keyDoc.templateSettings, ...templateSettings };
+      keyDoc.templateSettings = mergeTemplateSettings(keyDoc.templateSettings, templateSettings);
       keyDoc.styleType = "custom";
       await keyDoc.save();
       res.json({ success: true, key: keyDoc });
@@ -720,7 +759,7 @@ router.put("/keys/:id/settings", requireAuth, async (req, res, next) => {
       if (!keyDoc) {
         return res.status(404).json({ error: "API key not found." });
       }
-      keyDoc.templateSettings = { ...keyDoc.templateSettings, ...templateSettings };
+      keyDoc.templateSettings = mergeTemplateSettings(keyDoc.templateSettings, templateSettings);
       keyDoc.styleType = "custom";
       res.json({ success: true, key: keyDoc });
     }

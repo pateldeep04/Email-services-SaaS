@@ -20,7 +20,8 @@ import {
   notificationTemplate,
   otpTemplate,
   welcomeTemplate,
-  customTemplate
+  customTemplate,
+  simpleTemplate
 } from "../services/templates.js";
 
 const router = express.Router();
@@ -307,6 +308,29 @@ router.post("/notification", emailRateLimiter, async (req, res, next) => {
       "notification",
       to,
       notificationTemplate({ title, message }, getTemplateSettings(req)),
+      req.body,
+      req.apiClient?._id,
+      req.apiKeyUsed,
+      getStyleNameUsed(req)
+    );
+    res.status(201).json(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/simple", emailRateLimiter, async (req, res, next) => {
+  try {
+    const { to, subject, message, buttonText, buttonUrl } = req.body;
+    validateEmail(to);
+    if (!subject || !message) {
+      return res.status(400).json({ error: "subject and message are required." });
+    }
+
+    const response = await deliver(
+      "simple",
+      to,
+      simpleTemplate({ subject, message, buttonText, buttonUrl }, getTemplateSettings(req)),
       req.body,
       req.apiClient?._id,
       req.apiKeyUsed,
