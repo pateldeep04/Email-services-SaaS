@@ -83,13 +83,20 @@ export function AuthProvider({ children }) {
   }
 
   async function loginWithGoogle(credential) {
+    if (!credential) {
+      throw new Error("Google credential is missing. Please try again.");
+    }
     setLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     try {
       const res = await fetch(`${API_URL}/api/v1/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential })
+        body: JSON.stringify({ credential }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Google login failed");
       setToken(data.token);
@@ -100,6 +107,10 @@ export function AuthProvider({ children }) {
       localStorage.setItem("mailbridge_api_key", data.apiKey);
       return true;
     } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === "AbortError") {
+        throw new Error("Request timed out. Please check your connection and try again.");
+      }
       throw error;
     } finally {
       setLoading(false);

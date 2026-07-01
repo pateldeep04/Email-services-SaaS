@@ -30,12 +30,17 @@ export function RegisterPage() {
   const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== "google-client-id-placeholder";
 
   async function handleGoogleCallback(response) {
+    // Guard: if Google returns no credential (e.g. origin_mismatch error), abort silently
+    if (!response || !response.credential) {
+      console.warn("Google Sign-In: No credential received (possible origin_mismatch error).");
+      return;
+    }
     setError("");
     try {
       await loginWithGoogle(response.credential);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Google Sign-In failed. Please try email login instead.");
     }
   }
 
