@@ -65,3 +65,27 @@ code {
   outline-offset: 2px;
 }
 
+/* Page Loading Fallback Styles */
+.page-loading-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  font-family: inherit;
+  color: var(--text-main);
+}
+
+.page-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(20, 184, 166, 0.1);
+  border-radius: 50%;
+  border-top-color: #14b8a6;
+  animation: page-spin 1s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes page-spin {
+  to { transform: rotate(360deg); }
+}

@@ -448,7 +448,7 @@ export function HomePage() {
           <div className="hero-right-dashboard">
             <div className="premium-dashboard-card">
               <div className="dashboard-card-header">
-                <h3>Live Delivery Metrics</h3>
+                <h2>Live Delivery Metrics</h2>
                 <span className="live-indicator-dot"></span>
               </div>
               
@@ -784,9 +784,10 @@ export function HomePage() {
               {templateType !== "sms-otp" && (
                 <>
                   <div className="sandbox-control-group">
-                    <label className="control-label">Header BG Theme</label>
+                    <label className="control-label" htmlFor="header-bg-color">Header BG Theme</label>
                     <div className="color-picker-control">
                       <input 
+                        id="header-bg-color"
                         type="color" 
                         value={headerColor}
                         onChange={(e) => setHeaderColor(e.target.value)}
@@ -796,9 +797,10 @@ export function HomePage() {
                   </div>
 
                   <div className="sandbox-control-group">
-                    <label className="control-label">Header Text Theme</label>
+                    <label className="control-label" htmlFor="header-text-color">Header Text Theme</label>
                     <div className="color-picker-control">
                       <input 
+                        id="header-text-color"
                         type="color" 
                         value={headerTextColor}
                         onChange={(e) => setHeaderTextColor(e.target.value)}

@@ -215,7 +215,7 @@
   margin-bottom: 20px;
 }
 
-.dashboard-card-header h3 {
+.dashboard-card-header h2 {
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
@@ -1089,7 +1089,7 @@ html.light .premium-dashboard-card {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
-html.light .dashboard-card-header h3 {
+html.light .dashboard-card-header h2 {
   color: #111827;
 }
 
@@ -1098,7 +1098,7 @@ html.light .metric-pills-row {
 }
 
 html.light .metric-pill-btn {
-  color: #6b7280;
+  color: #374151;
 }
 
 html.light .metric-pill-btn:hover {
@@ -1121,6 +1121,10 @@ html.light .dashboard-metrics-summary-row {
 
 html.light .metric-box h4 {
   color: #111827;
+}
+
+html.light .metric-box label {
+  color: #4b5563;
 }
 
 html.light .section-title-wrapper h2 {
@@ -1621,7 +1625,7 @@ html.light .cta-banner-content p {
 html.light .services-tab-btn {
   background: #ffffff;
   border-color: #cbd5e1;
-  color: #6b7280;
+  color: #374151;
 }
 
 html.light .services-tab-btn:hover {
@@ -1643,6 +1647,10 @@ html.light .services-tab-content {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
 }
 
+html.light .service-detail-info p.service-tagline {
+  color: #0f766e;
+}
+
 html.light .service-detail-info h3 {
   color: #111827;
 }
@@ -1656,7 +1664,7 @@ html.light .service-feature-item div h4 {
 }
 
 html.light .service-feature-item div p {
-  color: #6b7280;
+  color: #4b5563;
 }
 
 html.light .service-detail-graphic {
@@ -1671,6 +1679,11 @@ html.light .services-visual-card {
 
 html.light .visual-title {
   color: #475569;
+}
+
+html.light .visual-badge {
+  background: rgba(20, 184, 166, 0.1);
+  color: #0f766e;
 }
 
 html.light .visual-line {
