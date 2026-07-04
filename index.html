@@ -30,7 +30,69 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static App Shell Fallback for SEO and Instant Paint -->
+      <nav class="navbar">
+        <div class="nav-container">
+          <a href="/" class="nav-brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;">
+              <path d="M 4 19 C 7 13.5, 17 13.5, 20 19" />
+              <path d="M 8 16 L 8 19" opacity="0.6" />
+              <path d="M 12 14.5 L 12 19" opacity="0.6" />
+              <path d="M 16 16 L 16 19" opacity="0.6" />
+              <rect x="6" y="4" width="12" height="8" rx="1.5" />
+              <path d="M 6 4 L 12 8 L 18 4" />
+            </svg>
+            <span>MailBridge</span>
+          </a>
+          <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+          </button>
+          <div class="nav-menu-wrapper">
+            <div class="nav-links">
+              <a href="/" class="nav-link active">Home</a>
+              <a href="/docs" class="nav-link">Documentation</a>
+              <a href="/tester" class="nav-link">API Tester</a>
+            </div>
+            <div class="nav-auth">
+              <a href="/login" class="nav-link">Login</a>
+              <a href="/register" class="nav-button register-btn">Register</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main style="flex: 1; display: flex; flex-direction: column;">
+        <section class="hero-section-new">
+          <div class="hero-grid">
+            <div class="hero-left-content">
+              <span class="hero-badge-pill">
+                Gmail API Gateway for Developers
+              </span>
+              <h1 class="hero-title">
+                Robust Transactional Emails via Gmail SMTP.
+              </h1>
+              <p class="hero-desc-text">
+                Zero paid vendor overhead. Register, create an API key, and instantly trigger styled OTPs, password resets, welcome campaigns, or custom alerts over a unified HTTPS endpoint.
+              </p>
+              <div class="hero-cta-buttons">
+                <a href="/register" class="btn btn-hero-primary glow-btn">
+                  Get Started Free
+                </a>
+                <a href="/docs" class="btn btn-hero-secondary">
+                  Explore API Docs
+                </a>
+              </div>
+              <div class="hero-stats-row">
+                <div class="stat-pill"><strong>5</strong> Ready Templates</div>
+                <div class="stat-pill"><strong>&lt; 100ms</strong> Latency</div>
+                <div class="stat-pill"><strong>100%</strong> Free Relaying</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
