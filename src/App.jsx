@@ -33,9 +33,9 @@ function App() {
               <Route path="/tester" element={<TesterPage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
+            <Footer />
           </Suspense>
         </main>
-        <Footer />
       </AuthProvider>
     </ThemeProvider>
   );

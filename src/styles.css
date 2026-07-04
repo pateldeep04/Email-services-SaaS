@@ -1,11 +1,3 @@
-/* Import all page-specific styles */
-@import url('./styles/Navbar.css');
-@import url('./styles/Auth.css');
-@import url('./styles/Home.css');
-@import url('./styles/Documentation.css');
-@import url('./styles/Dashboard.css');
-@import url('./styles/Tester.css');
-@import url('./styles/Footer.css');
 
 :root {
   --bg-main: #f9fafb;
