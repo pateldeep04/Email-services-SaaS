@@ -154,37 +154,141 @@ html.dark .theme-toggle-btn:hover {
   color: #2dd4bf;
 }
 
+/* Desktop default for menu wrapper and toggle */
+.mobile-menu-toggle {
+  display: none;
+}
+
+.nav-menu-wrapper {
+  display: contents;
+}
+
 @media (max-width: 768px) {
+  .navbar {
+    position: relative;
+  }
+
   .nav-container {
-    flex-direction: column;
-    height: auto;
-    padding: 16px 20px;
-    gap: 16px;
-    align-items: stretch;
+    padding: 0 16px;
+    height: 64px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .nav-brand {
+    font-size: 18px;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
     justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .mobile-menu-toggle:hover {
+    background: #f3f4f6;
+  }
+
+  html.dark .mobile-menu-toggle {
+    color: #cbd5e1;
+  }
+
+  html.dark .mobile-menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .nav-menu-wrapper {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 24px;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    z-index: 99;
+  }
+
+  .nav-menu-wrapper.open {
+    display: flex;
+  }
+
+  html.dark .nav-menu-wrapper {
+    background: #090d16;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
   }
 
   .nav-links {
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
     width: 100%;
   }
 
+  .nav-link {
+    padding: 10px 12px;
+    border-radius: 6px;
+    width: 100%;
+    display: block;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    background: #f3f4f6;
+  }
+
+  html.dark .nav-link:hover,
+  html.dark .nav-link.active {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
   .nav-auth {
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: 16px;
     width: 100%;
-    margin-top: 4px;
+    margin-top: 0;
     padding-top: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    flex-wrap: wrap;
+    border-top: 1px solid #e5e7eb;
   }
 
   html.dark .nav-auth {
     border-top-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .theme-toggle-btn {
+    align-self: flex-start;
+    padding: 8px 12px;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .theme-toggle-btn::after {
+    content: "Toggle Theme";
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .register-btn {
+    text-align: center;
   }
 }

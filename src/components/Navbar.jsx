@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Mail, LogOut, Sun, Moon } from "lucide-react";
+import { Mail, LogOut, Sun, Moon, Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import "../styles/Navbar.css";
@@ -37,41 +37,59 @@ export function Navbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path ? "active" : "";
+
+  const handleLinkClick = () => setIsMenuOpen(false);
+  const handleLogoutClick = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <Link to="/" className="nav-brand">
+        <Link to="/" className="nav-brand" onClick={handleLinkClick}>
           <MailBridgeLogo size={24} />
           <span>MailBridge</span>
         </Link>
         
-        <div className="nav-links">
-          <Link to="/" className={`nav-link ${isActive("/")}`}>Home</Link>
-          <Link to="/docs" className={`nav-link ${isActive("/docs")}`}>Documentation</Link>
-          <Link to="/tester" className={`nav-link ${isActive("/tester")}`}>API Tester</Link>
-        </div>
+        <button 
+          className="mobile-menu-toggle" 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={isMenuOpen}
+        >
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
 
-        <div className="nav-auth">
-          <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
-          {user ? (
-            <>
-              <span className="user-name">{user.name}</span>
-              <Link to="/dashboard" className={`nav-link ${isActive("/dashboard")}`}>Dashboard</Link>
-              <button className="logout-btn" onClick={logout}>
-                <LogOut size={18} /> Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className={`nav-link ${isActive("/login")}`}>Login</Link>
-              <Link to="/register" className="nav-button register-btn">Register</Link>
-            </>
-          )}
+        <div className={`nav-menu-wrapper ${isMenuOpen ? "open" : ""}`}>
+          <div className="nav-links">
+            <Link to="/" className={`nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
+            <Link to="/docs" className={`nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
+            <Link to="/tester" className={`nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
+          </div>
+
+          <div className="nav-auth">
+            <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            {user ? (
+              <>
+                <span className="user-name">{user.name}</span>
+                <Link to="/dashboard" className={`nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
+                <button className="logout-btn" onClick={handleLogoutClick}>
+                  <LogOut size={18} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className={`nav-link ${isActive("/login")}`} onClick={handleLinkClick}>Login</Link>
+                <Link to="/register" className="nav-button register-btn" onClick={handleLinkClick}>Register</Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -51,26 +51,51 @@ export function RegisterPage() {
       return;
     }
 
-    if (typeof window !== "undefined" && window.google) {
-      try {
-        window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          callback: handleGoogleCallback,
-        });
+    let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+    
+    const initGoogle = () => {
+      if (window.google) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+            callback: handleGoogleCallback,
+          });
 
-        window.google.accounts.id.renderButton(
-          document.getElementById("googleBtn"),
-          {
-            theme: theme === "dark" ? "filled_black" : "outline",
-            size: "large",
-            width: "340",
-            shape: "rectangular",
+          const btn = document.getElementById("googleBtn");
+          if (btn) {
+            window.google.accounts.id.renderButton(btn, {
+              theme: theme === "dark" ? "filled_black" : "outline",
+              size: "large",
+              width: "340",
+              shape: "rectangular",
+            });
           }
-        );
-      } catch (err) {
-        console.error("Google Sign-In initialization failed:", err);
+        } catch (err) {
+          console.error("Google Sign-In initialization failed:", err);
+        }
+      }
+    };
+
+    if (!script) {
+      script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = initGoogle;
+      document.body.appendChild(script);
+    } else {
+      if (window.google) {
+        initGoogle();
+      } else {
+        script.addEventListener("load", initGoogle);
       }
     }
+
+    return () => {
+      if (script) {
+        script.removeEventListener("load", initGoogle);
+      }
+    };
   }, [theme, isGoogleConfigured]);
 
   async function handleSubmit(e) {

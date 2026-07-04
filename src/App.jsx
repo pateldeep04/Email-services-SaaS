@@ -5,7 +5,7 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 
-const HomePage = lazy(() => import("./pages/HomePage.jsx").then(m => ({ default: m.HomePage })));
+import { HomePage } from "./pages/HomePage.jsx";
 const LoginPage = lazy(() => import("./pages/LoginPage.jsx").then(m => ({ default: m.LoginPage })));
 const RegisterPage = lazy(() => import("./pages/RegisterPage.jsx").then(m => ({ default: m.RegisterPage })));
 const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx").then(m => ({ default: m.DashboardPage })));
