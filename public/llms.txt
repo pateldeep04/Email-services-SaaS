@@ -1,0 +1,9 @@
+# MailBridge
+
+MailBridge is a free, high-performance transactional email and SMS API. Relay automated emails and SMS verification codes directly using Gmail SMTP with zero vendor costs.
+
+## Key Resources
+- [Home Page](https://mail-bridge.email/)
+- [API Documentation](https://mail-bridge.email/docs)
+- [Login Portal](https://mail-bridge.email/login)
+- [Registration Portal](https://mail-bridge.email/register)
