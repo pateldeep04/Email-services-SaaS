@@ -24,7 +24,8 @@ export function RegisterPage() {
   useSEO({
     title: "Create Account | MailBridge",
     description: "Sign up for MailBridge to start sending transactional emails and SMS verifications via Gmail SMTP with zero platform fees.",
-    keywords: "register mailbridge, create mailbridge account, email api signup"
+    keywords: "register mailbridge, create mailbridge account, email api signup",
+    noindex: true
   });
 
   const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== "google-client-id-placeholder";

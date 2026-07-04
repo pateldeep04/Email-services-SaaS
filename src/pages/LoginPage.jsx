@@ -18,7 +18,8 @@ export function LoginPage() {
   useSEO({
     title: "Login | MailBridge",
     description: "Access your MailBridge account to manage your API keys, configure SMTP settings, view delivery logs, and set up your SMS gateway.",
-    keywords: "login mailbridge, email api login, mailbridge portal"
+    keywords: "login mailbridge, email api login, mailbridge portal",
+    noindex: true
   });
 
   const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== "google-client-id-placeholder";

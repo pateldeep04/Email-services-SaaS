@@ -60,6 +60,7 @@ if (!global.fetch) {
 }
 
 import express from "express";
+import fs from "fs";
 import cors from "cors";
 import mongoose from "mongoose";
 import dns from "dns";
@@ -158,13 +159,44 @@ app.use("/api/v1/ai", aiRoutes);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+let indexHtmlCache = null;
+
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../dist")));
-  app.get("/*splat", (req, res, next) => {
+  app.use(express.static(path.join(__dirname, "../dist"), { index: false }));
+  app.get("/{*splat}", (req, res, next) => {
     if (req.path.startsWith("/api/")) {
       return next();
     }
-    res.sendFile(path.resolve(__dirname, "../dist", "index.html"));
+    const indexPath = path.resolve(__dirname, "../dist", "index.html");
+    if (!indexHtmlCache) {
+      try {
+        indexHtmlCache = fs.readFileSync(indexPath, "utf8");
+      } catch (err) {
+        return next(err);
+      }
+    }
+    const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+    const host = req.get("host") || "mail-bridge.email";
+    
+    // Normalize path: strip trailing slash except for root '/'
+    let cleanPath = req.path;
+    if (cleanPath.length > 1 && cleanPath.endsWith("/")) {
+      cleanPath = cleanPath.slice(0, -1);
+    }
+    const canonicalUrl = `${protocol}://${host}${cleanPath}`;
+    
+    let responseHtml = indexHtmlCache;
+    const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*\/?>/i;
+    const replacement = `<link rel="canonical" href="${canonicalUrl}" />`;
+    
+    if (canonicalRegex.test(responseHtml)) {
+      responseHtml = responseHtml.replace(canonicalRegex, replacement);
+    } else {
+      responseHtml = responseHtml.replace("</head>", `  ${replacement}\n  </head>`);
+    }
+    
+    res.setHeader("Content-Type", "text/html");
+    res.send(responseHtml);
   });
 }
 

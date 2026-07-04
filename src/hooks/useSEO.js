@@ -54,7 +54,15 @@ export function useSEO({
       link.setAttribute("rel", "canonical");
       document.head.appendChild(link);
     }
-    link.setAttribute("href", canonical || window.location.href);
+    
+    // Normalize path: strip trailing slashes (except root '/') and search params
+    const pathname = window.location.pathname;
+    const cleanPath = pathname.length > 1 && pathname.endsWith("/") 
+      ? pathname.slice(0, -1) 
+      : pathname;
+    const derivedCanonical = window.location.origin + cleanPath;
+    
+    link.setAttribute("href", canonical || derivedCanonical);
 
   }, [title, description, keywords, canonical, ogTitle, ogDescription, ogImage, ogUrl, ogType, noindex]);
 }
