@@ -1065,5 +1065,14 @@ html.light .tester-ai-note {
     flex-direction: column;
     gap: 12px;
   }
+  .api-key-header {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+  .save-template-inline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
 }
 

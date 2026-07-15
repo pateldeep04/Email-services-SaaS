@@ -75,9 +75,9 @@ export function TesterPage() {
       title: "Simple Email",
       method: "POST",
       path: "/api/v1/emails/simple",
-      body: { 
-        to: user?.email || "test@example.com", 
-        subject: "Important Account Update", 
+      body: {
+        to: user?.email || "test@example.com",
+        subject: "Important Account Update",
         message: "Please click the button below to verify your changes.",
         buttonText: "Verify Now",
         buttonUrl: "https://yourdomain.com/verify"
@@ -246,7 +246,7 @@ export function TesterPage() {
         }
 
         setPayload(JSON.stringify(currentPayloadObj, null, 2));
-        
+
         if (data.isMock) {
           setAiNote(data.note);
         } else {
@@ -314,264 +314,264 @@ export function TesterPage() {
           </div>
         </div>
       ) : (
-      <div className="tester-container">
-        <div className="tester-sidebar">
-          <h3>Endpoints</h3>
-          <div className="endpoints-list">
-            {endpoints.map((ep) => (
-              <button
-                key={ep.id}
-                className={`endpoint-btn ${selected.id === ep.id ? "active" : ""}`}
-                onClick={() => selectEndpoint(ep)}
-              >
-                <span className="method">{ep.method}</span>
-                <span className="title">{ep.title}</span>
-              </button>
-            ))}
-          </div>
+        <div className="tester-container">
+          <div className="tester-sidebar">
+            <h3>Endpoints</h3>
+            <div className="endpoints-list">
+              {endpoints.map((ep) => (
+                <button
+                  key={ep.id}
+                  className={`endpoint-btn ${selected.id === ep.id ? "active" : ""}`}
+                  onClick={() => selectEndpoint(ep)}
+                >
+                  <span className="method">{ep.method}</span>
+                  <span className="title">{ep.title}</span>
+                </button>
+              ))}
+            </div>
 
-          <div className="tester-sidebar-section" style={{ marginTop: "32px" }}>
-            <h3>My Templates</h3>
-            <div className="templates-list">
-              {savedTemplates.length === 0 ? (
-                <div className="empty-templates-text">
-                  No saved templates yet. Edit the body and click "Save Template" to store one.
-                </div>
-              ) : (
-                savedTemplates.map((tmpl) => (
-                  <div key={tmpl.id} className="template-item-row">
-                    <button
-                      className="template-select-btn"
-                      onClick={() => handleSelectTemplate(tmpl)}
-                    >
-                      <span className="template-badge">{tmpl.endpointId}</span>
-                      <span className="template-name" title={tmpl.name}>{tmpl.name}</span>
-                    </button>
-                    <button
-                      className="template-delete-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteTemplate(tmpl.id);
-                      }}
-                      title="Delete Template"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+            <div className="tester-sidebar-section" style={{ marginTop: "32px" }}>
+              <h3>My Templates</h3>
+              <div className="templates-list">
+                {savedTemplates.length === 0 ? (
+                  <div className="empty-templates-text">
+                    No saved templates yet. Edit the body and click "Save Template" to store one.
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="tester-main">
-          {/* Sender Info Card */}
-          <div className="sender-info-card">
-            <div className="info-item">
-              <label>From (Sender)</label>
-              <div className="sender-email">
-                <Mail size={16} />
-                <span>{user?.email}</span>
-              </div>
-            </div>
-            <div className="info-item">
-              <label>Sending From Account</label>
-              <div className="account-name">{user?.name}</div>
-            </div>
-          </div>
-
-          <div className="tester-section">
-            <div className="section-header">
-              <h3>Request</h3>
-              <div className="endpoint-info">
-                <span className="method">{selected.method}</span>
-                <code>{selected.path}</code>
-              </div>
-            </div>
-
-            <div className="form-section">
-              <label>Headers</label>
-              <div className="headers-display">
-                <div>Content-Type: application/json</div>
-                <div className="api-key-header">
-                  x-api-key: <code>{apiKey || "your-api-key"}</code>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px" }}>
-                <label style={{ margin: 0 }}>Request Body</label>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <button
-                    type="button"
-                    className="btn-ai-trigger-inline"
-                    onClick={() => setShowAiAssist(!showAiAssist)}
-                    style={{ padding: "4px 8px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}
-                  >
-                    <Sparkles size={14} /> AI Assist
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => setShowSaveForm(!showSaveForm)}
-                    style={{ padding: "4px 8px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}
-                  >
-                    <Plus size={14} /> Save Template
-                  </button>
-                </div>
-              </div>
-
-              {showAiAssist && (
-                <div className="tester-ai-container">
-                  <div className="tester-ai-title">
-                    <Sparkles size={16} /> AI Writing Assistant
-                  </div>
-                  
-                  <div className="tester-ai-form-group full" style={{ marginBottom: "12px" }}>
-                    <label>What should this email be about?</label>
-                    <input 
-                      type="text"
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      placeholder="e.g. maintenance alert this Sunday from 2 to 4 AM"
-                      className="tester-ai-input"
-                    />
-                  </div>
-
-                  <div className="tester-ai-row">
-                    <div className="tester-ai-form-group">
-                      <label>Tone</label>
-                      <select 
-                        value={aiTone} 
-                        onChange={(e) => setAiTone(e.target.value)}
-                        className="tester-ai-select"
+                ) : (
+                  savedTemplates.map((tmpl) => (
+                    <div key={tmpl.id} className="template-item-row">
+                      <button
+                        className="template-select-btn"
+                        onClick={() => handleSelectTemplate(tmpl)}
                       >
-                        <option value="Professional">Professional</option>
-                        <option value="Friendly">Friendly</option>
-                        <option value="Casual">Casual</option>
-                        <option value="Urgent">Urgent</option>
-                        <option value="Persuasive">Persuasive</option>
-                      </select>
+                        <span className="template-badge">{tmpl.endpointId}</span>
+                        <span className="template-name" title={tmpl.name}>{tmpl.name}</span>
+                      </button>
+                      <button
+                        className="template-delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTemplate(tmpl.id);
+                        }}
+                        title="Delete Template"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
-                  </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
 
-                  <div className="tester-ai-actions">
-                    <button 
-                      type="button" 
-                      onClick={() => setShowAiAssist(false)}
-                      className="btn-tester-ai-cancel"
+          <div className="tester-main">
+            {/* Sender Info Card */}
+            <div className="sender-info-card">
+              <div className="info-item">
+                <label>From (Sender)</label>
+                <div className="sender-email">
+                  <Mail size={16} />
+                  <span>{user?.email}</span>
+                </div>
+              </div>
+              <div className="info-item">
+                <label>Sending From Account</label>
+                <div className="account-name">{user?.name}</div>
+              </div>
+            </div>
+
+            <div className="tester-section">
+              <div className="section-header">
+                <h3>Request</h3>
+                <div className="endpoint-info">
+                  <span className="method">{selected.method}</span>
+                  <code>{selected.path}</code>
+                </div>
+              </div>
+
+              <div className="form-section">
+                <label>Headers</label>
+                <div className="headers-display">
+                  <div>Content-Type: application/json</div>
+                  <div className="api-key-header">
+                    x-api-key: <code>{apiKey || "your-api-key"}</code>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", flexWrap: "wrap", gap: "8px" }}>
+                  <label style={{ margin: 0 }}>Request Body</label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      type="button"
+                      className="btn-ai-trigger-inline"
+                      onClick={() => setShowAiAssist(!showAiAssist)}
+                      style={{ padding: "4px 8px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}
                     >
+                      <Sparkles size={14} /> AI Assist
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setShowSaveForm(!showSaveForm)}
+                      style={{ padding: "4px 8px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                    >
+                      <Plus size={14} /> Save Template
+                    </button>
+                  </div>
+                </div>
+
+                {showAiAssist && (
+                  <div className="tester-ai-container">
+                    <div className="tester-ai-title">
+                      <Sparkles size={16} /> AI Writing Assistant
+                    </div>
+
+                    <div className="tester-ai-form-group full" style={{ marginBottom: "12px" }}>
+                      <label>What should this email be about?</label>
+                      <input
+                        type="text"
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        placeholder="e.g. maintenance alert this Sunday from 2 to 4 AM"
+                        className="tester-ai-input"
+                      />
+                    </div>
+
+                    <div className="tester-ai-row">
+                      <div className="tester-ai-form-group">
+                        <label>Tone</label>
+                        <select
+                          value={aiTone}
+                          onChange={(e) => setAiTone(e.target.value)}
+                          className="tester-ai-select"
+                        >
+                          <option value="Professional">Professional</option>
+                          <option value="Friendly">Friendly</option>
+                          <option value="Casual">Casual</option>
+                          <option value="Urgent">Urgent</option>
+                          <option value="Persuasive">Persuasive</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="tester-ai-actions">
+                      <button
+                        type="button"
+                        onClick={() => setShowAiAssist(false)}
+                        className="btn-tester-ai-cancel"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleAiGenerate}
+                        disabled={generatingAi || !aiPrompt.trim()}
+                        className="btn-tester-ai-generate"
+                      >
+                        {generatingAi ? "Generating..." : "Generate Content"}
+                      </button>
+                    </div>
+
+                    {aiNote && (
+                      <div className="tester-ai-note">
+                        <AlertCircle size={14} style={{ flexShrink: 0, marginTop: "2px" }} />
+                        <span>{aiNote}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {showSaveForm && (
+                  <div className="save-template-inline">
+                    <input
+                      type="text"
+                      placeholder="Template Name (e.g. Welcome Test)"
+                      value={templateName}
+                      onChange={(e) => setTemplateName(e.target.value)}
+                      className="template-name-input"
+                    />
+                    <button onClick={handleSaveTemplate} className="btn btn-primary btn-sm">
+                      Save
+                    </button>
+                    <button onClick={() => setShowSaveForm(false)} className="btn btn-secondary btn-sm">
                       Cancel
                     </button>
-                    <button 
-                      type="button" 
-                      onClick={handleAiGenerate}
-                      disabled={generatingAi || !aiPrompt.trim()}
-                      className="btn-tester-ai-generate"
-                    >
-                      {generatingAi ? "Generating..." : "Generate Content"}
+                  </div>
+                )}
+
+                <textarea
+                  value={payload}
+                  onChange={(e) => setPayload(e.target.value)}
+                  className="code-input"
+                />
+
+                <label style={{ marginTop: "20px" }}>cURL Command</label>
+                <div className="code-block-container">
+                  <div className="code-block-header">
+                    <span>Shell Command</span>
+                    <button className="code-block-copy-btn" onClick={copyToClipboard} title="Copy cURL">
+                      <Copy size={12} />
+                      {copied ? "Copied!" : "Copy cURL"}
                     </button>
                   </div>
-
-                  {aiNote && (
-                    <div className="tester-ai-note">
-                      <AlertCircle size={14} style={{ flexShrink: 0, marginTop: "2px" }} />
-                      <span>{aiNote}</span>
-                    </div>
-                  )}
+                  <div className="code-block-body overflow-x">
+                    <pre>{curl}</pre>
+                  </div>
                 </div>
-              )}
 
-              {showSaveForm && (
-                <div className="save-template-inline">
-                  <input
-                    type="text"
-                    placeholder="Template Name (e.g. Welcome Test)"
-                    value={templateName}
-                    onChange={(e) => setTemplateName(e.target.value)}
-                    className="template-name-input"
-                  />
-                  <button onClick={handleSaveTemplate} className="btn btn-primary btn-sm">
-                    Save
-                  </button>
-                  <button onClick={() => setShowSaveForm(false)} className="btn btn-secondary btn-sm">
-                    Cancel
-                  </button>
-                </div>
-              )}
+                <button
+                  className="btn btn-primary"
+                  onClick={runRequest}
+                  disabled={loading}
+                  style={{ marginTop: "20px", width: "100%" }}
+                >
+                  <Send size={18} /> {loading ? "Sending..." : "Send Request"}
+                </button>
+              </div>
+            </div>
 
-              <textarea
-                value={payload}
-                onChange={(e) => setPayload(e.target.value)}
-                className="code-input"
-              />
-
-              <label style={{ marginTop: "20px" }}>cURL Command</label>
-              <div className="code-block-container">
-                <div className="code-block-header">
-                  <span>Shell Command</span>
-                  <button className="code-block-copy-btn" onClick={copyToClipboard} title="Copy cURL">
-                    <Copy size={12} />
-                    {copied ? "Copied!" : "Copy cURL"}
-                  </button>
-                </div>
-                <div className="code-block-body overflow-x">
-                  <pre>{curl}</pre>
-                </div>
+            <div className="tester-section">
+              <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h3>Response</h3>
+                {responseStatus && (
+                  <span className={`status-badge ${responseStatus.code >= 200 && responseStatus.code < 300 ? "success" : "error"}`}>
+                    {responseStatus.code} {responseStatus.text}
+                  </span>
+                )}
               </div>
 
-              <button
-                className="btn btn-primary"
-                onClick={runRequest}
-                disabled={loading}
-                style={{ marginTop: "20px", width: "100%" }}
-              >
-                <Send size={18} /> {loading ? "Sending..." : "Send Request"}
-              </button>
-            </div>
-          </div>
-
-          <div className="tester-section">
-            <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3>Response</h3>
-              {responseStatus && (
-                <span className={`status-badge ${responseStatus.code >= 200 && responseStatus.code < 300 ? "success" : "error"}`}>
-                  {responseStatus.code} {responseStatus.text}
-                </span>
-              )}
-            </div>
-            
-            <div className="response-container">
-              {!response ? (
-                <div className="empty-state">
-                  <AlertCircle size={32} />
-                  <p>Send a request to see the response here</p>
-                </div>
-              ) : (
-                <div className="code-block-container" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                  <div className="code-block-header">
-                    <span>JSON Response</span>
-                    <button 
-                      className="code-block-copy-btn" 
-                      onClick={() => {
-                        navigator.clipboard.writeText(response);
-                        setResponseCopied(true);
-                        setTimeout(() => setResponseCopied(false), 2000);
-                      }}
-                      title="Copy Response"
-                    >
-                      <Copy size={12} />
-                      {responseCopied ? "Copied!" : "Copy Response"}
-                    </button>
+              <div className="response-container">
+                {!response ? (
+                  <div className="empty-state">
+                    <AlertCircle size={32} />
+                    <p>Send a request to see the response here</p>
                   </div>
-                  <div className="code-block-body" style={{ flex: 1, overflow: "auto" }}>
-                    <pre>{response}</pre>
+                ) : (
+                  <div className="code-block-container" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                    <div className="code-block-header">
+                      <span>JSON Response</span>
+                      <button
+                        className="code-block-copy-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(response);
+                          setResponseCopied(true);
+                          setTimeout(() => setResponseCopied(false), 2000);
+                        }}
+                        title="Copy Response"
+                      >
+                        <Copy size={12} />
+                        {responseCopied ? "Copied!" : "Copy Response"}
+                      </button>
+                    </div>
+                    <div className="code-block-body" style={{ flex: 1, overflow: "auto" }}>
+                      <pre>{response}</pre>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
       )}
     </div>
   );

@@ -153,12 +153,36 @@ const endpoints = [
 
 export function DocumentationPage() {
   const [copied, setCopied] = React.useState(null);
+  const [activeId, setActiveId] = React.useState("auth");
 
   useSEO({
     title: "API Documentation | MailBridge",
     description: "MailBridge API documentation. Learn how to configure endpoints for sending OTPs, verifications, welcome emails, password resets, and carrier SMS relays.",
     keywords: "mailbridge docs, email api documentation, sms api docs, verify otp endpoint, free email relay docs"
   });
+
+  React.useEffect(() => {
+    const sections = document.querySelectorAll(".doc-section");
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -60% 0px",
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveId(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
 
   const copyToClipboard = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -177,14 +201,20 @@ export function DocumentationPage() {
         <div className="docs-nav">
           <div className="nav-section">
             <h3>Getting Started</h3>
-            <a href="#auth">Authentication</a>
-            <a href="#headers">Headers</a>
-            <a href="#errors">Errors</a>
+            <a href="#auth" className={activeId === "auth" ? "active" : ""}>Authentication</a>
+            <a href="#headers" className={activeId === "headers" ? "active" : ""}>Headers</a>
+            <a href="#errors" className={activeId === "errors" ? "active" : ""}>Errors</a>
           </div>
           <div className="nav-section">
             <h3>Endpoints</h3>
             {endpoints.map((ep) => (
-              <a key={ep.path} href={`#${ep.path}`}>{ep.title}</a>
+              <a 
+                key={ep.path} 
+                href={`#${ep.path}`} 
+                className={activeId === ep.path ? "active" : ""}
+              >
+                {ep.title}
+              </a>
             ))}
           </div>
         </div>
@@ -206,55 +236,59 @@ export function DocumentationPage() {
 
           <div className="doc-section" id="headers">
             <h2>Request Headers</h2>
-            <table className="headers-table">
-              <thead>
-                <tr>
-                  <th>Header</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Content-Type</td>
-                  <td>application/json</td>
-                </tr>
-                <tr>
-                  <td>x-api-key</td>
-                  <td>Your API key</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="table-responsive">
+              <table className="headers-table">
+                <thead>
+                  <tr>
+                    <th>Header</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Content-Type</td>
+                    <td>application/json</td>
+                  </tr>
+                  <tr>
+                    <td>x-api-key</td>
+                    <td>Your API key</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div className="doc-section" id="errors">
             <h2>Error Responses</h2>
             <p>The API returns standard HTTP status codes:</p>
-            <table className="errors-table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Meaning</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>200</td>
-                  <td>Success</td>
-                </tr>
-                <tr>
-                  <td>400</td>
-                  <td>Bad request (invalid parameters)</td>
-                </tr>
-                <tr>
-                  <td>401</td>
-                  <td>Unauthorized (missing or invalid API key)</td>
-                </tr>
-                <tr>
-                  <td>500</td>
-                  <td>Server error</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="table-responsive">
+              <table className="errors-table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>200</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <td>400</td>
+                    <td>Bad request (invalid parameters)</td>
+                  </tr>
+                  <tr>
+                    <td>401</td>
+                    <td>Unauthorized (missing or invalid API key)</td>
+                  </tr>
+                  <tr>
+                    <td>500</td>
+                    <td>Server error</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {endpoints.map((endpoint) => (

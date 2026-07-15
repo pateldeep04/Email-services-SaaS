@@ -97,16 +97,26 @@
   color: #9ca3af;
   text-decoration: none;
   border-radius: 8px;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 6px;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 3px solid transparent;
 }
 
 .nav-section a:hover {
   background: rgba(20, 184, 166, 0.08);
   color: #2dd4bf;
   transform: translateX(4px);
+}
+
+/* ScrollSpy Active State */
+.nav-section a.active {
+  background: rgba(20, 184, 166, 0.12);
+  color: #2dd4bf;
+  border-left-color: #14b8a6;
+  border-radius: 0 8px 8px 0;
+  font-weight: 700;
 }
 
 .docs-main {
@@ -116,6 +126,8 @@
   padding: 48px;
   backdrop-filter: blur(16px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .doc-section {
@@ -271,6 +283,12 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media (max-width: 1024px) {
   .docs-content {
     grid-template-columns: 240px 1fr;
@@ -281,20 +299,100 @@
 @media (max-width: 768px) {
   .docs-content {
     grid-template-columns: 1fr;
-    padding: 30px 16px;
+    padding: 20px 16px;
   }
 
   .docs-nav {
-    position: static;
+    position: sticky;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    z-index: 90;
     margin-bottom: 24px;
+    padding: 12px;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    scrollbar-width: none;
+    align-self: start;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .docs-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .nav-section h3 {
+    margin: 0 10px 0 0;
+    font-size: 11px;
+    color: #14b8a6;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-section a {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 13.5px;
+    margin-bottom: 0;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav-section a:hover {
+    transform: none;
+    background: transparent;
+    color: #2dd4bf;
+  }
+
+  .nav-section a.active {
+    background: transparent;
+    color: #2dd4bf;
+    border-radius: 0;
+    border-bottom-color: #14b8a6;
+    font-weight: 700;
   }
 
   .docs-main {
-    padding: 30px 20px;
+    padding: 20px 12px;
+  }
+  
+  .headers-table,
+  .errors-table {
+    min-width: 460px;
   }
   
   .docs-header h1 {
     font-size: 32px;
+  }
+
+  .endpoint-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .endpoint-header .path {
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  .code-block {
+    padding: 14px 10px;
   }
 }
 
@@ -329,6 +427,14 @@ html.light .docs-nav {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
+@media (max-width: 768px) {
+  html.light .docs-nav {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+}
+
 html.light .nav-section h3 {
   color: #0f766e;
 }
@@ -340,6 +446,19 @@ html.light .nav-section a {
 html.light .nav-section a:hover {
   background: rgba(15, 118, 110, 0.08);
   color: #0f766e;
+}
+
+html.light .nav-section a.active {
+  background: rgba(15, 118, 110, 0.08);
+  color: #0f766e;
+  border-left-color: #0f766e;
+}
+
+@media (max-width: 768px) {
+  html.light .nav-section a.active {
+    background: transparent;
+    border-bottom-color: #0f766e;
+  }
 }
 
 html.light .docs-main {

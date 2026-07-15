@@ -1012,16 +1012,34 @@
 
 @media (max-width: 768px) {
   .hero-title {
-    font-size: 42px;
+    font-size: 38px;
   }
   .cta-banner-content h2 {
-    font-size: 28px;
+    font-size: 26px;
+  }
+  .services-tab-content {
+    padding: 24px 16px;
+  }
+  .services-tab-btn {
+    padding: 12px 18px;
+    font-size: 13.5px;
+  }
+  .sandbox-viewer-card {
+    min-height: auto;
+  }
+  .preview-body-email-scroller {
+    overflow-x: auto;
   }
 }
 
 @media (max-width: 576px) {
   .hero-title {
-    font-size: 34px;
+    font-size: 32px;
+  }
+  .hero-cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
   }
   .btn-hero-primary,
   .btn-hero-secondary {
@@ -1029,7 +1047,7 @@
     justify-content: center;
   }
   .sandbox-controls-card {
-    padding: 20px;
+    padding: 16px;
   }
   .sandbox-inputs-grid {
     grid-template-columns: 1fr;
@@ -1040,6 +1058,22 @@
   .dashboard-metrics-summary-row {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+  .services-hub-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .services-tab-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .cta-buttons-row {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+  }
+  .cta-buttons-row a.btn {
+    width: 100%;
   }
 }
 

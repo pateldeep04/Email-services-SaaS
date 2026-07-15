@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Mail, LogOut, Sun, Moon, Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -39,6 +39,11 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
   const isActive = (path) => location.pathname === path ? "active" : "";
 
   const handleLinkClick = () => setIsMenuOpen(false);
@@ -48,9 +53,9 @@ export function Navbar() {
   };
 
   return (
-    <nav className="navbar">
-      <div className="nav-container">
-        <Link to="/" className="nav-brand" onClick={handleLinkClick}>
+    <nav className="app-navbar">
+      <div className="app-nav-container">
+        <Link to="/" className="app-nav-brand" onClick={handleLinkClick}>
           <MailBridgeLogo size={24} />
           <span>MailBridge</span>
         </Link>
@@ -64,31 +69,33 @@ export function Navbar() {
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <div className={`nav-menu-wrapper ${isMenuOpen ? "open" : ""}`}>
-          <div className="nav-links">
-            <Link to="/" className={`nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
-            <Link to="/docs" className={`nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
-            <Link to="/tester" className={`nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
-          </div>
+        <div className={`app-nav-menu-wrapper ${isMenuOpen ? "open" : ""}`}>
+          <div className="nav-menu-content">
+            <div className="app-nav-links">
+              <Link to="/" className={`app-nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
+              <Link to="/docs" className={`app-nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
+              <Link to="/tester" className={`app-nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
+            </div>
 
-          <div className="nav-auth">
-            <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            {user ? (
-              <>
-                <span className="user-name">{user.name}</span>
-                <Link to="/dashboard" className={`nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
-                <button className="logout-btn" onClick={handleLogoutClick}>
-                  <LogOut size={18} /> Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className={`nav-link ${isActive("/login")}`} onClick={handleLinkClick}>Login</Link>
-                <Link to="/register" className="nav-button register-btn" onClick={handleLinkClick}>Register</Link>
-              </>
-            )}
+            <div className="app-nav-auth">
+              <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
+                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+              {user ? (
+                <>
+                  <span className="user-name">{user.name}</span>
+                  <Link to="/dashboard" className={`app-nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
+                  <button className="logout-btn" onClick={handleLogoutClick}>
+                    <LogOut size={18} /> Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className={`app-nav-link ${isActive("/login")}`} onClick={handleLinkClick}>Login</Link>
+                  <Link to="/register" className="app-nav-button register-btn" onClick={handleLinkClick}>Register</Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

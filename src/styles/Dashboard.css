@@ -3032,6 +3032,17 @@ html.dark .otp-verify-input:focus {
     flex-direction: column;
     gap: 12px;
   }
+
+  /* Generate Key form stack */
+  .generate-key-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .generate-key-form input,
+  .generate-key-form button {
+    width: 100% !important;
+  }
 }
 
 /* ==========================================
