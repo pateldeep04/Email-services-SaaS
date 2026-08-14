@@ -13,7 +13,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5000
-      - MONGO_URI=mongodb://mongo:27017/mailbridge
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/mailbridge}
       - JWT_SECRET=${JWT_SECRET:-supersecretkey_change_me_in_prod}
       - GMAIL_USER=${GMAIL_USER:-}
       - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
