@@ -6,3 +6,4 @@ node_modules
 .DS_Store
 .agents/
 .claude/
+DOCKER_DEPLOYMENT.md

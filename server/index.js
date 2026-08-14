@@ -211,9 +211,10 @@ app.use((err, _req, res, _next) => {
 });
 
 async function start() {
-  if (process.env.MONGO_URI) {
+  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+  if (mongoUri) {
     try {
-      await mongoose.connect(process.env.MONGO_URI);
+      await mongoose.connect(mongoUri);
       console.log("MongoDB connected");
     } catch (error) {
       let connected = false;
@@ -225,7 +226,7 @@ async function start() {
         console.warn("MongoDB connection failed due to DNS issue. Retrying with public DNS servers...");
         try {
           dns.setServers(["8.8.8.8", "1.1.1.1"]);
-          await mongoose.connect(process.env.MONGO_URI);
+          await mongoose.connect(mongoUri);
           console.log("MongoDB connected (via public DNS fallback)");
           connected = true;
         } catch (retryError) {
