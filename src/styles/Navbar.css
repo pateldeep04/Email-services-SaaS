@@ -163,6 +163,12 @@ html.dark .theme-toggle-btn:hover {
   display: contents;
 }
 
+.nav-menu-content {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
 @media (max-width: 768px) {
   .app-navbar {
     position: sticky;
@@ -227,6 +233,13 @@ html.dark .theme-toggle-btn:hover {
 
   .app-nav-menu-wrapper.open {
     display: flex;
+  }
+
+  .nav-menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
   }
 
   html.dark .app-nav-menu-wrapper {
