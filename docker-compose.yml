@@ -21,9 +21,6 @@ services:
       - GMAIL_USER=${GMAIL_USER:-}
       - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
       - CLIENT_URL=${CLIENT_URL:-}
-    depends_on:
-      mongo:
-        condition: service_healthy
 
   mongo:
     image: mongo:6.0
