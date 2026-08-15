@@ -7,7 +7,6 @@ services:
     container_name: mailbridge-app
     restart: unless-stopped
     ports:
-      - "80:5000"
       - "5000:5000"
     env_file:
       - path: .env
