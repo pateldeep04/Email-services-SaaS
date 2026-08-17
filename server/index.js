@@ -159,22 +159,37 @@ app.use("/api/v1/ai", aiRoutes);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let indexHtmlCache = null;
+const distPath = path.join(__dirname, "../dist");
+const hasDist = fs.existsSync(distPath);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../dist"), { index: false }));
+if (process.env.NODE_ENV === "production" || hasDist) {
+  // Serve static assets from dist folder
+  app.use(express.static(distPath, { index: false }));
+
+  // Prevent catch-all route from returning index.html for missing static assets (.css, .js, images, etc.)
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/assets/") || path.extname(req.path)) {
+      return res.status(404).send("Asset not found");
+    }
+    next();
+  });
+
   app.get("/{*splat}", (req, res, next) => {
     if (req.path.startsWith("/api/")) {
       return next();
     }
-    const indexPath = path.resolve(__dirname, "../dist", "index.html");
-    if (!indexHtmlCache) {
-      try {
-        indexHtmlCache = fs.readFileSync(indexPath, "utf8");
-      } catch (err) {
-        return next(err);
-      }
+    const indexPath = path.resolve(distPath, "index.html");
+    if (!fs.existsSync(indexPath)) {
+      return next();
     }
+
+    let responseHtml;
+    try {
+      responseHtml = fs.readFileSync(indexPath, "utf8");
+    } catch (err) {
+      return next(err);
+    }
+
     const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
     const host = req.get("host") || "mail-bridge.email";
     
@@ -185,7 +200,6 @@ if (process.env.NODE_ENV === "production") {
     }
     const canonicalUrl = `${protocol}://${host}${cleanPath}`;
     
-    let responseHtml = indexHtmlCache;
     const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*\/?>/i;
     const replacement = `<link rel="canonical" href="${canonicalUrl}" />`;
     
@@ -198,6 +212,8 @@ if (process.env.NODE_ENV === "production") {
     res.setHeader("Content-Type", "text/html");
     res.send(responseHtml);
   });
+} else {
+  console.warn("⚠️ Production build folder (dist) not found. Run 'npm run build' to generate frontend production assets.");
 }
 
 app.use((err, _req, res, _next) => {
