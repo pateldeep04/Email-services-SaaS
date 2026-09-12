@@ -20,6 +20,12 @@ export function requireAuth(req, res, next) {
 
   try {
     req.user = verifyJwtToken(token);
+    if (req.user && req.user.id && !req.user._id) {
+      req.user._id = req.user.id;
+    }
+    if (req.user && req.user._id && !req.user.id) {
+      req.user.id = req.user._id;
+    }
     next();
   } catch (error) {
     return res.status(401).json({ error: "Invalid or expired token." });

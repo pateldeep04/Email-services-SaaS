@@ -32,10 +32,9 @@ const getApiUrl = () => {
         return window.location.origin;
       }
     }
-    // Match something like "prefix-5173.something.devtunnels.ms"
-    const match = hostname.match(/^(.+)-(517\d)\.(.+devtunnels\.ms)$/);
-    if (match) {
-      return `${window.location.protocol}//${match[1]}-5000.${match[3]}`;
+    // On local machine, always route to local backend on port 5000
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return `${window.location.protocol}//${hostname}:5000`;
     }
 
     if (window.location.port && window.location.port.startsWith("517")) {

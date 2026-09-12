@@ -11,6 +11,7 @@ const RegisterPage = lazy(() => import("./pages/RegisterPage.jsx").then(m => ({ 
 const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx").then(m => ({ default: m.DashboardPage })));
 const DocumentationPage = lazy(() => import("./pages/DocumentationPage.jsx").then(m => ({ default: m.DocumentationPage })));
 const TesterPage = lazy(() => import("./pages/TesterPage.jsx").then(m => ({ default: m.TesterPage })));
+const BulkMailerPage = lazy(() => import("./pages/BulkMailerPage.jsx").then(m => ({ default: m.BulkMailerPage })));
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/bulk-mail" element={<BulkMailerPage />} />
               <Route path="/docs" element={<DocumentationPage />} />
               <Route path="/tester" element={<TesterPage />} />
               <Route path="*" element={<Navigate to="/" />} />

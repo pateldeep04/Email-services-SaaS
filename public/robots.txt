@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /bulk-mail
 Allow: /docs
 Allow: /login
 Allow: /register
@@ -7,3 +8,4 @@ Disallow: /dashboard
 Disallow: /tester
 
 Sitemap: https://mail-bridge.email/sitemap.xml
+

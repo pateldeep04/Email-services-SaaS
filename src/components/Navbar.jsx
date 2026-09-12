@@ -73,6 +73,7 @@ export function Navbar() {
           <div className="nav-menu-content">
             <div className="app-nav-links">
               <Link to="/" className={`app-nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
+              <Link to="/bulk-mail" className={`app-nav-link ${isActive("/bulk-mail")}`} onClick={handleLinkClick}>Bulk Mailer</Link>
               <Link to="/docs" className={`app-nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
               <Link to="/tester" className={`app-nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
             </div>

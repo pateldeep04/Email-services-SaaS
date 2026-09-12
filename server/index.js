@@ -71,10 +71,21 @@ import authRoutes from "./routes/authRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
 import smsRoutes from "./routes/smsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import campaignRoutes from "./routes/campaignRoutes.js";
 import { createRateLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// Production Security Headers
+app.disable("x-powered-by");
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  next();
+});
 
 function isAllowedCorsOrigin(origin) {
   if (!origin || origin === "null") {
@@ -155,6 +166,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/emails", emailRoutes);
 app.use("/api/v1/sms", smsRoutes);
 app.use("/api/v1/ai", aiRoutes);
+app.use("/api/v1/campaigns", campaignRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -163,8 +175,16 @@ const distPath = path.join(__dirname, "../dist");
 const hasDist = fs.existsSync(distPath);
 
 if (process.env.NODE_ENV === "production" || hasDist) {
-  // Serve static assets from dist folder
-  app.use(express.static(distPath, { index: false }));
+  // Serve static assets with high-performance immutable caching
+  app.use(express.static(distPath, {
+    index: false,
+    maxAge: "1d",
+    setHeaders: (res, filePath) => {
+      if (filePath.includes(path.sep + "assets" + path.sep)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+    }
+  }));
 
   // Prevent catch-all route from returning index.html for missing static assets (.css, .js, images, etc.)
   app.use((req, res, next) => {
@@ -200,6 +220,78 @@ if (process.env.NODE_ENV === "production" || hasDist) {
     }
     const canonicalUrl = `${protocol}://${host}${cleanPath}`;
     
+    const ROUTE_METADATA = {
+      "/": {
+        title: "MailBridge | Free Transactional Email & SMS API via Gmail",
+        description: "MailBridge is a free, high-performance transactional email and SMS API. Use your Gmail SMTP server as a secure transactional email relay for OTPs, password resets, and marketing campaigns with zero vendor fees.",
+        keywords: "transactional email API, bulk mailer saas, free email api, gmail smtp relay, email gateway, sms gateway, otp verification, cold email outreach, csv email sender, excel mail merge, developer email service, lead tracking pipeline, mailbridge"
+      },
+      "/bulk-mail": {
+        title: "Bulk Mailer & Cold Email Lead Generation SaaS | Free Gmail Relay | MailBridge",
+        description: "Send personalized bulk emails via CSV or Excel with free Gmail SMTP relay. Track real-time email opens, qualify hot sales leads, and manage outreach campaigns with zero vendor fees.",
+        keywords: "bulk mailer saas, free bulk email sender, csv email sender, excel mail merge, gmail smtp bulk email, cold outreach tool, email campaign tracker, lead qualification pipeline, personalized bulk email, mailbridge"
+      },
+      "/docs": {
+        title: "API Documentation & Developer Quickstart | MailBridge",
+        description: "Comprehensive MailBridge developer documentation for transactional email and SMS APIs. Includes cURL, Node.js, Python, and Go code snippets.",
+        keywords: "mailbridge docs, email api documentation, sms api docs, verify otp endpoint, free email relay docs, developer email gateway"
+      },
+      "/register": {
+        title: "Create Free Account | MailBridge Email & Bulk Mailer SaaS",
+        description: "Sign up for MailBridge to get instant API keys, connect Gmail SMTP relay, and start sending transactional emails and bulk campaigns for free.",
+        keywords: "mailbridge sign up, create free email api account, free gmail smtp relay account"
+      },
+      "/login": {
+        title: "Login | MailBridge Developer & Bulk Mailer Portal",
+        description: "Sign in to your MailBridge account to manage API keys, view transactional logs, track bulk email campaigns, and monitor lead pipelines.",
+        keywords: "mailbridge login, email api dashboard login, developer portal"
+      }
+    };
+
+    const meta = ROUTE_METADATA[cleanPath] || ROUTE_METADATA["/"];
+    if (meta) {
+      responseHtml = responseHtml.replace(/<title>[^<]*<\/title>/i, `<title>${meta.title}</title>`);
+      responseHtml = responseHtml.replace(
+        /<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta name="description" content="${meta.description}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+name=["']keywords["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta name="keywords" content="${meta.keywords}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+property=["']og:title["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta property="og:title" content="${meta.title}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+name=["']twitter:title["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta name="twitter:title" content="${meta.title}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+property=["']og:description["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta property="og:description" content="${meta.description}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+name=["']twitter:description["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta name="twitter:description" content="${meta.description}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+property=["']og:url["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta property="og:url" content="${canonicalUrl}" />`
+      );
+      responseHtml = responseHtml.replace(
+        /<meta\s+name=["']twitter:url["']\s+content=["'][^"']*["']\s*\/?>/i,
+        `<meta name="twitter:url" content="${canonicalUrl}" />`
+      );
+
+      if (cleanPath.startsWith("/dashboard") || cleanPath.startsWith("/tester")) {
+        responseHtml = responseHtml.replace(
+          /<meta\s+name=["']robots["']\s+content=["'][^"']*["']\s*\/?>/i,
+          `<meta name="robots" content="noindex, nofollow" />`
+        );
+      }
+    }
+
     const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*\/?>/i;
     const replacement = `<link rel="canonical" href="${canonicalUrl}" />`;
     
@@ -210,6 +302,7 @@ if (process.env.NODE_ENV === "production" || hasDist) {
     }
     
     res.setHeader("Content-Type", "text/html");
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     res.send(responseHtml);
   });
 } else {
@@ -264,13 +357,29 @@ async function start() {
   }
 
   if (process.env.NODE_ENV !== "test") {
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`MailBridge API running on http://localhost:${port}`);
     });
+
+    const shutdown = async (signal) => {
+      console.log(`Received ${signal}. Gracefully shutting down...`);
+      server.close(async () => {
+        try {
+          if (mongoose.connection.readyState === 1) {
+            await mongoose.connection.close();
+          }
+        } catch (_) {}
+        process.exit(0);
+      });
+      setTimeout(() => process.exit(1), 5000);
+    };
+
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
   }
 }
 
 start();
 
-export default app; // touch to restart for public IP choice 2
+export default app;
 

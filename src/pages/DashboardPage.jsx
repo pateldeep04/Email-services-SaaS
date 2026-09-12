@@ -2834,8 +2834,15 @@ export function DashboardPage() {
                 <p className="info-value">{apiKeys.length}</p>
               </div>
               <div className="dashboard-shortcuts" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "16px" }}>
+                <a 
+                  href="/bulk-mail" 
+                  className="btn btn-primary" 
+                  style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "8px", background: "var(--primary-color, #0f766e)" }}
+                >
+                  <Mail size={16} /> Bulk Mailer & Campaigns
+                </a>
                 <div style={{ display: "flex", gap: "10px", width: "100%" }}>
-                  <a href="/tester" className="btn btn-primary" style={{ flex: 1, textAlign: "center" }}>Try API Tester</a>
+                  <a href="/tester" className="btn btn-outline" style={{ flex: 1, textAlign: "center" }}>API Tester</a>
                   <a href="/docs" className="btn btn-secondary" style={{ flex: 1, textAlign: "center" }}>Read Docs</a>
                 </div>
                 <button className="btn btn-danger-outline" onClick={handleLogout} style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>

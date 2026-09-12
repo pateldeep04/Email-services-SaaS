@@ -4,6 +4,7 @@ const emailLogs = [];
 const otpTokens = [];
 const users = [];
 const apiKeys = [];
+const campaigns = [];
 
 export const memoryStore = {
   async createLog(log) {
@@ -258,5 +259,125 @@ export const memoryStore = {
       failed,
       byType
     };
+  },
+
+  // Bulk Campaign Methods
+  async createCampaign(campaignData) {
+    const item = {
+      _id: crypto.randomUUID(),
+      userId: campaignData.userId,
+      name: campaignData.name,
+      subject: campaignData.subject,
+      body: campaignData.body,
+      senderName: campaignData.senderName || "",
+      senderEmail: campaignData.senderEmail || "",
+      ctaButtonText: campaignData.ctaButtonText || "",
+      ctaTargetUrl: campaignData.ctaTargetUrl || "",
+      totalRecipients: campaignData.totalRecipients || (campaignData.recipients ? campaignData.recipients.length : 0),
+      sentCount: campaignData.sentCount || 0,
+      failedCount: campaignData.failedCount || 0,
+      openedCount: campaignData.openedCount || 0,
+      clickedCount: campaignData.clickedCount || 0,
+      recipients: (campaignData.recipients || []).map(r => ({
+        ...r,
+        opened: r.opened || false,
+        openCount: r.openCount || 0,
+        openedAt: r.openedAt || null,
+        lastOpenedAt: r.lastOpenedAt || null,
+        clicked: r.clicked || false,
+        clickedAt: r.clickedAt || null,
+        clickCount: r.clickCount || 0
+      })),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    campaigns.unshift(item);
+    return item;
+  },
+
+  async listCampaigns(userId) {
+    return campaigns
+      .filter(c => !userId || String(c.userId) === String(userId))
+      .map(c => {
+        const opened = c.recipients.filter(r => r.opened).length;
+        const clicked = c.recipients.filter(r => r.clicked).length;
+        return {
+          ...c,
+          openedCount: opened,
+          clickedCount: clicked
+        };
+      });
+  },
+
+  async getCampaignById(id, userId) {
+    return campaigns.find(c => String(c._id) === String(id) && (!userId || String(c.userId) === String(userId))) || null;
+  },
+
+  async updateCampaignRecipient(campaignId, trackingId, updates) {
+    const campaign = campaigns.find(c => String(c._id) === String(campaignId));
+    if (!campaign) return null;
+    const recipient = campaign.recipients.find(r => r.trackingId === trackingId);
+    if (!recipient) return null;
+    Object.assign(recipient, updates);
+    campaign.updatedAt = new Date().toISOString();
+    return recipient;
+  },
+
+  async trackCampaignOpen(trackingId, clientInfo = {}) {
+    for (const campaign of campaigns) {
+      const recipient = campaign.recipients.find(r => r.trackingId === trackingId);
+      if (recipient) {
+        const now = new Date().toISOString();
+        if (!recipient.opened) {
+          recipient.opened = true;
+          recipient.openedAt = now;
+        }
+        recipient.openCount = (recipient.openCount || 0) + 1;
+        recipient.lastOpenedAt = now;
+        if (clientInfo.ip) recipient.ip = clientInfo.ip;
+        if (clientInfo.userAgent) recipient.userAgent = clientInfo.userAgent;
+        campaign.openedCount = campaign.recipients.filter(r => r.opened).length;
+        campaign.updatedAt = now;
+        return { campaign, recipient };
+      }
+    }
+    return null;
+  },
+
+  async trackCampaignClick(trackingId, clientInfo = {}) {
+    for (const campaign of campaigns) {
+      const recipient = campaign.recipients.find(r => r.trackingId === trackingId);
+      if (recipient) {
+        const now = new Date().toISOString();
+        if (!recipient.opened) {
+          recipient.opened = true;
+          recipient.openedAt = now;
+        }
+        recipient.openCount = Math.max(1, (recipient.openCount || 0) + 1);
+        recipient.lastOpenedAt = now;
+
+        if (!recipient.clicked) {
+          recipient.clicked = true;
+          recipient.clickedAt = now;
+        }
+        recipient.clickCount = (recipient.clickCount || 0) + 1;
+        if (clientInfo.ip) recipient.ip = clientInfo.ip;
+        if (clientInfo.userAgent) recipient.userAgent = clientInfo.userAgent;
+        campaign.openedCount = campaign.recipients.filter(r => r.opened).length;
+        campaign.clickedCount = campaign.recipients.filter(r => r.clicked).length;
+        campaign.updatedAt = now;
+        return { campaign, recipient };
+      }
+    }
+    return null;
+  },
+
+  async deleteCampaign(id, userId) {
+    const idx = campaigns.findIndex(c => String(c._id) === String(id) && (!userId || String(c.userId) === String(userId)));
+    if (idx !== -1) {
+      campaigns.splice(idx, 1);
+      return true;
+    }
+    return false;
   }
 };

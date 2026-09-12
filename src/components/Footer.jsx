@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import "../styles/Footer.css";
 
@@ -21,11 +22,13 @@ export function Footer() {
           </a>
         </div>
         <div className="footer-links">
-          <a href="/docs" className="footer-link">Documentation</a>
-          <a href="/tester" className="footer-link">API Tester</a>
+          <Link to="/bulk-mail" className="footer-link">Bulk Mailer</Link>
+          <Link to="/docs" className="footer-link">Documentation</Link>
+          <Link to="/tester" className="footer-link">API Tester</Link>
           <a href="https://github.com/pateldeep04/Email-services-SaaS" target="_blank" rel="noopener noreferrer" className="footer-link">GitHub</a>
         </div>
       </div>
     </footer>
   );
 }
+

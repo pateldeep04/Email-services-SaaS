@@ -339,3 +339,33 @@ html.dark .form-group input.is-invalid:focus {
   box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25) !important;
 }
 
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 16px 12px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .auth-card {
+    padding: 24px 18px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .auth-card h1 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .auth-subtitle {
+    font-size: 13.5px;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+}
+
+
