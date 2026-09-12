@@ -1,0 +1,738 @@
+/* ========================================================================= */
+/* DELIVERABILITY INSPECTOR & SPAM CHECKER STYLES                            */
+/* ========================================================================= */
+
+.deliverability-inspector-section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.inspector-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 36px;
+}
+
+.inspector-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(20, 184, 166, 0.12);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  color: #2dd4bf;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+}
+
+.inspector-title {
+  font-size: 34px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin: 0 0 12px;
+}
+
+.inspector-subtitle {
+  font-size: 16px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.inspector-presets-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.presets-label {
+  font-size: 13.5px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.presets-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-preset-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-preset-chip:hover {
+  background: rgba(20, 184, 166, 0.15);
+  border-color: #14b8a6;
+  color: #2dd4bf;
+}
+
+/* Navigation Tabs */
+.inspector-nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.inspector-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inspector-nav-tab.active {
+  background: #0f766e;
+  border-color: #14b8a6;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3);
+}
+
+/* Main Grid */
+.inspector-main-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.inspector-inputs-card,
+.inspector-preview-card {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.input-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.char-counter {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.char-counter.warn {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.inspector-input,
+.inspector-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #ffffff;
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.inspector-input:focus,
+.inspector-textarea:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.analysis-summary-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 10px;
+}
+
+.analysis-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 12px;
+}
+
+.spam-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.spam-tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.spam-tag.tag-high {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+}
+
+.spam-tag.tag-medium {
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid #f59e0b;
+  color: #fcd34d;
+}
+
+.clean-status-text {
+  font-size: 13.5px;
+  color: #34d399;
+  margin: 0 0 12px;
+}
+
+.quick-tips-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+}
+
+.tip-item {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.tip-item.good { color: #10b981; }
+.tip-item.warn { color: #f59e0b; }
+.tip-item.bad { color: #ef4444; }
+
+/* Right Column: Score Meter */
+.score-meter-panel {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.score-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.score-badge {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.meter-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.meter-fill {
+  height: 100%;
+  transition: width 0.4s ease, background-color 0.4s ease;
+  border-radius: 9999px;
+}
+
+.score-verdict {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Device Toggle */
+.device-toggle-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.preview-label {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.device-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.device-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.device-btn.active {
+  background: rgba(20, 184, 166, 0.2);
+  border-color: #14b8a6;
+  color: #2dd4bf;
+}
+
+/* Mobile Simulator */
+.mobile-phone-frame {
+  background: #020617;
+  border: 3px solid #334155;
+  border-radius: 28px;
+  padding: 18px 14px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.phone-notch {
+  width: 60px;
+  height: 6px;
+  background: #334155;
+  border-radius: 4px;
+  margin: 0 auto 14px;
+}
+
+.notification-card {
+  background: rgba(30, 41, 59, 0.9);
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.notif-app-icon {
+  width: 18px;
+  height: 18px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif-app-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.notif-time {
+  font-size: 10px;
+  color: #64748b;
+  margin-left: auto;
+}
+
+.notif-sender {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 2px;
+}
+
+.notif-subject {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notif-snippet {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.mobile-cutoff-hint {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Desktop Inbox Frame */
+.desktop-inbox-frame {
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.desktop-inbox-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0f172a;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.window-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.window-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.inbox-title {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.desktop-inbox-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 65px;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.inbox-sender {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inbox-subject-line {
+  font-size: 13px;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inbox-body-preview {
+  color: #94a3b8;
+}
+
+.inbox-time {
+  font-size: 11.5px;
+  color: #64748b;
+  text-align: right;
+}
+
+/* DNS Tab Panel */
+.inspector-dns-panel {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 32px;
+  backdrop-filter: blur(12px);
+}
+
+.dns-intro-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.dns-intro-card p {
+  font-size: 14.5px;
+  color: #94a3b8;
+  margin: 0 0 24px;
+}
+
+.dns-records-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.dns-record-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.dns-record-card.full-width {
+  grid-column: span 2;
+}
+
+.dns-record-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.record-badge {
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.dns-record-header h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.dns-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.record-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  gap: 10px;
+}
+
+.record-code-box code {
+  font-family: monospace;
+  font-size: 12.5px;
+  color: #2dd4bf;
+  word-break: break-all;
+}
+
+.btn-copy-code {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.btn-copy-code:hover {
+  color: #2dd4bf;
+}
+
+/* Light Mode Overrides */
+html.light .deliverability-inspector-section {
+  color: #1f2937;
+}
+
+html.light .inspector-title {
+  color: #0f172a;
+}
+
+html.light .inspector-subtitle {
+  color: #475569;
+}
+
+html.light .btn-preset-chip {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+html.light .btn-preset-chip:hover {
+  background: #ccfbf1;
+  border-color: #14b8a6;
+  color: #0f766e;
+}
+
+html.light .inspector-inputs-card,
+html.light .inspector-preview-card,
+html.light .inspector-dns-panel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+html.light .input-label {
+  color: #0f172a;
+}
+
+html.light .inspector-input,
+html.light .inspector-textarea {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+html.light .analysis-summary-box,
+html.light .score-meter-panel,
+html.light .dns-record-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+html.light .analysis-box-title,
+html.light .score-title,
+html.light .dns-intro-card h3,
+html.light .dns-record-header h4 {
+  color: #0f172a;
+}
+
+html.light .record-code-box {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+html.light .record-code-box code {
+  color: #0f766e;
+}
+
+html.light .mobile-phone-frame {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+html.light .notification-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+html.light .notif-sender {
+  color: #0f172a;
+}
+
+html.light .notif-subject {
+  color: #334155;
+}
+
+/* ========================================================================= */
+/* RESPONSIVE DESIGN (MOBILE & TABLET)                                       */
+/* ========================================================================= */
+
+@media (max-width: 1024px) {
+  .inspector-main-grid {
+    grid-template-columns: 1fr;
+  }
+  .dns-records-grid {
+    grid-template-columns: 1fr;
+  }
+  .dns-record-card.full-width {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .deliverability-inspector-section {
+    padding: 50px 16px;
+  }
+  .inspector-title {
+    font-size: 26px;
+  }
+  .inspector-subtitle {
+    font-size: 14px;
+  }
+  .inspector-nav-tabs {
+    flex-direction: column;
+  }
+  .inspector-nav-tab {
+    width: 100%;
+    justify-content: center;
+  }
+  .desktop-inbox-row {
+    grid-template-columns: 80px 1fr 50px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inspector-header {
+    margin-bottom: 24px;
+  }
+  .inspector-inputs-card,
+  .inspector-preview-card,
+  .inspector-dns-panel {
+    padding: 18px 14px;
+  }
+  .btn-preset-chip {
+    font-size: 11.5px;
+    padding: 5px 10px;
+  }
+}

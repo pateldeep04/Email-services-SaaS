@@ -1,0 +1,21 @@
+{
+  "name": "MailBridge - Cold Email Outreach & Free Gmail SMTP API",
+  "short_name": "MailBridge",
+  "description": "Free high-performance transactional email, SMS gateway, and personalized bulk mailer with Gmail SMTP relay and real-time open tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}

@@ -33,6 +33,7 @@ import {
 import { useAuth } from "../context/AuthContext.jsx";
 import { API_URL } from "../config.js";
 import { useSEO } from "../hooks/useSEO.js";
+import { DeliverabilityInspector } from "../components/DeliverabilityInspector.jsx";
 
 const features = [
   { 
@@ -105,9 +106,9 @@ export function HomePage() {
   const { user, token } = useAuth();
   
   useSEO({
-    title: "MailBridge | Free Transactional Email API & Bulk Cold Outreach SaaS",
-    description: "MailBridge is a free, all-in-one email platform: send transactional OTPs via REST APIs, or upload spreadsheets for personalized cold email campaigns with live open tracking and lead qualification via Gmail SMTP.",
-    keywords: "bulk mailer saas, cold email outreach, free email api, transactional email api, gmail smtp relay, lead tracking pipeline, csv email sender, excel mail merge, free sms gateway, otp verification, developer email service, mailbridge"
+    title: "MailBridge | Free Cold Email Outreach Platform & Gmail SMTP Relay API",
+    description: "MailBridge is a free, high-performance cold email outreach tool and transactional email API. Send personalized bulk email campaigns via Gmail SMTP, inspect email spam score, qualify hot leads live, and dispatch SMS with zero vendor fees.",
+    keywords: "cold email outreach software, free bulk mailer, gmail smtp relay, email spam checker, cold lead pipeline saas, transactional email api, email gateway, sms gateway, otp verification, excel mail merge, developer email service, lead tracking pipeline, mailbridge"
   });
   
   // Hero Visual Mode: "pipeline" (Cold Outreach) vs "metrics" (Transactional API)
@@ -1154,6 +1155,11 @@ export function HomePage() {
           )}
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* 3.5 FREE ORGANIC SEO TOOL: COLD EMAIL SPAM WORD & DELIVERABILITY INSPECTOR */}
+      {/* ========================================================================= */}
+      <DeliverabilityInspector />
 
       {/* ========================================================================= */}
       {/* 4. COMPARISON MATRIX: MAILBRIDGE VS EXPENSIVE TRADITIONAL SERVICES         */}

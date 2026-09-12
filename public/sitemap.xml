@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://mail-bridge.email/</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://mail-bridge.email/og-image.png</image:loc>
+      <image:title>MailBridge Cold Email Outreach and Free Gmail SMTP API</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://mail-bridge.email/bulk-mail</loc>
@@ -31,4 +36,3 @@
     <priority>0.60</priority>
   </url>
 </urlset>
-

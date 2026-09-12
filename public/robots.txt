@@ -6,6 +6,17 @@ Allow: /login
 Allow: /register
 Disallow: /dashboard
 Disallow: /tester
+Disallow: /api/
+
+# Crawler-specific guidelines for maximum search visibility
+User-agent: Googlebot
+Allow: /
+Allow: /bulk-mail
+Allow: /docs
+
+User-agent: Bingbot
+Allow: /
+Allow: /bulk-mail
+Allow: /docs
 
 Sitemap: https://mail-bridge.email/sitemap.xml
-

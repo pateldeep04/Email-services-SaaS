@@ -39,10 +39,20 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Close menu on route change
+  // Close menu on route change & handle escape key
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMenuOpen]);
 
   const isActive = (path) => location.pathname === path ? "active" : "";
 
@@ -53,53 +63,64 @@ export function Navbar() {
   };
 
   return (
-    <nav className="app-navbar">
-      <div className="app-nav-container">
-        <Link to="/" className="app-nav-brand" onClick={handleLinkClick}>
-          <MailBridgeLogo size={24} />
-          <span>MailBridge</span>
-        </Link>
-        
-        <button 
-          className="mobile-menu-toggle" 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle navigation menu"
-          aria-expanded={isMenuOpen}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+    <>
+      <nav className="app-navbar">
+        <div className="app-nav-container">
+          <Link to="/" className="app-nav-brand" onClick={handleLinkClick}>
+            <MailBridgeLogo size={24} />
+            <span>MailBridge</span>
+          </Link>
+          
+          <button 
+            className="mobile-menu-toggle" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
-        <div className={`app-nav-menu-wrapper ${isMenuOpen ? "open" : ""}`}>
-          <div className="nav-menu-content">
-            <div className="app-nav-links">
-              <Link to="/" className={`app-nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
-              <Link to="/bulk-mail" className={`app-nav-link ${isActive("/bulk-mail")}`} onClick={handleLinkClick}>Bulk Mailer</Link>
-              <Link to="/docs" className={`app-nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
-              <Link to="/tester" className={`app-nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
-            </div>
+          <div className={`app-nav-menu-wrapper ${isMenuOpen ? "open" : ""}`}>
+            <div className="nav-menu-content">
+              <div className="app-nav-links">
+                <Link to="/" className={`app-nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
+                <Link to="/bulk-mail" className={`app-nav-link ${isActive("/bulk-mail")}`} onClick={handleLinkClick}>Bulk Mailer</Link>
+                <a href="/#spam-checker" className="app-nav-link" onClick={handleLinkClick}>Spam Inspector</a>
+                <Link to="/docs" className={`app-nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
+                <Link to="/tester" className={`app-nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
+              </div>
 
-            <div className="app-nav-auth">
-              <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
-                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-              {user ? (
-                <>
-                  <span className="user-name">{user.name}</span>
-                  <Link to="/dashboard" className={`app-nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
-                  <button className="logout-btn" onClick={handleLogoutClick}>
-                    <LogOut size={18} /> Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" className={`app-nav-link ${isActive("/login")}`} onClick={handleLinkClick}>Login</Link>
-                  <Link to="/register" className="app-nav-button register-btn" onClick={handleLinkClick}>Register</Link>
-                </>
-              )}
+              <div className="app-nav-auth">
+                <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
+                  {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+                </button>
+                {user ? (
+                  <>
+                    <span className="user-name">{user.name}</span>
+                    <Link to="/dashboard" className={`app-nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
+                    <button className="logout-btn" onClick={handleLogoutClick}>
+                      <LogOut size={18} /> Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className={`app-nav-link ${isActive("/login")}`} onClick={handleLinkClick}>Login</Link>
+                    <Link to="/register" className="app-nav-button register-btn" onClick={handleLinkClick}>Register</Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+      {/* Mobile Drawer Backdrop */}
+      {isMenuOpen && (
+        <div 
+          className="app-nav-backdrop" 
+          onClick={() => setIsMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+    </>
   );
 }

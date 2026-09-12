@@ -214,6 +214,17 @@ html.dark .theme-toggle-btn:hover {
     background: rgba(255, 255, 255, 0.06);
   }
 
+  .app-nav-backdrop {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 64px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 98;
+  }
+
   .app-nav-menu-wrapper {
     display: none;
     position: absolute;
@@ -222,13 +233,25 @@ html.dark .theme-toggle-btn:hover {
     width: 100%;
     background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    padding: 24px;
+    padding: 20px 24px 28px;
     flex-direction: column;
     gap: 20px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
     z-index: 99;
     max-height: calc(100vh - 64px);
     overflow-y: auto;
+    animation: slideDownMenu 0.22s ease-out forwards;
+  }
+
+  @keyframes slideDownMenu {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .app-nav-menu-wrapper.open {
@@ -244,22 +267,26 @@ html.dark .theme-toggle-btn:hover {
 
   html.dark .app-nav-menu-wrapper {
     background: #090d16;
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
   }
 
   .app-nav-links {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: 8px;
     width: 100%;
   }
 
   .app-nav-link {
-    padding: 10px 12px;
-    border-radius: 6px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 8px;
     width: 100%;
-    display: block;
+    font-size: 15px;
+    box-sizing: border-box;
   }
 
   .app-nav-link:hover,
