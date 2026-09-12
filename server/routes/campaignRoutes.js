@@ -23,7 +23,7 @@ function sleep(ms) {
 // Helper to replace {{variables}} in text/html
 function interpolateTemplate(text, data = {}) {
   if (!text) return "";
-  return text.replace(/\{\{\s*([a-zA-Z0-9_\-\.]+)\s*\}\}/gi, (_, key) => {
+  return text.replace(/\{\{\s*([a-zA-Z0-9_\-.]+)\s*\}\}/gi, (_, key) => {
     const cleanKey = key.trim();
     // Case-insensitive match against data keys
     const match = Object.keys(data).find(k => k.toLowerCase() === cleanKey.toLowerCase());
@@ -227,82 +227,6 @@ router.get(["/track/cta/:trackingId", "/track/click/:trackingId", "/track/ack/:t
     </body>
     </html>
   `);
-});
-
-// ==========================================
-// 1c. SIMULATE / MANUAL TRIGGER OPEN ENDPOINT
-// ==========================================
-router.post("/:id/recipients/:trackingId/simulate-open", requireAuth, async (req, res, next) => {
-  try {
-    const { id, trackingId } = req.params;
-    const userId = req.user._id || req.user.id;
-
-    if (hasMongo()) {
-      const campaign = await EmailCampaign.findOne({ _id: id, userId });
-      if (!campaign) return res.status(404).json({ error: "Campaign not found." });
-      const recipient = campaign.recipients.find(r => r.trackingId === trackingId);
-      if (!recipient) return res.status(404).json({ error: "Recipient not found." });
-
-      const now = new Date();
-      if (!recipient.opened) {
-        recipient.opened = true;
-        recipient.openedAt = now;
-      }
-      recipient.openCount = (recipient.openCount || 0) + 1;
-      recipient.lastOpenedAt = now;
-      campaign.openedCount = campaign.recipients.filter(r => r.opened).length;
-      await campaign.save();
-      return res.json({ success: true, recipient });
-    } else {
-      const result = await memoryStore.trackCampaignOpen(trackingId, { ip: "127.0.0.1", userAgent: "MailBridge Dashboard Simulator" });
-      if (!result) return res.status(404).json({ error: "Recipient not found in memory store." });
-      return res.json({ success: true, recipient: result.recipient });
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ==========================================
-// 1d. SIMULATE / MANUAL TRIGGER HOT LEAD CTA CLICK
-// ==========================================
-router.post("/:id/recipients/:trackingId/simulate-click", requireAuth, async (req, res, next) => {
-  try {
-    const { id, trackingId } = req.params;
-    const userId = req.user._id || req.user.id;
-
-    if (hasMongo()) {
-      const campaign = await EmailCampaign.findOne({ _id: id, userId });
-      if (!campaign) return res.status(404).json({ error: "Campaign not found." });
-      const recipient = campaign.recipients.find(r => r.trackingId === trackingId);
-      if (!recipient) return res.status(404).json({ error: "Recipient not found." });
-
-      const now = new Date();
-      if (!recipient.opened) {
-        recipient.opened = true;
-        recipient.openedAt = now;
-      }
-      recipient.openCount = Math.max(1, (recipient.openCount || 0) + 1);
-      recipient.lastOpenedAt = now;
-
-      if (!recipient.clicked) {
-        recipient.clicked = true;
-        recipient.clickedAt = now;
-      }
-      recipient.clickCount = (recipient.clickCount || 0) + 1;
-
-      campaign.openedCount = campaign.recipients.filter(r => r.opened).length;
-      campaign.clickedCount = campaign.recipients.filter(r => r.clicked).length;
-      await campaign.save();
-      return res.json({ success: true, recipient });
-    } else {
-      const result = await memoryStore.trackCampaignClick(trackingId, { ip: "127.0.0.1", userAgent: "MailBridge Simulator" });
-      if (!result) return res.status(404).json({ error: "Recipient not found in memory store." });
-      return res.json({ success: true, recipient: result.recipient });
-    }
-  } catch (err) {
-    next(err);
-  }
 });
 
 // ==========================================
@@ -526,122 +450,6 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
     }
 
     res.json({ success: true, message: "Campaign deleted successfully." });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// ==========================================
-// 6. GENERATE SAMPLE DEMO CAMPAIGN FOR IMMEDIATE TESTING
-// ==========================================
-router.post("/demo", requireAuth, async (req, res, next) => {
-  try {
-    const userId = req.user._id || req.user.id;
-    const now = new Date();
-
-    const sampleRecipients = [
-      {
-        email: "sarah.jenkins@acmecorp.com",
-        recipientData: { firstname: "Sarah", lastname: "Jenkins", company: "Acme Corp" },
-        trackingId: crypto.randomUUID(),
-        status: "sent",
-        opened: true,
-        openCount: 4,
-        openedAt: new Date(now.getTime() - 25 * 60 * 1000),
-        lastOpenedAt: new Date(now.getTime() - 5 * 60 * 1000),
-        clicked: true,
-        clickedAt: new Date(now.getTime() - 5 * 60 * 1000),
-        clickCount: 2,
-        sentAt: new Date(now.getTime() - 60 * 60 * 1000),
-        error: ""
-      },
-      {
-        email: "m.chang@techstart.io",
-        recipientData: { firstname: "Michael", lastname: "Chang", company: "TechStart IO" },
-        trackingId: crypto.randomUUID(),
-        status: "sent",
-        opened: true,
-        openCount: 2,
-        openedAt: new Date(now.getTime() - 40 * 60 * 1000),
-        lastOpenedAt: new Date(now.getTime() - 15 * 60 * 1000),
-        clicked: false,
-        clickedAt: null,
-        clickCount: 0,
-        sentAt: new Date(now.getTime() - 60 * 60 * 1000),
-        error: ""
-      },
-      {
-        email: "emily@globalventures.com",
-        recipientData: { firstname: "Emily", lastname: "Rodriguez", company: "Global Ventures" },
-        trackingId: crypto.randomUUID(),
-        status: "sent",
-        opened: true,
-        openCount: 1,
-        openedAt: new Date(now.getTime() - 10 * 60 * 1000),
-        lastOpenedAt: new Date(now.getTime() - 10 * 60 * 1000),
-        clicked: false,
-        clickedAt: null,
-        clickCount: 0,
-        sentAt: new Date(now.getTime() - 60 * 60 * 1000),
-        error: ""
-      },
-      {
-        email: "david.k@innovatecloud.com",
-        recipientData: { firstname: "David", lastname: "Kim", company: "Innovate Cloud" },
-        trackingId: crypto.randomUUID(),
-        status: "sent",
-        opened: false,
-        openCount: 0,
-        openedAt: null,
-        lastOpenedAt: null,
-        clicked: false,
-        clickedAt: null,
-        clickCount: 0,
-        sentAt: new Date(now.getTime() - 60 * 60 * 1000),
-        error: ""
-      },
-      {
-        email: "alex.morgan@nextgensolutions.net",
-        recipientData: { firstname: "Alex", lastname: "Morgan", company: "NextGen Solutions" },
-        trackingId: crypto.randomUUID(),
-        status: "sent",
-        opened: false,
-        openCount: 0,
-        openedAt: null,
-        lastOpenedAt: null,
-        clicked: false,
-        clickedAt: null,
-        clickCount: 0,
-        sentAt: new Date(now.getTime() - 60 * 60 * 1000),
-        error: ""
-      }
-    ];
-
-    const campaignData = {
-      userId,
-      name: `Q3 Enterprise Outreach (Sample Demo ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`,
-      subject: "Exclusive Preview: Scaling your pipeline with MailBridge",
-      body: "Hi {{firstname}},\n\nWe saw your recent growth at {{company}} and wanted to share how similar high-growth teams are increasing their qualified pipeline.\n\nBest regards,\nThe Growth Team",
-      senderName: "MailBridge Demo",
-      senderEmail: "demo@mail-bridge.email",
-      ctaButtonText: "Book a Free 15-Min Demo",
-      ctaTargetUrl: "https://mail-bridge.email",
-      totalRecipients: sampleRecipients.length,
-      sentCount: sampleRecipients.length,
-      failedCount: 0,
-      openedCount: sampleRecipients.filter(r => r.opened).length,
-      clickedCount: sampleRecipients.filter(r => r.clicked).length,
-      recipients: sampleRecipients
-    };
-
-    let campaign;
-    if (hasMongo()) {
-      campaign = await EmailCampaign.create(campaignData);
-    } else {
-      campaign = await memoryStore.createCampaign(campaignData);
-    }
-
-    res.status(201).json({ success: true, campaign });
   } catch (error) {
     next(error);
   }

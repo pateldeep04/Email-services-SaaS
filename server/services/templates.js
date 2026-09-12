@@ -2,7 +2,6 @@ const shell = ({ title, body, action, settings }) => {
   const brandName = settings?.brandName || "My Brand";
   const colorHeaderBg = settings?.colorHeaderBg || "#0f766e";
   const colorHeaderText = settings?.colorHeaderText || "#ffffff";
-  const colorButtonBg = settings?.colorButtonBg || "#0f766e";
   const colorBgLight = settings?.colorBgLight || "#f1f5f9";
   const emailFooter = settings?.emailFooter || "© 2026 MailBridge. All rights reserved.";
 

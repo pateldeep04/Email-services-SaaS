@@ -119,7 +119,6 @@ The Team`
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [openFilter, setOpenFilter] = useState("all"); // "all" | "opened" | "unopened"
   const [searchQuery, setSearchQuery] = useState("");
-  const [showDevSimulation, setShowDevSimulation] = useState(false);
   const [copiedLeadEmail, setCopiedLeadEmail] = useState(null);
 
   // Load campaigns list when switching to tracking tab
@@ -185,41 +184,6 @@ The Team`
     }
   }
 
-  const [loadingDemo, setLoadingDemo] = useState(false);
-
-  async function handleGenerateDemoCampaign() {
-    if (!token) {
-      setShowLoginModal(true);
-      return;
-    }
-    setLoadingDemo(true);
-    try {
-      const res = await fetch(`${API_URL}/api/v1/campaigns/demo`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const data = await res.json();
-      if (res.ok && data.campaign) {
-        await fetchCampaigns();
-        setSelectedCampaignId(data.campaign._id);
-        await fetchCampaignDetails(data.campaign._id);
-        setComposerFeedback({
-          type: "success",
-          message: `Loaded sample demo campaign "${data.campaign.name}" with 5 qualified leads!`
-        });
-      } else {
-        throw new Error(data.error || "Failed to generate demo campaign.");
-      }
-    } catch (err) {
-      console.error("Error generating demo campaign:", err);
-      alert(err.message);
-    } finally {
-      setLoadingDemo(false);
-    }
-  }
 
   // ==========================================
   // FILE PARSING (CSV / XLSX / XLS)
@@ -446,42 +410,6 @@ The Team`
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Qualified Leads");
     XLSX.writeFile(wb, `${selectedCampaignDetails.name}_qualified_leads.csv`);
-  }
-
-  async function handleSimulateOpen(trackingId) {
-    if (!selectedCampaignId || !trackingId) return;
-    try {
-      await fetch(`${API_URL}/api/v1/campaigns/track/${trackingId}.png?t=${Date.now()}`, { cache: "no-store" }).catch(() => {});
-      await fetch(`${API_URL}/api/v1/campaigns/${selectedCampaignId}/recipients/${trackingId}/simulate-open`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
-        }
-      });
-      await fetchCampaignDetails(selectedCampaignId, true);
-      await fetchCampaigns();
-    } catch (err) {
-      console.error("Error triggering open:", err);
-    }
-  }
-
-  async function handleSimulateClick(trackingId) {
-    if (!selectedCampaignId || !trackingId) return;
-    try {
-      await fetch(`${API_URL}/api/v1/campaigns/track/cta/${trackingId}?t=${Date.now()}`, { cache: "no-store" }).catch(() => {});
-      await fetch(`${API_URL}/api/v1/campaigns/${selectedCampaignId}/recipients/${trackingId}/simulate-click`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
-        }
-      });
-      await fetchCampaignDetails(selectedCampaignId, true);
-      await fetchCampaigns();
-    } catch (err) {
-      console.error("Error triggering click simulation:", err);
-    }
   }
 
   const totalRecipients = selectedCampaignDetails?.totalRecipients || selectedCampaignDetails?.recipients?.length || 0;
@@ -1046,7 +974,7 @@ The Team`
                   No Campaigns Dispatched Yet
                 </h3>
                 <p style={{ fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px", lineHeight: "1.6" }}>
-                  You haven&apos;t sent any campaigns yet on this account to track. You can compose and dispatch an outreach campaign in Tab 1, or load a sample demo campaign with pre-configured leads to test live tracking right away.
+                  You haven&apos;t sent any campaigns yet on this account to track. Compose and dispatch an outreach campaign in Tab 1 to track email delivery, open rates, and CTA clicks in real time.
                 </p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
                   <button 
@@ -1056,23 +984,6 @@ The Team`
                     style={{ padding: "10px 20px" }}
                   >
                     <Send size={16} /> Compose & Send Campaign
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn-bulk-secondary"
-                    onClick={handleGenerateDemoCampaign}
-                    disabled={loadingDemo}
-                    style={{ padding: "10px 20px", color: "#0f766e", borderColor: "#0f766e" }}
-                  >
-                    {loadingDemo ? (
-                      <>
-                        <RefreshCw className="animate-spin" size={16} /> Creating Demo...
-                      </>
-                    ) : (
-                      <>
-                        ✨ Load Sample Demo Leads
-                      </>
-                    )}
                   </button>
                 </div>
               </div>
@@ -1126,15 +1037,6 @@ The Team`
                 </div>
 
                 <div className="campaign-actions-btns flex items-center gap-2 flex-wrap">
-                  <button 
-                    className="btn-bulk-secondary"
-                    onClick={handleGenerateDemoCampaign}
-                    disabled={loadingDemo}
-                    title="Generate another sample demo campaign for testing"
-                    style={{ color: "#0f766e", borderColor: "#0f766e" }}
-                  >
-                    {loadingDemo ? <RefreshCw className="animate-spin" size={15} /> : "✨ Demo Leads"}
-                  </button>
                   <button 
                     className="btn-bulk-secondary"
                     onClick={() => fetchCampaignDetails(selectedCampaignId)}
@@ -1248,25 +1150,6 @@ The Team`
                       ❄️ Cold ({totalUnopened})
                     </button>
                   </div>
-
-                  {/* Production Simulation Testing Mode Toggle */}
-                  <button
-                    type="button"
-                    className="btn-bulk-secondary"
-                    onClick={() => setShowDevSimulation(prev => !prev)}
-                    style={{
-                      fontSize: "12px",
-                      padding: "6px 12px",
-                      borderRadius: "8px",
-                      background: showDevSimulation ? "rgba(249, 115, 22, 0.08)" : "transparent",
-                      borderColor: showDevSimulation ? "#f97316" : "var(--border-color)",
-                      color: showDevSimulation ? "#ea580c" : "var(--text-muted)",
-                      marginLeft: "auto"
-                    }}
-                    title="Toggle development simulation tools for automated open and click testing"
-                  >
-                    {showDevSimulation ? "🧪 Hide Dev Simulation" : "🧪 Dev Test Mode"}
-                  </button>
                 </div>
               </div>
 
@@ -1293,8 +1176,8 @@ The Team`
                         <th>Lead Qualification</th>
                         <th>First Engaged At</th>
                         <th>Interactions</th>
-                        <th style={{ textAlign: "center", minWidth: showDevSimulation ? "240px" : "170px" }}>
-                          {showDevSimulation ? "Lead Actions & Dev Test" : "Lead Actions"}
+                        <th style={{ textAlign: "center", minWidth: "160px" }}>
+                          Lead Actions
                         </th>
                       </tr>
                     </thead>
@@ -1431,49 +1314,6 @@ The Team`
                                   </span>
                                 )}
                               </button>
-
-                              {/* Developer Simulation Tools (Only displayed when Dev Test Mode is active) */}
-                              {showDevSimulation && (
-                                <div style={{
-                                  display: "flex",
-                                  gap: "4px",
-                                  width: "100%",
-                                  justifyContent: "center",
-                                  marginTop: "6px",
-                                  paddingTop: "6px",
-                                  borderTop: "1px dashed var(--border-color)",
-                                  flexWrap: "wrap"
-                                }}>
-                                  <button
-                                    type="button"
-                                    className="btn-bulk-secondary"
-                                    style={{ padding: "3px 6px", fontSize: "10.5px", borderRadius: "4px", color: "#ea580c", borderColor: "#fed7aa" }}
-                                    onClick={() => handleSimulateClick(recipient.trackingId)}
-                                    title="Simulate this lead clicking your CTA button"
-                                  >
-                                    🔥 Test Click
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn-bulk-secondary"
-                                    style={{ padding: "3px 6px", fontSize: "10.5px", borderRadius: "4px" }}
-                                    onClick={() => handleSimulateOpen(recipient.trackingId)}
-                                    title="Simulate this lead opening the email"
-                                  >
-                                    ⚡ Test Open
-                                  </button>
-                                  <a
-                                    href={`${API_URL}/api/v1/campaigns/track/cta/${recipient.trackingId}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="btn-bulk-secondary"
-                                    style={{ padding: "3px 6px", fontSize: "10.5px", borderRadius: "4px", textDecoration: "none" }}
-                                    title="Open this lead's CTA destination link in new tab"
-                                  >
-                                    🔗 Open Link
-                                  </a>
-                                </div>
-                              )}
                             </div>
                           </td>
                         </tr>

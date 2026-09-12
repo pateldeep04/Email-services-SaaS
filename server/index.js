@@ -39,7 +39,7 @@ if (!global.fetch) {
             json: () => {
               try {
                 return Promise.resolve(JSON.parse(rawData));
-              } catch (e) {
+              } catch (_e) {
                 return Promise.reject(new Error("Invalid JSON: " + rawData));
               }
             }
@@ -129,7 +129,60 @@ app.use(cors({
 
 app.set("trust proxy", 1);
 
+class SafeSessionStore extends session.Store {
+  constructor() {
+    super();
+    this.sessions = new Map();
+    this.cleanupTimer = setInterval(() => {
+      const now = Date.now();
+      for (const [sid, sess] of this.sessions.entries()) {
+        if (sess.expires && sess.expires <= now) {
+          this.sessions.delete(sid);
+        }
+      }
+    }, 15 * 60 * 1000);
+    if (this.cleanupTimer.unref) {
+      this.cleanupTimer.unref();
+    }
+  }
+
+  get(sid, cb) {
+    const sess = this.sessions.get(sid);
+    if (!sess) return cb(null, null);
+    if (sess.expires && sess.expires <= Date.now()) {
+      this.sessions.delete(sid);
+      return cb(null, null);
+    }
+    return cb(null, sess.data);
+  }
+
+  set(sid, sess, cb) {
+    const expires = sess.cookie?.expires
+      ? new Date(sess.cookie.expires).getTime()
+      : Date.now() + (sess.cookie?.maxAge || 86400000);
+    this.sessions.set(sid, { data: sess, expires });
+    if (cb) cb(null);
+  }
+
+  destroy(sid, cb) {
+    this.sessions.delete(sid);
+    if (cb) cb(null);
+  }
+
+  touch(sid, sess, cb) {
+    const existing = this.sessions.get(sid);
+    if (existing) {
+      const expires = sess.cookie?.expires
+        ? new Date(sess.cookie.expires).getTime()
+        : Date.now() + (sess.cookie?.maxAge || 86400000);
+      existing.expires = expires;
+    }
+    if (cb) cb(null);
+  }
+}
+
 const sessionConfig = {
+  store: new SafeSessionStore(),
   secret: process.env.JWT_SECRET || "supersecretkey",
   resave: false,
   saveUninitialized: false,
@@ -327,9 +380,10 @@ app.use((err, _req, res, _next) => {
 
 async function start() {
   const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+
   if (mongoUri) {
     try {
-      await mongoose.connect(mongoUri);
+      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
       console.log("MongoDB connected");
     } catch (error) {
       let connected = false;
@@ -338,22 +392,23 @@ async function start() {
         error.message.includes("ENOTFOUND") ||
         error.message.includes("ECONNREFUSED")
       ) {
-        console.warn("MongoDB connection failed due to DNS issue. Retrying with public DNS servers...");
         try {
           dns.setServers(["8.8.8.8", "1.1.1.1"]);
-          await mongoose.connect(mongoUri);
+          await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
           console.log("MongoDB connected (via public DNS fallback)");
           connected = true;
-        } catch (retryError) {
-          // ignore, print original error
+        } catch (_retryError) {
+          // DNS retry failed
         }
       }
+
       if (!connected) {
         await mongoose.disconnect().catch(() => {});
-        console.warn("MongoDB unavailable. Using in-memory demo store.");
-        console.warn(error.message);
+        console.warn(`MongoDB unavailable (${error.message}). Using safe in-memory store.`);
       }
     }
+  } else {
+    console.warn("No MongoDB URI configured. Using safe in-memory store.");
   }
 
   if (process.env.NODE_ENV !== "test") {
@@ -368,7 +423,9 @@ async function start() {
           if (mongoose.connection.readyState === 1) {
             await mongoose.connection.close();
           }
-        } catch (_) {}
+        } catch (_closeErr) {
+          // Ignore connection close errors on shutdown
+        }
         process.exit(0);
       });
       setTimeout(() => process.exit(1), 5000);

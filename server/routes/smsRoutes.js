@@ -2,7 +2,6 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import OtpToken from "../models/OtpToken.js";
-import User from "../models/User.js";
 import { requireApiKey } from "../middleware/apiKey.js";
 import { memoryStore } from "../services/memoryStore.js";
 import { sendSms } from "../services/smsService.js";

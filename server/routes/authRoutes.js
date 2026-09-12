@@ -592,7 +592,7 @@ router.put("/settings", requireAuth, async (req, res, next) => {
   }
 });
 
-router.post("/smtp/test", requireAuth, async (req, res, next) => {
+router.post("/smtp/test", requireAuth, async (req, res, _next) => {
   try {
     const { host, port, secure, user, pass } = req.body;
     let smtpPass = pass;
