@@ -220,8 +220,14 @@ app.use((err, _req, res, _next) => {
   if (!err.status || err.status >= 500) {
     console.error(err);
   }
+
+  let errorMessage = err.message || "Something went wrong";
+  if (errorMessage.toLowerCase().includes("bad auth") || errorMessage.toLowerCase().includes("authentication failed")) {
+    errorMessage = "Database authentication failed. Please check your MongoDB username and password in .env.";
+  }
+
   res.status(err.status || 500).json({
-    error: err.message || "Something went wrong",
+    error: errorMessage,
     details: err.details
   });
 });
@@ -250,6 +256,7 @@ async function start() {
         }
       }
       if (!connected) {
+        await mongoose.disconnect().catch(() => {});
         console.warn("MongoDB unavailable. Using in-memory demo store.");
         console.warn(error.message);
       }
