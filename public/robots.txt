@@ -14,6 +14,12 @@ Allow: /
 Allow: /bulk-mail
 Allow: /docs
 
+User-agent: Googlebot-Image
+Allow: /
+Allow: /favicon.ico
+Allow: /*.png
+Allow: /*.svg
+
 User-agent: Bingbot
 Allow: /
 Allow: /bulk-mail
