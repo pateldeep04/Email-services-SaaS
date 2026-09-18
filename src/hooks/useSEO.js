@@ -60,7 +60,8 @@ export function useSEO({
     const cleanPath = pathname.length > 1 && pathname.endsWith("/") 
       ? pathname.slice(0, -1) 
       : pathname;
-    const derivedCanonical = window.location.origin + cleanPath;
+    const origin = window.location.origin.replace("www.mail-bridge.email", "mail-bridge.email");
+    const derivedCanonical = origin + cleanPath;
     
     link.setAttribute("href", canonical || derivedCanonical);
 

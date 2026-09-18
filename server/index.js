@@ -87,12 +87,25 @@ app.use((_req, res, next) => {
   next();
 });
 
+// Canonical 301 redirect: consolidate www to apex domain for clean Google indexing
+app.use((req, res, next) => {
+  const host = req.get("host") || "";
+  if (host.startsWith("www.mail-bridge.email")) {
+    return res.redirect(301, `https://mail-bridge.email${req.originalUrl || req.url}`);
+  }
+  next();
+});
+
 function isAllowedCorsOrigin(origin) {
   if (!origin || origin === "null") {
     return true;
   }
 
-  const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean);
+  const allowedOrigins = [
+    process.env.CLIENT_URL,
+    "https://mail-bridge.email",
+    "https://www.mail-bridge.email"
+  ].filter(Boolean);
 
   if (allowedOrigins.includes(origin)) {
     return true;
@@ -106,6 +119,8 @@ function isAllowedCorsOrigin(origin) {
       hostname === "localhost" ||
       hostname === "127.0.0.1" ||
       hostname === "[::1]" ||
+      hostname === "mail-bridge.email" ||
+      hostname.endsWith(".mail-bridge.email") ||
       hostname.endsWith(".onrender.com") ||
       hostname.endsWith(".loca.lt") ||
       hostname.endsWith(".devtunnels.ms") ||
@@ -228,6 +243,19 @@ const distPath = path.join(__dirname, "../dist");
 const hasDist = fs.existsSync(distPath);
 
 if (process.env.NODE_ENV === "production" || hasDist) {
+  // Explicit favicon.ico handler with caching to ensure search engines and browsers always receive valid ICO
+  app.get("/favicon.ico", (_req, res) => {
+    const icoDist = path.resolve(distPath, "favicon.ico");
+    const icoPublic = path.resolve(__dirname, "../public/favicon.ico");
+    const targetPath = fs.existsSync(icoDist) ? icoDist : icoPublic;
+    if (fs.existsSync(targetPath)) {
+      res.setHeader("Content-Type", "image/x-icon");
+      res.setHeader("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400");
+      return res.sendFile(targetPath);
+    }
+    return res.status(404).end();
+  });
+
   // Serve static assets with high-performance immutable caching
   app.use(express.static(distPath, {
     index: false,
@@ -265,19 +293,20 @@ if (process.env.NODE_ENV === "production" || hasDist) {
 
     const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
     const host = req.get("host") || "mail-bridge.email";
+    const canonicalHost = (host.includes("mail-bridge.email")) ? "mail-bridge.email" : host;
     
     // Normalize path: strip trailing slash except for root '/'
     let cleanPath = req.path;
     if (cleanPath.length > 1 && cleanPath.endsWith("/")) {
       cleanPath = cleanPath.slice(0, -1);
     }
-    const canonicalUrl = `${protocol}://${host}${cleanPath}`;
+    const canonicalUrl = `${protocol}://${canonicalHost}${cleanPath}`;
     
     const ROUTE_METADATA = {
       "/": {
-        title: "MailBridge | Free Transactional Email & SMS API via Gmail",
-        description: "MailBridge is a free, high-performance transactional email and SMS API. Use your Gmail SMTP server as a secure transactional email relay for OTPs, password resets, and marketing campaigns with zero vendor fees.",
-        keywords: "transactional email API, bulk mailer saas, free email api, gmail smtp relay, email gateway, sms gateway, otp verification, cold email outreach, csv email sender, excel mail merge, developer email service, lead tracking pipeline, mailbridge"
+        title: "MailBridge | Free Cold Email Outreach Platform & Gmail SMTP Relay API",
+        description: "MailBridge is an open-source, free cold email outreach tool and developer transactional email API. Send personalized bulk email campaigns via Gmail SMTP, qualify hot leads in real-time, test email spam score, and trigger carrier SMS with zero vendor fees.",
+        keywords: "cold email outreach tool, free bulk mailer, gmail smtp relay, email spam checker, cold lead pipeline saas, transactional email api, email gateway, sms gateway, otp verification, excel mail merge, developer email service, lead tracking pipeline, mailbridge"
       },
       "/bulk-mail": {
         title: "Bulk Mailer & Cold Email Lead Generation SaaS | Free Gmail Relay | MailBridge",
