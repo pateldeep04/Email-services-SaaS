@@ -22,7 +22,6 @@ import {
   Flame,
   Target,
   Lock,
-  X,
   LogIn,
   Copy
 } from "lucide-react";
@@ -32,7 +31,7 @@ import { useSEO } from "../hooks/useSEO.js";
 import "../styles/BulkMailer.css";
 
 export function BulkMailerPage() {
-  const { user, token, login } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("composer"); // "composer" | "tracking"
 
@@ -77,34 +76,53 @@ The Team`
   const [ctaButtonText, setCtaButtonText] = useState("Book a Free 15-Min Demo");
   const [ctaTargetUrl, setCtaTargetUrl] = useState("https://mail-bridge.email");
 
-  // Auth & Login Popup Modal States
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
-
-  async function handlePopupLogin(e) {
-    e.preventDefault();
-    if (!loginEmail.trim() || !loginPassword.trim()) {
-      setLoginError("Please enter your email and password.");
-      return;
-    }
-    setLoginLoading(true);
-    setLoginError("");
+  // Preserve draft campaign and cleanly redirect to Login or Register
+  function redirectToAuth(target = "/login") {
     try {
-      await login(loginEmail.trim(), loginPassword);
-      setShowLoginModal(false);
-      setComposerFeedback({
-        type: "success",
-        message: "Logged in successfully! You can now click 'Send Bulk Campaign' to dispatch."
-      });
-    } catch (err) {
-      setLoginError(err.message || "Invalid email or password. Please try again.");
-    } finally {
-      setLoginLoading(false);
+      sessionStorage.setItem("mailbridge_bulk_draft", JSON.stringify({
+        campaignName,
+        subject,
+        body,
+        recipientsData,
+        fileName,
+        availableColumns,
+        emailColumnKey,
+        customTrackingUrl,
+        ctaEnabled,
+        ctaButtonText,
+        ctaTargetUrl
+      }));
+    } catch (_e) {
+      // ignore storage quota errors
     }
+    navigate(target, { state: { from: "/bulk-mail" } });
   }
+
+  // Restore draft if returning from login or register
+  useEffect(() => {
+    try {
+      const savedDraft = sessionStorage.getItem("mailbridge_bulk_draft");
+      if (savedDraft) {
+        const draft = JSON.parse(savedDraft);
+        if (draft.campaignName) setCampaignName(draft.campaignName);
+        if (draft.subject) setSubject(draft.subject);
+        if (draft.body) setBody(draft.body);
+        if (draft.recipientsData && draft.recipientsData.length > 0) {
+          setRecipientsData(draft.recipientsData);
+          setFileName(draft.fileName || "");
+          setAvailableColumns(draft.availableColumns || []);
+          setEmailColumnKey(draft.emailColumnKey || "");
+        }
+        if (draft.customTrackingUrl) setCustomTrackingUrl(draft.customTrackingUrl);
+        if (draft.ctaEnabled !== undefined) setCtaEnabled(draft.ctaEnabled);
+        if (draft.ctaButtonText) setCtaButtonText(draft.ctaButtonText);
+        if (draft.ctaTargetUrl) setCtaTargetUrl(draft.ctaTargetUrl);
+        sessionStorage.removeItem("mailbridge_bulk_draft");
+      }
+    } catch (_e) {
+      // ignore
+    }
+  }, []);
 
   const fileInputRef = useRef(null);
   const bodyTextareaRef = useRef(null);
@@ -297,7 +315,7 @@ The Team`
 
     // Check if user is authenticated before sending
     if (!token || !user) {
-      setShowLoginModal(true);
+      redirectToAuth("/login");
       return;
     }
 
@@ -349,7 +367,7 @@ The Team`
       } else {
         if (!res.ok) {
           if (res.status === 401) {
-            setShowLoginModal(true);
+            redirectToAuth("/login");
             throw new Error("Authentication session expired. Please log in to dispatch campaigns.");
           }
           throw new Error(`Server returned error (${res.status}).`);
@@ -358,7 +376,8 @@ The Team`
 
       if (!res.ok) {
         if (res.status === 401) {
-          setShowLoginModal(true);
+          redirectToAuth("/login");
+          return;
         }
         throw new Error(data.error || "Failed to process campaign dispatch.");
       }
@@ -942,14 +961,14 @@ The Team`
                   <button 
                     type="button" 
                     className="btn-bulk-primary"
-                    onClick={() => setShowLoginModal(true)}
+                    onClick={() => redirectToAuth("/login")}
                   >
                     <LogIn size={16} /> Log In to View Pipeline
                   </button>
                   <button 
                     type="button" 
                     className="btn-bulk-secondary"
-                    onClick={() => navigate("/register")}
+                    onClick={() => redirectToAuth("/register")}
                   >
                     Create Free Account
                   </button>
@@ -1331,114 +1350,7 @@ The Team`
 
       </div>
 
-      {/* Login Required Popup Modal */}
-      {showLoginModal && (
-        <div className="login-popup-overlay" onClick={() => setShowLoginModal(false)}>
-          <div className="login-popup-card" onClick={(e) => e.stopPropagation()}>
-            <div className="login-popup-header">
-              <div className="login-popup-title-group">
-                <div className="login-popup-icon">
-                  <Lock size={22} />
-                </div>
-                <div>
-                  <h3 className="login-popup-title">Account Login Required</h3>
-                  <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>MailBridge Campaign Dispatch</div>
-                </div>
-              </div>
-              <button 
-                type="button" 
-                className="login-popup-close-btn"
-                onClick={() => setShowLoginModal(false)}
-                title="Close"
-              >
-                <X size={20} />
-              </button>
-            </div>
 
-            <div className="login-popup-body">
-              <p className="login-popup-desc">
-                Please log in to your account to dispatch this campaign and track real-time leads. Your uploaded recipients and customized template are safely preserved!
-              </p>
-
-              {loginError && (
-                <div style={{
-                  padding: "10px 14px",
-                  background: "#fef2f2",
-                  border: "1px solid #fecaca",
-                  borderRadius: "8px",
-                  color: "#b91c1c",
-                  fontSize: "13px",
-                  marginBottom: "14px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px"
-                }}>
-                  <AlertCircle size={16} style={{ flexShrink: 0 }} />
-                  <span>{loginError}</span>
-                </div>
-              )}
-
-              <form onSubmit={handlePopupLogin}>
-                <div className="login-popup-field">
-                  <label>Email Address</label>
-                  <input
-                    type="email"
-                    className="bulk-input"
-                    placeholder="name@company.com"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    autoFocus
-                    required
-                  />
-                </div>
-
-                <div className="login-popup-field">
-                  <label>Password</label>
-                  <input
-                    type="password"
-                    className="bulk-input"
-                    placeholder="Enter your password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="login-popup-btn"
-                  disabled={loginLoading}
-                >
-                  {loginLoading ? (
-                    <>
-                      <RefreshCw className="animate-spin" size={16} /> Logging In...
-                    </>
-                  ) : (
-                    <>
-                      <LogIn size={16} /> Log In & Continue Sending
-                    </>
-                  )}
-                </button>
-              </form>
-
-              <div className="login-popup-footer">
-                Don&apos;t have an account? 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowLoginModal(false);
-                    navigate("/register");
-                  }}
-                  className="login-popup-link"
-                  style={{ background: "none", border: "none", padding: 0, font: "inherit" }}
-                >
-                  Create Free Account →
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

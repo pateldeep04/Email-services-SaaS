@@ -1,6 +1,6 @@
 .app-navbar {
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  background: #090d16;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -23,13 +23,13 @@
   gap: 10px;
   font-size: 20px;
   font-weight: 700;
-  color: #1f2937;
+  color: #ffffff;
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .app-nav-brand svg {
-  color: #0f766e;
+  color: #14b8a6;
   transition: color 0.3s;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .app-nav-link {
-  color: #6b7280;
+  color: #9ca3af;
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
@@ -49,7 +49,7 @@
 
 .app-nav-link:hover,
 .app-nav-link.active {
-  color: #0f766e;
+  color: #2dd4bf;
 }
 
 .app-nav-auth {
@@ -61,7 +61,7 @@
 .user-name {
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: #ffffff;
   transition: color 0.3s;
 }
 
@@ -103,7 +103,7 @@
 .theme-toggle-btn {
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: #cbd5e1;
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
@@ -114,44 +114,44 @@
 }
 
 .theme-toggle-btn:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.06);
+  color: #2dd4bf;
+}
+
+/* Light mode navbar overrides */
+html.light .app-navbar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+html.light .app-nav-brand {
+  color: #1f2937;
+}
+
+html.light .app-nav-brand svg {
   color: #0f766e;
 }
 
-/* Dark mode navbar overrides */
-html.dark .app-navbar {
-  background: #090d16;
-  border-bottom-color: rgba(255, 255, 255, 0.08);
+html.light .app-nav-link {
+  color: #6b7280;
 }
 
-html.dark .app-nav-brand {
-  color: #ffffff;
+html.light .app-nav-link:hover,
+html.light .app-nav-link.active {
+  color: #0f766e;
 }
 
-html.dark .app-nav-brand svg {
-  color: #14b8a6;
+html.light .user-name {
+  color: #1f2937;
 }
 
-html.dark .app-nav-link {
-  color: #9ca3af;
+html.light .theme-toggle-btn {
+  color: #6b7280;
 }
 
-html.dark .app-nav-link:hover,
-html.dark .app-nav-link.active {
-  color: #2dd4bf;
-}
-
-html.dark .user-name {
-  color: #ffffff;
-}
-
-html.dark .theme-toggle-btn {
-  color: #cbd5e1;
-}
-
-html.dark .theme-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #2dd4bf;
+html.light .theme-toggle-btn:hover {
+  background: #f3f4f6;
+  color: #0f766e;
 }
 
 /* Desktop default for menu wrapper and toggle */

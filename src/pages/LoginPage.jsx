@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useSEO } from "../hooks/useSEO.js";
@@ -14,6 +14,8 @@ export function LoginPage() {
   const { login, loginWithGoogle, loading } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/dashboard";
 
   useSEO({
     title: "Login | MailBridge",
@@ -33,7 +35,7 @@ export function LoginPage() {
     setError("");
     try {
       await loginWithGoogle(response.credential);
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || "Google Sign-In failed. Please try email login instead.");
     }
@@ -117,7 +119,7 @@ export function LoginPage() {
 
     try {
       await login(email, password);
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
     }
@@ -188,7 +190,7 @@ export function LoginPage() {
         </div>
 
         <p className="auth-footer">
-          Don't have an account? <a href="/register">Create one</a>
+          Don't have an account? <Link to="/register" state={{ from }}>Create one</Link>
         </p>
       </div>
     </div>

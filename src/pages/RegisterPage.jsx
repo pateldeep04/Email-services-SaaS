@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useSEO } from "../hooks/useSEO.js";
@@ -20,6 +20,8 @@ export function RegisterPage() {
   const { register, loginWithGoogle, loading } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/dashboard";
 
   useSEO({
     title: "Create Account | MailBridge",
@@ -39,7 +41,7 @@ export function RegisterPage() {
     setError("");
     try {
       await loginWithGoogle(response.credential);
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || "Google Sign-In failed. Please try email login instead.");
     }
@@ -147,7 +149,7 @@ export function RegisterPage() {
 
     try {
       await register(email, name, password, companyName);
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
     }
@@ -266,7 +268,7 @@ export function RegisterPage() {
         </div>
 
         <p className="auth-footer">
-          Already have an account? <a href="/login">Login</a>
+          Already have an account? <Link to="/login" state={{ from }}>Login</Link>
         </p>
       </div>
     </div>
