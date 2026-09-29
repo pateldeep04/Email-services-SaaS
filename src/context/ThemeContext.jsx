@@ -4,7 +4,13 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("mailbridge-theme") || "dark";
+    const saved = localStorage.getItem("mailbridge-theme");
+    if (saved) return saved;
+    // Default to OS system theme
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    return "dark";
   });
 
   const toggleTheme = () => {
@@ -25,6 +31,19 @@ export function ThemeProvider({ children }) {
       root.classList.remove("dark");
     }
   }, [theme]);
+
+  // Dynamically listen to OS theme changes if user hasn't explicitly set a preference
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      if (!localStorage.getItem("mailbridge-theme")) {
+        setTheme(e.matches ? "dark" : "light");
+      }
+    };
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
