@@ -2,8 +2,8 @@ User-agent: *
 Allow: /
 Allow: /bulk-mail
 Allow: /docs
-Allow: /login
-Allow: /register
+Disallow: /login
+Disallow: /register
 Disallow: /dashboard
 Disallow: /tester
 Disallow: /api/
@@ -13,6 +13,11 @@ User-agent: Googlebot
 Allow: /
 Allow: /bulk-mail
 Allow: /docs
+Disallow: /login
+Disallow: /register
+Disallow: /dashboard
+Disallow: /tester
+Disallow: /api/
 
 User-agent: Googlebot-Image
 Allow: /

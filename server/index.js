@@ -87,12 +87,29 @@ app.use((_req, res, next) => {
   next();
 });
 
-// Canonical 301 redirect: consolidate www to apex domain for clean Google indexing
+// Canonical 301 redirects: enforce HTTPS, consolidate www to apex domain, and clean trailing slashes
 app.use((req, res, next) => {
   const host = req.get("host") || "";
+  const forwardedProto = req.headers["x-forwarded-proto"];
+
+  // 1. Force HTTPS redirect if requested via plain HTTP
+  if (forwardedProto === "http" || (!req.secure && process.env.NODE_ENV === "production" && !host.includes("localhost") && !host.includes("127.0.0.1"))) {
+    const cleanHost = host.replace(/^www\./, "");
+    return res.redirect(301, `https://${cleanHost}${req.originalUrl || req.url}`);
+  }
+
+  // 2. Consolidate www to apex domain
   if (host.startsWith("www.mail-bridge.email")) {
     return res.redirect(301, `https://mail-bridge.email${req.originalUrl || req.url}`);
   }
+
+  // 3. Remove trailing slash on non-root routes to prevent duplicate content
+  if (req.path.length > 1 && req.path.endsWith("/") && !req.path.startsWith("/api/")) {
+    const query = req.url.slice(req.path.length);
+    const cleanPath = req.path.slice(0, -1);
+    return res.redirect(301, `${cleanPath}${query}`);
+  }
+
   next();
 });
 
@@ -291,7 +308,6 @@ if (process.env.NODE_ENV === "production" || hasDist) {
       return next(err);
     }
 
-    const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
     const host = req.get("host") || "mail-bridge.email";
     const canonicalHost = (host.includes("mail-bridge.email")) ? "mail-bridge.email" : host;
     
@@ -300,7 +316,11 @@ if (process.env.NODE_ENV === "production" || hasDist) {
     if (cleanPath.length > 1 && cleanPath.endsWith("/")) {
       cleanPath = cleanPath.slice(0, -1);
     }
-    const canonicalUrl = `${protocol}://${canonicalHost}${cleanPath}`;
+    // Enforce HTTPS canonical URLs in production to prevent canonical mismatch
+    const canonicalProtocol = (canonicalHost.includes("localhost") || canonicalHost.includes("127.0.0.1")) 
+      ? (req.protocol || "http") 
+      : "https";
+    const canonicalUrl = `${canonicalProtocol}://${canonicalHost}${cleanPath}`;
     
     const ROUTE_METADATA = {
       "/": {
@@ -366,7 +386,7 @@ if (process.env.NODE_ENV === "production" || hasDist) {
         `<meta name="twitter:url" content="${canonicalUrl}" />`
       );
 
-      if (cleanPath.startsWith("/dashboard") || cleanPath.startsWith("/tester")) {
+      if (cleanPath.startsWith("/dashboard") || cleanPath.startsWith("/tester") || cleanPath === "/login" || cleanPath === "/register") {
         responseHtml = responseHtml.replace(
           /<meta\s+name=["']robots["']\s+content=["'][^"']*["']\s*\/?>/i,
           `<meta name="robots" content="noindex, nofollow" />`
