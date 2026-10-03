@@ -219,7 +219,7 @@ router.delete("/:id", async (req, res, next) => {
  * POST /api/v1/webhooks/:id/test
  * Send a test ping event to the specified endpoint and return the result.
  */
-router.post("/:id/test", async (req, res, next) => {
+router.post("/:id/test", async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { id } = req.params;

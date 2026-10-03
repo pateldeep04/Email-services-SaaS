@@ -35,7 +35,7 @@ async function deliverToEndpoint(endpoint, event, eventPayload) {
   const startTime = Date.now();
   let statusCode = 0;
   let responseBody = "";
-  let status = "failed";
+  let status;
   let errorMsg = "";
 
   try {
@@ -149,13 +149,9 @@ export async function dispatchWebhook({ userId, event, data }) {
  * Trigger an immediate test webhook ping for developer verification.
  */
 export async function sendTestWebhook({ userId, endpointId }) {
-  let endpoint = null;
-
-  if (hasMongo()) {
-    endpoint = await WebhookEndpoint.findOne({ _id: endpointId, userId });
-  } else {
-    endpoint = await memoryStore.getWebhookEndpointById(endpointId, userId);
-  }
+  const endpoint = hasMongo()
+    ? await WebhookEndpoint.findOne({ _id: endpointId, userId })
+    : await memoryStore.getWebhookEndpointById(endpointId, userId);
 
   if (!endpoint) {
     throw new Error("Webhook endpoint not found or unauthorized.");

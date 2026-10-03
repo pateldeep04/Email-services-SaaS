@@ -61,6 +61,12 @@ router.post("/otp", smsRateLimiter, async (req, res, next) => {
       deviceId
     });
 
+    dispatchWebhook({
+      userId,
+      event: "sms.sent",
+      data: { to, purpose, status: result.status, messageId: result.messageId, simulated: result.simulated, dispatchedAt: new Date().toISOString() }
+    });
+
     const isSuccess = result.status !== "failed";
     res.status(isSuccess ? 201 : 502).json({
       success: isSuccess,
