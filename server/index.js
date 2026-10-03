@@ -435,7 +435,11 @@ async function start() {
   if (mongoUri) {
     try {
       await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
-      console.log("MongoDB connected");
+      console.log("==========================================");
+      console.log("✅ MongoDB Atlas (Cloud) Connected Successfully!");
+      console.log(`📦 Database: ${mongoose.connection.name}`);
+      console.log(`🌐 Cluster Host: ${mongoose.connection.host}`);
+      console.log("==========================================");
     } catch (error) {
       let connected = false;
       if (
@@ -446,7 +450,11 @@ async function start() {
         try {
           dns.setServers(["8.8.8.8", "1.1.1.1"]);
           await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
-          console.log("MongoDB connected (via public DNS fallback)");
+          console.log("==========================================");
+          console.log("✅ MongoDB Atlas (Cloud) Connected Successfully! (via public DNS fallback)");
+          console.log(`📦 Database: ${mongoose.connection.name}`);
+          console.log(`🌐 Cluster Host: ${mongoose.connection.host}`);
+          console.log("==========================================");
           connected = true;
         } catch (_retryError) {
           // DNS retry failed
