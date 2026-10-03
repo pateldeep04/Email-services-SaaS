@@ -23,8 +23,10 @@ import {
   Search,
   Settings,
   Sparkles,
-  Smartphone
+  Smartphone,
+  Webhook
 } from "lucide-react";
+import { WebhookManager } from "../components/WebhookManager.jsx";
 import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Dashboard.css";
 const isLocalIp = (url) => {
@@ -2862,6 +2864,8 @@ export function DashboardPage() {
       {activeTab === "smtp" && renderSmtpSettings()}
 
       {activeTab === "sms" && renderSmsSettings()}
+
+      {activeTab === "webhooks" && <WebhookManager token={token} />}
 
       {selectedLog && renderLogDetailModal()}
     </div>

@@ -148,6 +148,44 @@ const endpoints = [
       status: "sent",
       messageId: "..."
     }
+  },
+  {
+    method: "POST",
+    path: "/api/v1/webhooks",
+    title: "Register Webhook",
+    description: "Register an HTTP endpoint URL to receive real-time push events signed with HMAC SHA-256",
+    request: {
+      url: "https://api.yourdomain.com/webhooks/mailbridge",
+      description: "CRM Event Stream",
+      events: ["email.sent", "email.opened", "email.clicked", "email.failed", "sms.sent"]
+    },
+    response: {
+      success: true,
+      message: "Webhook endpoint registered successfully.",
+      endpoint: {
+        _id: "65b...",
+        url: "https://api.yourdomain.com/webhooks/mailbridge",
+        secret: "whsec_98fbc18...",
+        events: ["email.sent", "email.opened", "email.clicked", "email.failed", "sms.sent"],
+        isActive: true
+      }
+    }
+  },
+  {
+    method: "POST",
+    path: "/api/v1/webhooks/:id/test",
+    title: "Test Webhook Ping",
+    description: "Send an immediate test.ping event to verify that your destination endpoint is reachable",
+    request: {},
+    response: {
+      success: true,
+      result: {
+        deliveryId: "del_8716b...",
+        statusCode: 200,
+        status: "success",
+        durationMs: 45
+      }
+    }
   }
 ];
 

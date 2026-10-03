@@ -6,6 +6,7 @@ import User from "../models/User.js";
 import { memoryStore } from "../services/memoryStore.js";
 import { requireAuth } from "../middleware/auth.js";
 import { sendEmail } from "../services/emailService.js";
+import { dispatchWebhook } from "../services/webhookService.js";
 
 const router = express.Router();
 const hasMongo = () => mongoose.connection.readyState === 1;
@@ -122,12 +123,14 @@ router.get(["/track/:trackingId", "/track/:trackingId.png", "/track/:trackingId.
           campaign.openedCount = campaign.recipients.filter((r) => r.opened).length;
           await campaign.save();
           console.log(`[WARM LEAD] Lead ${recipient.email} opened email! (Total opens: ${recipient.openCount})`);
+          dispatchWebhook({ userId: campaign.userId, event: "email.opened", data: { campaignId: campaign._id, campaignName: campaign.name, recipientEmail: recipient.email, ip, userAgent, openCount: recipient.openCount, openedAt: new Date().toISOString() } });
         }
       }
     } else {
       const result = await memoryStore.trackCampaignOpen(trackingId, { ip, userAgent });
       if (result) {
         console.log(`[WARM LEAD] MemoryStore lead ${result.recipient.email} opened email! (Total opens: ${result.recipient.openCount})`);
+        dispatchWebhook({ userId: result.campaign.userId, event: "email.opened", data: { campaignId: result.campaign._id, campaignName: result.campaign.name, recipientEmail: result.recipient.email, ip, userAgent, openCount: result.recipient.openCount, openedAt: new Date().toISOString() } });
       }
     }
   } catch (err) {
@@ -177,6 +180,7 @@ router.get(["/track/cta/:trackingId", "/track/click/:trackingId", "/track/ack/:t
           campaign.clickedCount = campaign.recipients.filter((r) => r.clicked).length;
           await campaign.save();
           console.log(`[🔥 HOT LEAD CAPTURED] Lead ${recipient.email} clicked CTA for campaign "${campaign.name}"!`);
+          dispatchWebhook({ userId: campaign.userId, event: "email.clicked", data: { campaignId: campaign._id, campaignName: campaign.name, recipientEmail: recipient.email, ip, userAgent, clickCount: recipient.clickCount, clickedAt: new Date().toISOString(), targetUrl: redirectTarget } });
         }
       }
     } else {
@@ -184,6 +188,7 @@ router.get(["/track/cta/:trackingId", "/track/click/:trackingId", "/track/ack/:t
       if (result) {
         recipientEmail = result.recipient.email;
         redirectTarget = result.campaign.ctaTargetUrl || "";
+        dispatchWebhook({ userId: result.campaign.userId, event: "email.clicked", data: { campaignId: result.campaign._id, campaignName: result.campaign.name, recipientEmail: result.recipient.email, ip, userAgent, clickCount: result.recipient.clickCount, clickedAt: new Date().toISOString(), targetUrl: redirectTarget } });
       }
     }
   } catch (err) {

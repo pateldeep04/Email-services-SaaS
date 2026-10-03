@@ -72,6 +72,7 @@ import emailRoutes from "./routes/emailRoutes.js";
 import smsRoutes from "./routes/smsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import campaignRoutes from "./routes/campaignRoutes.js";
+import webhookRoutes from "./routes/webhookRoutes.js";
 import { createRateLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
@@ -252,6 +253,7 @@ app.use("/api/v1/emails", emailRoutes);
 app.use("/api/v1/sms", smsRoutes);
 app.use("/api/v1/ai", aiRoutes);
 app.use("/api/v1/campaigns", campaignRoutes);
+app.use("/api/v1/webhooks", webhookRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

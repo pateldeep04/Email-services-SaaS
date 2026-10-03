@@ -16,6 +16,7 @@ MailBridge is a sellable Email and SMS service platform built as a MERN college 
   * **Simulation Mode:** Automatically logs messages to the console and emails a copy to the sandbox owner.
 * **Resilient Database Design:** Persistent data logging with MongoDB and a built-in custom in-memory database fallback (`memoryStore.js`) for lightweight local demos.
 * **Interactive Sandbox Portal:** Full web portal containing dynamic documentation, template saving, and a live request tester with automatic shell `cURL` command generation.
+* **⚡ Real-Time Webhook System:** Register HTTP POST endpoints with cryptographic HMAC SHA-256 signatures (`X-MailBridge-Signature`) to receive push event streams for `email.sent`, `email.opened` (real-time tracking pixel), `email.clicked` (CTA clicks), `email.failed`, and `sms.sent` with built-in test pings and delivery audit logging.
 
 ---
 

@@ -6,6 +6,7 @@ import OtpToken from "../models/OtpToken.js";
 import User from "../models/User.js";
 import { requireApiKey } from "../middleware/apiKey.js";
 import { sendEmail, testSmtpConnection } from "../services/emailService.js";
+import { dispatchWebhook } from "../services/webhookService.js";
 import { memoryStore } from "../services/memoryStore.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
 
@@ -108,6 +109,7 @@ async function deliver(type, to, template, metadata = {}, userId = null, apiKey 
       keyStyle
     });
 
+    dispatchWebhook({ userId, event: "email.sent", data: { logId: log._id, to, subject: template.subject, type, status: result.status, messageId: result.messageId, sentAt: new Date().toISOString() } });
     return {
       success: true,
       status: result.status,

@@ -5,6 +5,8 @@ const otpTokens = [];
 const users = [];
 const apiKeys = [];
 const campaigns = [];
+const webhookEndpoints = [];
+const webhookDeliveryLogs = [];
 
 export const memoryStore = {
   async createLog(log) {
@@ -379,5 +381,72 @@ export const memoryStore = {
       return true;
     }
     return false;
+  },
+
+  // Webhook Endpoints
+  async createWebhookEndpoint(data) {
+    const item = {
+      _id: crypto.randomUUID(),
+      events: ["email.sent", "email.opened", "email.clicked", "email.failed", "sms.sent"],
+      isActive: true,
+      description: "Production Webhook",
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    webhookEndpoints.unshift(item);
+    return item;
+  },
+
+  async listWebhookEndpoints(userId) {
+    return webhookEndpoints.filter(e => String(e.userId) === String(userId));
+  },
+
+  async getWebhookEndpointById(id, userId) {
+    return webhookEndpoints.find(e => String(e._id) === String(id) && (!userId || String(e.userId) === String(userId))) || null;
+  },
+
+  async updateWebhookEndpoint(id, userId, updates) {
+    const endpoint = webhookEndpoints.find(e => String(e._id) === String(id) && (!userId || String(e.userId) === String(userId)));
+    if (!endpoint) return null;
+    Object.assign(endpoint, updates, { updatedAt: new Date().toISOString() });
+    return endpoint;
+  },
+
+  async deleteWebhookEndpoint(id, userId) {
+    const idx = webhookEndpoints.findIndex(e => String(e._id) === String(id) && (!userId || String(e.userId) === String(userId)));
+    if (idx !== -1) {
+      webhookEndpoints.splice(idx, 1);
+      return true;
+    }
+    return false;
+  },
+
+  // Webhook Delivery Logs
+  async createWebhookDeliveryLog(log) {
+    const item = {
+      _id: crypto.randomUUID(),
+      ...log,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    webhookDeliveryLogs.unshift(item);
+    if (webhookDeliveryLogs.length > 200) {
+      webhookDeliveryLogs.pop();
+    }
+    return item;
+  },
+
+  async listWebhookDeliveryLogs(userId, limit = 50) {
+    return webhookDeliveryLogs
+      .filter(l => String(l.userId) === String(userId))
+      .slice(0, limit);
+  },
+
+  async clearWebhookDeliveryLogs(userId) {
+    const remaining = webhookDeliveryLogs.filter(l => String(l.userId) !== String(userId));
+    webhookDeliveryLogs.length = 0;
+    webhookDeliveryLogs.push(...remaining);
+    return true;
   }
 };

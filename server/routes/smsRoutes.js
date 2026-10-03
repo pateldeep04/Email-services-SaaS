@@ -5,6 +5,7 @@ import OtpToken from "../models/OtpToken.js";
 import { requireApiKey } from "../middleware/apiKey.js";
 import { memoryStore } from "../services/memoryStore.js";
 import { sendSms } from "../services/smsService.js";
+import { dispatchWebhook } from "../services/webhookService.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
 
 const smsRateLimiter = createRateLimiter({
