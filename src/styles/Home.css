@@ -2621,19 +2621,35 @@ html.light .hero-title-highlight {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #14b8a6;
-  color: #030712;
-  font-weight: 700;
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #ffffff !important;
+  font-family: var(--font-heading);
+  font-weight: 600;
   font-size: 14px;
   padding: 12px 20px;
   border-radius: 10px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.btn-demo-action:hover {
-  background: #2dd4bf;
-  box-shadow: 0 6px 20px rgba(45, 212, 191, 0.4);
+.btn-demo-action:hover,
+.btn-demo-action:focus {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
+  transform: translateY(-1px);
+}
+
+html.light .btn-demo-action {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #ffffff !important;
+}
+
+html.light .btn-demo-action:hover {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: #ffffff !important;
 }
 
 /* ========================================================================= */
