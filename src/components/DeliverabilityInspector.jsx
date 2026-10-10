@@ -349,7 +349,7 @@ export function DeliverabilityInspector() {
                     </div>
                   </div>
                   <span className="mobile-cutoff-hint">
-                    📱 Subject cuts off after ~42 chars on mobile lock screens.
+                    Subject cuts off after ~42 chars on mobile lock screens.
                   </span>
                 </div>
               ) : (
@@ -376,7 +376,7 @@ export function DeliverabilityInspector() {
           /* DNS Guidance Tab */
           <div className="inspector-dns-panel">
             <div className="dns-intro-card">
-              <h3>🔑 Gmail SMTP Deliverability Checklist (SPF, DKIM, DMARC)</h3>
+              <h3>Gmail SMTP Deliverability Checklist (SPF, DKIM, DMARC)</h3>
               <p>
                 To achieve 99%+ deliverability when sending cold emails through Gmail SMTP relay, your sending domain should have authenticated DNS records:
               </p>

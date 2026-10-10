@@ -4,7 +4,10 @@
   min-height: 100vh;
   background-color: #030712;
   color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
   position: relative;
   padding-bottom: 80px;
@@ -78,16 +81,23 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(20, 184, 166, 0.08);
-  border: 1px solid rgba(20, 184, 166, 0.2);
-  color: #14b8a6;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  color: #0f766e;
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 6px 14px;
+  font-family: var(--font-heading);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   margin-bottom: 24px;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  backdrop-filter: blur(8px);
+}
+
+html.dark .hero-badge-pill {
+  background: rgba(45, 212, 191, 0.08);
+  border-color: rgba(45, 212, 191, 0.25);
+  color: #2dd4bf;
 }
 
 .badge-spark {
@@ -101,20 +111,24 @@
 }
 
 .hero-title {
-  font-size: 54px;
-  font-weight: 850;
-  line-height: 1.1;
+  font-family: var(--font-heading);
+  font-size: 56px;
+  font-weight: 750;
+  line-height: 1.14;
   color: #ffffff;
   margin: 0 0 20px 0;
-  letter-spacing: -1px;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 .hero-desc-text {
-  font-size: 18px;
-  line-height: 1.7;
-  color: #9ca3af;
+  font-family: var(--font-sans);
+  font-size: 17.5px;
+  line-height: 1.68;
+  color: #94a3b8;
   margin: 0 0 36px 0;
   max-width: 580px;
+  letter-spacing: -0.011em;
 }
 
 .hero-cta-buttons {
@@ -216,11 +230,12 @@
 }
 
 .dashboard-card-header h2 {
+  font-family: var(--font-heading);
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
-  letter-spacing: -0.1px;
+  letter-spacing: -0.02em;
 }
 
 .live-indicator-dot {
@@ -1861,7 +1876,13 @@ html.light .graph-tooltip-text.text-rate {
 /* ========================================================================= */
 
 .hero-title-highlight {
-  background: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 50%, #fb923c 100%);
+  background: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 60%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.light .hero-title-highlight {
+  background: linear-gradient(135deg, #0d9488 0%, #0284c7 50%, #2563eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

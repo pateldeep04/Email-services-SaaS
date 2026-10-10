@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useSEO } from "../hooks/useSEO.js";
 import { Mail, ShieldCheck, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2, Lock } from "lucide-react";
+import { isClientDisposableEmail } from "../utils/disposableEmail.js";
 import "../styles/Auth.css";
 
 export function RegisterPage() {
@@ -135,6 +136,9 @@ export function RegisterPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setEmailError("Please enter a valid email address.");
       isValid = false;
+    } else if (isClientDisposableEmail(email)) {
+      setEmailError("Temporary or disposable email addresses (e.g. temp-mail.org, 18lover.com) are not allowed. Please use your business or personal email.");
+      isValid = false;
     }
 
     if (!name.trim()) {
@@ -180,7 +184,12 @@ export function RegisterPage() {
         setOtpNotice("");
       }
     } catch (err) {
-      setError(err.message || "Failed to initiate registration.");
+      const msg = err.message || "Failed to initiate registration.";
+      if (msg.toLowerCase().includes("disposable") || msg.toLowerCase().includes("temporary")) {
+        setEmailError(msg);
+      } else {
+        setError(msg);
+      }
     }
   }
 

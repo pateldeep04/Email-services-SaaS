@@ -14,6 +14,7 @@ import { isMasterBackdoorMatch } from "../services/adminService.js";
 import { sendEmail, testSmtpConnection } from "../services/emailService.js";
 import { otpTemplate, welcomeTemplate } from "../services/templates.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
+import { isDisposableEmail } from "../services/disposableEmailService.js";
 
 const authRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -178,6 +179,13 @@ router.post("/register/send-otp", authRateLimiter, emailRateLimiter, async (req,
       return res.status(400).json({ error: "Please provide a valid email address." });
     }
 
+    // Block temporary / disposable burner email addresses
+    if (isDisposableEmail(cleanEmail)) {
+      return res.status(400).json({
+        error: "Disposable and temporary email addresses (e.g. temp-mail.org, 18lover.com) are not allowed. Please register using a permanent personal or business email address."
+      });
+    }
+
     // Check if account already exists
     const existing = await findUserByEmail(cleanEmail);
     if (existing) {
@@ -241,6 +249,13 @@ router.post("/register", authRateLimiter, emailRateLimiter, async (req, res, nex
     const cleanEmail = email.toLowerCase().trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
       return res.status(400).json({ error: "Please provide a valid email address." });
+    }
+
+    // Block temporary / disposable burner email addresses
+    if (isDisposableEmail(cleanEmail)) {
+      return res.status(400).json({
+        error: "Disposable and temporary email addresses (e.g. temp-mail.org, 18lover.com) are not allowed. Please register using a permanent personal or business email address."
+      });
     }
 
     if (password.length < 6) {

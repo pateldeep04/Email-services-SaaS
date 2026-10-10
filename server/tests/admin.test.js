@@ -106,4 +106,80 @@ describe("Admin API Suite", () => {
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body.logs)).toBe(true);
   });
+
+  it("should provide cache statistics and allow cache flush", async () => {
+    const statsRes = await request(app)
+      .get("/api/v1/admin/cache/stats")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(statsRes.status).toBe(200);
+    expect(statsRes.body.cache).toBeDefined();
+    expect(statsRes.body.cache.keysCount).toBeDefined();
+
+    const flushRes = await request(app)
+      .post("/api/v1/admin/cache/flush")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(flushRes.status).toBe(200);
+    expect(flushRes.body.cache.keysCount).toBe(0);
+  });
+
+  it("should allow admin to view and control user API keys (provision, toggle, rotate, delete)", async () => {
+    // 1. Get first user
+    const usersRes = await request(app)
+      .get("/api/v1/admin/users")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    const targetUser = usersRes.body.users[0];
+    expect(targetUser).toBeDefined();
+
+    // 2. Provision a new API key for the user
+    const createKeyRes = await request(app)
+      .post(`/api/v1/admin/users/${targetUser._id || targetUser.id}/keys`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ name: "Admin Test Key" });
+
+    expect(createKeyRes.status).toBe(201);
+    expect(createKeyRes.body.key).toBeDefined();
+    expect(createKeyRes.body.key.key).toContain("mb_");
+    const keyId = createKeyRes.body.key._id || createKeyRes.body.key.id;
+
+    // 3. View user keys and verify unmasked key is returned
+    const getKeysRes = await request(app)
+      .get(`/api/v1/admin/users/${targetUser._id || targetUser.id}/keys`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(getKeysRes.status).toBe(200);
+    expect(Array.isArray(getKeysRes.body.keys)).toBe(true);
+    const createdKey = getKeysRes.body.keys.find((k) => (k._id || k.id) === keyId);
+    expect(createdKey).toBeDefined();
+    expect(createdKey.isActive).toBe(true);
+
+    // 4. Toggle active status to false (revoke)
+    const toggleRes = await request(app)
+      .patch(`/api/v1/admin/keys/${keyId}/toggle`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ isActive: false });
+
+    expect(toggleRes.status).toBe(200);
+    expect(toggleRes.body.key.isActive).toBe(false);
+
+    // 5. Rotate key
+    const rotateRes = await request(app)
+      .post(`/api/v1/admin/keys/${keyId}/rotate`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(rotateRes.status).toBe(200);
+    expect(rotateRes.body.key.key).not.toBe(createdKey.key);
+    expect(rotateRes.body.key.key).toContain("mb_");
+
+    // 6. Delete key
+    const deleteRes = await request(app)
+      .delete(`/api/v1/admin/keys/${keyId}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(deleteRes.status).toBe(200);
+    expect(deleteRes.body.message).toContain("deleted");
+  });
 });
+

@@ -4,7 +4,7 @@
   min-height: 100vh;
   background-color: #030712;
   color: #f3f4f6;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   position: relative;
   overflow-x: clip;
 }
@@ -210,7 +210,7 @@
 }
 
 .endpoint-header .path {
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono);
   color: #e2e8f0;
   font-weight: 700;
   font-size: 15px;
@@ -230,7 +230,7 @@
 
 .code-block pre {
   margin: 0;
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13.5px;
   line-height: 1.6;
 }

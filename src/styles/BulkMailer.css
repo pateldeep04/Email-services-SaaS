@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: var(--bg-main, #f9fafb);
   padding: 40px 24px;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   color: var(--text-main, #1f2937);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -180,7 +180,7 @@
   border-radius: 6px;
   padding: 4px 10px;
   font-size: 12px;
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-weight: 600;
   color: var(--primary-color, #0f766e);
   cursor: pointer;

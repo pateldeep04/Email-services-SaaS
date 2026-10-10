@@ -5,6 +5,7 @@ const apiKeySchema = new mongoose.Schema(
     name: { type: String, required: true },
     key: { type: String, required: true, unique: true, index: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    isActive: { type: Boolean, default: true, index: true },
     lastUsedAt: { type: Date },
     styleType: { type: String, enum: ["global", "custom"], default: "global" },
     templateSettings: {

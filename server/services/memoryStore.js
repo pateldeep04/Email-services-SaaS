@@ -184,12 +184,17 @@ export const memoryStore = {
     return apiKeys.find(k => String(k._id) === String(keyId) && String(k.userId) === String(userId));
   },
 
+  findApiKeyById(keyId) {
+    return apiKeys.find(k => String(k._id) === String(keyId));
+  },
+
   async createApiKey(userId, name, key) {
     const item = {
       _id: crypto.randomUUID(),
       name,
       key,
       userId,
+      isActive: true,
       styleType: "global",
       templateSettings: {
         brandName: "My Brand",
@@ -215,6 +220,7 @@ export const memoryStore = {
       name,
       key,
       userId,
+      isActive: true,
       styleType,
       templateSettings,
       createdAt: new Date().toISOString()
@@ -225,6 +231,32 @@ export const memoryStore = {
 
   async listApiKeys(userId) {
     return apiKeys.filter(k => String(k.userId) === String(userId));
+  },
+
+  async toggleApiKeyStatus(keyId, isActive) {
+    const keyItem = apiKeys.find(k => String(k._id) === String(keyId));
+    if (!keyItem) return null;
+    keyItem.isActive = Boolean(isActive);
+    keyItem.updatedAt = new Date().toISOString();
+    return keyItem;
+  },
+
+  async rotateApiKey(keyId, newKey) {
+    const keyItem = apiKeys.find(k => String(k._id) === String(keyId));
+    if (!keyItem) return null;
+    keyItem.key = newKey;
+    keyItem.lastUsedAt = null;
+    keyItem.updatedAt = new Date().toISOString();
+    return keyItem;
+  },
+
+  async deleteApiKeyById(keyId) {
+    const idx = apiKeys.findIndex(k => String(k._id) === String(keyId));
+    if (idx !== -1) {
+      apiKeys.splice(idx, 1);
+      return true;
+    }
+    return false;
   },
 
   async deleteApiKey(userId, keyId) {
@@ -492,7 +524,10 @@ export const memoryStore = {
           list: uKeys.map(k => ({
             _id: k._id,
             name: k.name || "Default Key",
+            key: k.key,
             maskedKey: k.key ? `${k.key.slice(0, 8)}...${k.key.slice(-4)}` : "—",
+            isActive: k.isActive !== false,
+            lastUsedAt: k.lastUsedAt,
             createdAt: k.createdAt
           }))
         },

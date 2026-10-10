@@ -715,7 +715,7 @@ The Team`
                         />
                       </div>
                       <div className="lead-cta-tip">
-                        💡 When prospects click this CTA button in your email, they are immediately qualified as a <strong>🔥 Hot Lead</strong> in your Lead Pipeline and redirected to your landing page.
+                        When prospects click this CTA button in your email, they are immediately qualified as a <strong>Hot Lead</strong> in your Lead Pipeline and redirected to your landing page.
                       </div>
                     </div>
                   ) : (
@@ -881,7 +881,7 @@ The Team`
                                 {ctaButtonText || "Book a Demo"} →
                               </a>
                               <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
-                                🎯 Destination URL: <code>{ctaTargetUrl || "https://..."}</code>
+                                Destination URL: <code>{ctaTargetUrl || "https://..."}</code>
                               </div>
                             </div>
                           )}
@@ -921,7 +921,7 @@ The Team`
                   </button>
                   {!token && (
                     <div style={{ textAlign: "center", fontSize: "12px", color: "var(--text-muted)", marginTop: "8px" }}>
-                      🔒 You will be prompted to log in or create an account when clicking send.
+                      You will be prompted to log in or create an account when clicking send.
                     </div>
                   )}
                 </div>
@@ -1093,22 +1093,22 @@ The Team`
                 fontWeight: "bold",
                 fontSize: "15px"
               }}>
-                🎯
+                <Target size={18} className="text-teal-600" />
               </div>
               <div className="lead-pipeline-banner-text">
                 <span className="lead-pipeline-banner-title">Lead Generation & Qualification Pipeline</span><br />
                 Every prospect who receives your campaign is automatically segmented in real-time based on their engagement:
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px", marginTop: "8px" }}>
                   <div className="lead-pipeline-pill-hot">
-                    <strong style={{ color: "#ea580c" }}>🔥 Hot Qualified Lead:</strong>
+                    <strong style={{ color: "#ea580c" }}>Hot Qualified Lead:</strong>
                     <div style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>Prospect clicked your Call-to-Action button (e.g. booked demo/visited landing page). Ready for immediate sales closing!</div>
                   </div>
                   <div className="lead-pipeline-pill-warm">
-                    <strong style={{ color: "#059669" }}>👁️ Warm Lead:</strong>
+                    <strong style={{ color: "#059669" }}>Warm Lead:</strong>
                     <div style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>Prospect opened your email. High interest, prime for a targeted follow-up sequence.</div>
                   </div>
                   <div className="lead-pipeline-pill-cold">
-                    <strong style={{ color: "#64748b" }}>❄️ Cold Prospect:</strong>
+                    <strong style={{ color: "#64748b" }}>Cold Prospect:</strong>
                     <div style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>Delivered but unopened. Send a reminder with a revised subject line.</div>
                   </div>
                 </div>
@@ -1154,19 +1154,19 @@ The Team`
                       onClick={() => setOpenFilter("hot")}
                       style={{ color: openFilter === "hot" ? "#ea580c" : undefined }}
                     >
-                      🔥 Hot Leads ({totalClicked})
+                      Hot Leads ({totalClicked})
                     </button>
                     <button 
                       className={`bulk-tab-btn ${openFilter === "warm" ? "active" : ""}`}
                       onClick={() => setOpenFilter("warm")}
                     >
-                      👁️ Warm Leads ({totalOpened})
+                      Warm Leads ({totalOpened})
                     </button>
                     <button 
                       className={`bulk-tab-btn ${openFilter === "unopened" ? "active" : ""}`}
                       onClick={() => setOpenFilter("unopened")}
                     >
-                      ❄️ Cold ({totalUnopened})
+                      Cold ({totalUnopened})
                     </button>
                   </div>
                 </div>
@@ -1252,12 +1252,12 @@ The Team`
                           <td>
                             {recipient.clickedAt ? (
                               <div>
-                                <span style={{ color: "#ea580c", fontWeight: 600 }}>🔥 {new Date(recipient.clickedAt).toLocaleTimeString()}</span>
+                                <span style={{ color: "#ea580c", fontWeight: 600 }}>{new Date(recipient.clickedAt).toLocaleTimeString()}</span>
                                 <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{new Date(recipient.clickedAt).toLocaleDateString()}</div>
                               </div>
                             ) : recipient.openedAt ? (
                               <div>
-                                <span>👁️ {new Date(recipient.openedAt).toLocaleTimeString()}</span>
+                                <span>{new Date(recipient.openedAt).toLocaleTimeString()}</span>
                                 <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{new Date(recipient.openedAt).toLocaleDateString()}</div>
                               </div>
                             ) : (

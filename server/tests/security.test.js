@@ -98,4 +98,45 @@ describe("Security & Registration OTP Suite", () => {
     expect(ssrfMetadata.status).toBe(400);
     expect(ssrfMetadata.body.error).toContain("Cloud metadata");
   });
+
+  it("should reject registration OTP request with disposable / temporary email", async () => {
+    // 1. Temp-mail.org rotating domain from user's screenshot
+    const tempRes1 = await request(app)
+      .post("/api/v1/auth/register/send-otp")
+      .send({ email: "hobab32329@18lover.com", name: "Spammer" });
+
+    expect(tempRes1.status).toBe(400);
+    expect(tempRes1.body.error).toContain("Disposable and temporary email addresses");
+
+    // 2. Generic temp-mail.org
+    const tempRes2 = await request(app)
+      .post("/api/v1/auth/register/send-otp")
+      .send({ email: "randomuser@temp-mail.org", name: "Spammer" });
+
+    expect(tempRes2.status).toBe(400);
+    expect(tempRes2.body.error).toContain("Disposable and temporary email addresses");
+
+    // 3. Mailinator
+    const tempRes3 = await request(app)
+      .post("/api/v1/auth/register/send-otp")
+      .send({ email: "fakeuser@mailinator.com", name: "Spammer" });
+
+    expect(tempRes3.status).toBe(400);
+    expect(tempRes3.body.error).toContain("Disposable and temporary email addresses");
+  });
+
+  it("should reject registration completion with disposable / temporary email", async () => {
+    const res = await request(app)
+      .post("/api/v1/auth/register")
+      .send({
+        email: "attacker@18lover.com",
+        name: "Disposable User",
+        password: "Password123!",
+        companyName: "Throwaway Corp"
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain("Disposable and temporary email addresses");
+  });
 });
+

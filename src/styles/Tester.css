@@ -4,7 +4,7 @@
   min-height: 100vh;
   background-color: #030712;
   color: #f3f4f6;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   position: relative;
   overflow-x: clip;
 }
@@ -347,7 +347,7 @@
 }
 
 .endpoint-info code {
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono);
   color: #cbd5e1;
   font-weight: 700;
   font-size: 13.5px;
@@ -373,7 +373,7 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 14px;
   border-radius: 10px;
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: #cbd5e1;
   line-height: 1.6;
@@ -391,7 +391,7 @@
   color: #e5e7eb;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13.5px;
   line-height: 1.6;
   resize: vertical;
@@ -459,7 +459,7 @@
 
 .code-block-body pre {
   margin: 0;
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.6;
   color: #cbd5e1;

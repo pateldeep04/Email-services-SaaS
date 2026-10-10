@@ -1517,7 +1517,7 @@ export function DashboardPage() {
         if (data.theme.colorHeaderText) setColorHeaderText(data.theme.colorHeaderText);
         if (data.theme.colorButtonBg) setColorButtonBg(data.theme.colorButtonBg);
         if (data.theme.colorBgLight) setColorBgLight(data.theme.colorBgLight);
-        setAiNote(`🎨 AI theme suggestions successfully applied for "${brandName}"!`);
+        setAiNote(`AI theme suggestions successfully applied for "${brandName}"!`);
       } else {
         alert("Failed to suggest brand colors. Make sure you set a Brand Name first!");
       }
@@ -2410,7 +2410,7 @@ export function DashboardPage() {
                     boxShadow: "0 2px 4px rgba(15, 118, 110, 0.2)"
                   }}
                 >
-                  <SparklesIcon size={12} /> {generatingAi ? "Analyzing..." : "🎨 Auto-Theme with AI"}
+                  <SparklesIcon size={12} /> {generatingAi ? "Analyzing..." : "Auto-Theme with AI"}
                 </button>
               </div>
               <input

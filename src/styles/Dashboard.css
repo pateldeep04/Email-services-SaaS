@@ -26,7 +26,7 @@
   min-height: 100vh;
   background: var(--bg-main);
   padding: 40px 24px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -451,7 +451,7 @@ tr:last-child td {
   background: #f1f5f9;
   padding: 4px 8px;
   border-radius: 6px;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: #334155;
   font-weight: bold;
@@ -965,7 +965,7 @@ tr:last-child td {
   color: #e2e8f0;
   padding: 16px;
   border-radius: 8px;
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   margin: 0;
   overflow-x: auto;
@@ -1211,7 +1211,7 @@ tr:last-child td {
 }
 
 .color-picker-wrapper code {
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: #334155;
   font-weight: 700;
@@ -1442,7 +1442,7 @@ tr:last-child td {
   color: #e2e8f0;
   padding: 20px;
   border-radius: 8px;
-  font-family: 'Fira Code', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.5;
   margin: 0;

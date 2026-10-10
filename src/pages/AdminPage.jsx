@@ -23,9 +23,14 @@ import {
   Check,
   X,
   Eye,
+  EyeOff,
   Info,
   Smartphone,
-  Webhook
+  Webhook,
+  Copy,
+  Plus,
+  Zap,
+  RotateCw
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useSEO } from "../hooks/useSEO.js";
@@ -88,6 +93,15 @@ export function AdminPage() {
   const [viewUserKeysModal, setViewUserKeysModal] = useState(null);
   const [viewUserServicesModal, setViewUserServicesModal] = useState(null);
 
+  // API Key Management & Controls States
+  const [userKeysList, setUserKeysList] = useState([]);
+  const [userKeysLoading, setUserKeysLoading] = useState(false);
+  const [showUnmaskedKeys, setShowUnmaskedKeys] = useState({});
+  const [copiedKeyId, setCopiedKeyId] = useState(null);
+  const [newAdminKeyName, setNewAdminKeyName] = useState("");
+  const [creatingKeyForUser, setCreatingKeyForUser] = useState(false);
+  const [cacheFlushing, setCacheFlushing] = useState(false);
+
   // Global notification banner
   const [alertMessage, setAlertMessage] = useState(null);
 
@@ -95,6 +109,157 @@ export function AdminPage() {
     setAlertMessage({ text, type });
     setTimeout(() => setAlertMessage(null), 4500);
   };
+
+  // Fetch detailed API keys for inspected user
+  const fetchUserKeys = useCallback(async (userId) => {
+    if (!userId) return;
+    setUserKeysLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/users/${userId}/keys`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUserKeysList(data.keys || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch user API keys:", err);
+    } finally {
+      setUserKeysLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (viewUserKeysModal?._id) {
+      fetchUserKeys(viewUserKeysModal._id);
+    } else {
+      setUserKeysList([]);
+    }
+  }, [viewUserKeysModal, fetchUserKeys]);
+
+  // Toggle API Key Active/Revoked Status
+  async function handleToggleKey(keyId, currentActive) {
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/keys/${keyId}/toggle`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ isActive: !currentActive })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update API key status.");
+      showAlert(data.message || "API key updated successfully.");
+      if (viewUserKeysModal?._id) fetchUserKeys(viewUserKeysModal._id);
+      fetchUsers();
+      fetchStats();
+    } catch (err) {
+      showAlert(err.message, "danger");
+    }
+  }
+
+  // Rotate API Key
+  async function handleRotateKey(keyId) {
+    if (!window.confirm("Rotate this API key? A new key value will be generated and the existing key will be immediately revoked.")) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/keys/${keyId}/rotate`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to rotate API key.");
+      showAlert(data.message || "API key rotated successfully.");
+      if (viewUserKeysModal?._id) fetchUserKeys(viewUserKeysModal._id);
+      fetchUsers();
+      fetchStats();
+    } catch (err) {
+      showAlert(err.message, "danger");
+    }
+  }
+
+  // Permanently Delete API Key
+  async function handleDeleteKey(keyId) {
+    if (!window.confirm("Permanently delete this API key? This cannot be undone.")) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/keys/${keyId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete API key.");
+      showAlert(data.message || "API key deleted successfully.");
+      if (viewUserKeysModal?._id) fetchUserKeys(viewUserKeysModal._id);
+      fetchUsers();
+      fetchStats();
+    } catch (err) {
+      showAlert(err.message, "danger");
+    }
+  }
+
+  // Admin Generate New API Key for User
+  async function handleCreateKeyForUser(e) {
+    e.preventDefault();
+    if (!viewUserKeysModal?._id) return;
+    setCreatingKeyForUser(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/users/${viewUserKeysModal._id}/keys`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: newAdminKeyName || "Admin Provisioned Key" })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to generate API key.");
+      showAlert(data.message || "New API key provisioned successfully.");
+      setNewAdminKeyName("");
+      fetchUserKeys(viewUserKeysModal._id);
+      fetchUsers();
+      fetchStats();
+    } catch (err) {
+      showAlert(err.message, "danger");
+    } finally {
+      setCreatingKeyForUser(false);
+    }
+  }
+
+  // Purge / Flush Cache
+  async function handleFlushCache() {
+    setCacheFlushing(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/cache/flush`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to purge cache.");
+      showAlert(data.message || "High-performance cache purged successfully.");
+      fetchStats();
+    } catch (err) {
+      showAlert(err.message, "danger");
+    } finally {
+      setCacheFlushing(false);
+    }
+  }
+
+  function handleCopyKey(keyId, keyValue) {
+    navigator.clipboard.writeText(keyValue);
+    setCopiedKeyId(keyId);
+    setTimeout(() => setCopiedKeyId(null), 2500);
+  }
+
+  function toggleShowKey(keyId) {
+    setShowUnmaskedKeys(prev => ({
+      ...prev,
+      [keyId]: !prev[keyId]
+    }));
+  }
 
   // 1. Fetch Overview Stats
   const fetchStats = useCallback(async () => {
@@ -563,6 +728,30 @@ export function AdminPage() {
                 <div className="admin-kv-row">
                   <span className="admin-kv-label">Memory Heap Used</span>
                   <span className="admin-kv-val">{stats?.system?.memoryHeapMB || 0} MB</span>
+                </div>
+                <div className="admin-kv-row">
+                  <span className="admin-kv-label">Cache Engine</span>
+                  <span className="badge badge-success" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    <Zap size={11} /> High-Speed TTL Cache
+                  </span>
+                </div>
+                <div className="admin-kv-row">
+                  <span className="admin-kv-label">Cache Performance</span>
+                  <span className="admin-kv-val">
+                    {stats?.cache?.hitRatioPercent ?? 0}% Hit Rate ({stats?.cache?.hits ?? 0} hits, {stats?.cache?.keysCount ?? 0} keys)
+                  </span>
+                </div>
+                <div style={{ marginTop: "10px", display: "flex", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-outline"
+                    style={{ fontSize: "11px", padding: "4px 10px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                    onClick={handleFlushCache}
+                    disabled={cacheFlushing}
+                    title="Purge cached stats and API key authentication lookup cache"
+                  >
+                    <Zap size={12} color="#0f766e" /> {cacheFlushing ? "Purging..." : "Flush Cache"}
+                  </button>
                 </div>
               </div>
             </div>
@@ -1538,59 +1727,183 @@ export function AdminPage() {
         </div>
       )}
 
-      {/* MODAL 4: USER API KEYS INSPECTION MODAL */}
+      {/* MODAL 4: USER API KEYS MANAGEMENT & CONTROL MODAL */}
       {viewUserKeysModal && (
         <div className="admin-modal-overlay" onClick={() => setViewUserKeysModal(null)}>
-          <div className="admin-modal" style={{ maxWidth: "560px" }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal" style={{ maxWidth: "680px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
               <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Key size={18} color="#ca8a04" /> API Keys Created by {viewUserKeysModal.name}
+                <Key size={20} color="#ca8a04" /> API Key Control Center: {viewUserKeysModal.name}
               </h3>
               <button className="admin-modal-close" onClick={() => setViewUserKeysModal(null)}>
                 <X size={20} />
               </button>
             </div>
 
-            <div style={{ marginBottom: "16px", padding: "12px 14px", background: "rgba(148, 163, 184, 0.08)", borderRadius: "8px", fontSize: "13px" }}>
-              <div><strong>Account:</strong> {viewUserKeysModal.email}</div>
-              <div style={{ marginTop: "4px", color: "#64748b" }}>
-                <strong>Account Type:</strong> {viewUserKeysModal.role === "admin" || viewUserKeysModal.role === "superadmin" ? "Platform Administrator" : "Regular Client User"} • 
-                <strong> Total Keys Created:</strong> {viewUserKeysModal.apiKeyCount ?? viewUserKeysModal.apiKeys?.length ?? 0}
+            {/* User Meta Information Banner */}
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "12px 16px",
+                background: "rgba(148, 163, 184, 0.08)",
+                borderRadius: "10px",
+                fontSize: "13px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "8px"
+              }}
+            >
+              <div>
+                <span style={{ fontWeight: 600 }}>{viewUserKeysModal.email}</span>
+                <span style={{ color: "#64748b", marginLeft: "8px" }}>
+                  • {viewUserKeysModal.role === "admin" || viewUserKeysModal.role === "superadmin" ? "Administrator" : "Client User"}
+                </span>
               </div>
+              <span
+                style={{
+                  background: "rgba(202, 138, 4, 0.15)",
+                  color: "#ca8a04",
+                  padding: "3px 10px",
+                  borderRadius: "9999px",
+                  fontSize: "11px",
+                  fontWeight: 700
+                }}
+              >
+                {userKeysList.length} Total Keys
+              </span>
             </div>
 
-            {(!viewUserKeysModal.apiKeys || viewUserKeysModal.apiKeys.length === 0) ? (
-              <div style={{ padding: "24px", textAlign: "center", color: "#64748b", fontSize: "14px" }}>
-                This user has not generated any API keys yet.
+            {/* Provision New Key for User Toolbar */}
+            <form onSubmit={handleCreateKeyForUser} style={{ marginBottom: "18px", display: "flex", gap: "8px" }}>
+              <input
+                type="text"
+                className="admin-input"
+                style={{ padding: "8px 12px", fontSize: "13px", flex: 1 }}
+                placeholder="New key name (e.g. Production Mobile Backend)..."
+                value={newAdminKeyName}
+                onChange={(e) => setNewAdminKeyName(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="admin-btn admin-btn-primary"
+                style={{ fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap" }}
+                disabled={creatingKeyForUser}
+              >
+                <Plus size={14} /> {creatingKeyForUser ? "Generating..." : "Generate Key"}
+              </button>
+            </form>
+
+            {/* List of Keys with Full Visibility & Admin Controls */}
+            {userKeysLoading ? (
+              <div style={{ padding: "28px", textAlign: "center", color: "#64748b", fontSize: "14px" }}>
+                Loading user API keys...
+              </div>
+            ) : userKeysList.length === 0 ? (
+              <div style={{ padding: "32px", textAlign: "center", color: "#64748b", fontSize: "14px", border: "1px dashed rgba(148, 163, 184, 0.2)", borderRadius: "10px" }}>
+                <Key size={32} style={{ color: "#94a3b8", margin: "0 auto 10px" }} />
+                <div>This user currently has no API keys provisioned.</div>
+                <div style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
+                  Use the field above to generate their initial key.
+                </div>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "320px", overflowY: "auto" }}>
-                {viewUserKeysModal.apiKeys.map((k, i) => (
-                  <div
-                    key={k._id || i}
-                    style={{
-                      padding: "12px 14px",
-                      background: "rgba(15, 23, 42, 0.6)",
-                      border: "1px solid rgba(148, 163, 184, 0.15)",
-                      borderRadius: "8px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px"
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontWeight: 600, fontSize: "13px", color: "#f8fafc" }}>
-                        {k.name || `API Key #${i + 1}`}
-                      </span>
-                      <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-                        {k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "Active"}
-                      </span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxHeight: "380px", overflowY: "auto", paddingRight: "4px" }}>
+                {userKeysList.map((k, i) => {
+                  const isUnmasked = Boolean(showUnmaskedKeys[k._id]);
+                  const isCopied = copiedKeyId === k._id;
+                  const isActive = k.isActive !== false;
+
+                  return (
+                    <div key={k._id || i} className={`admin-key-card ${!isActive ? "disabled" : ""}`}>
+                      <div className="admin-key-card-top">
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ fontWeight: 600, fontSize: "14px", color: "#f8fafc" }}>
+                            {k.name || `API Key #${i + 1}`}
+                          </span>
+                          <span className={`badge badge-${isActive ? "success" : "danger"}`} style={{ fontSize: "10px", padding: "2px 8px" }}>
+                            {isActive ? "Active" : "Revoked"}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                          Created: {k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "Active"}
+                          {k.lastUsedAt && ` • Last used: ${new Date(k.lastUsedAt).toLocaleDateString()}`}
+                        </div>
+                      </div>
+
+                      {/* Monospace Key Display with Unmask & Copy Controls */}
+                      <div className="admin-key-display-box">
+                        <span className="admin-key-code">
+                          {isUnmasked ? k.key : (k.maskedKey || `${k.key?.slice(0, 8)}...${k.key?.slice(-4)}`)}
+                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn-outline"
+                            style={{ padding: "3px 8px", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                            onClick={() => toggleShowKey(k._id)}
+                            title={isUnmasked ? "Mask API key" : "View unmasked API key"}
+                          >
+                            {isUnmasked ? <EyeOff size={12} /> : <Eye size={12} />}
+                            {isUnmasked ? "Hide" : "Reveal"}
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn-outline"
+                            style={{ padding: "3px 8px", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                            onClick={() => handleCopyKey(k._id, k.key)}
+                            title="Copy full unmasked API key to clipboard"
+                          >
+                            {isCopied ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                            {isCopied ? "Copied" : "Copy"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Administrative Action Controls */}
+                      <div className="admin-key-actions-bar">
+                        <button
+                          type="button"
+                          className={`admin-btn ${isActive ? "admin-btn-outline" : "admin-btn-primary"}`}
+                          style={{
+                            padding: "4px 10px",
+                            fontSize: "11px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px",
+                            borderColor: isActive ? "rgba(239, 68, 68, 0.4)" : undefined,
+                            color: isActive ? "#ef4444" : undefined
+                          }}
+                          onClick={() => handleToggleKey(k._id, isActive)}
+                          title={isActive ? "Disable this key immediately to block all incoming requests" : "Re-activate this API key"}
+                        >
+                          {isActive ? "Deactivate / Revoke" : "Re-activate Key"}
+                        </button>
+
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-outline"
+                          style={{ padding: "4px 10px", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "5px" }}
+                          onClick={() => handleRotateKey(k._id)}
+                          title="Generate a new key string and revoke this one"
+                        >
+                          <RotateCw size={12} /> Rotate Key
+                        </button>
+
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-danger"
+                          style={{ padding: "4px 8px", fontSize: "11px" }}
+                          onClick={() => handleDeleteKey(k._id)}
+                          title="Permanently delete this key"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ fontFamily: "monospace", fontSize: "12px", color: "#38bdf8", background: "rgba(0,0,0,0.3)", padding: "4px 8px", borderRadius: "4px", width: "fit-content" }}>
-                      {k.maskedKey}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

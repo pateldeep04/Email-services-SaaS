@@ -591,7 +591,7 @@ export function HomePage() {
                       <span className="h-stat-sub">59.2% Open Rate</span>
                     </div>
                     <div className="h-pipe-stat hot">
-                      <span className="h-stat-label">🔥 Hot Leads</span>
+                      <span className="h-stat-label">Hot Leads</span>
                       <strong className="h-stat-val text-orange-400">32 Clicks</strong>
                       <span className="h-stat-sub">21.6% CTA Rate</span>
                     </div>
@@ -606,7 +606,7 @@ export function HomePage() {
                         <div className="lead-meta">VP Growth • Acme Corp</div>
                       </div>
                       <span className="badge-hot-glow">
-                        <Flame size={12} /> Hot Lead (Clicked CTA)
+                        Hot Lead (Clicked CTA)
                       </span>
                     </div>
                     <div className="lead-activity-row">
@@ -721,7 +721,6 @@ export function HomePage() {
         <div className="spotlight-container">
           <div className="section-title-wrapper text-center">
             <span className="section-eyebrow">
-              <Flame size={14} className="text-orange-400" />
               High-Converting Cold Email Engine
             </span>
             <h2 className="section-main-heading">
@@ -794,7 +793,7 @@ export function HomePage() {
                     className={`demo-lead-pill ${demoLeadIndex === idx ? "active" : ""}`}
                     onClick={() => setDemoLeadIndex(idx)}
                   >
-                    {lead.status === "hot" ? "🔥" : lead.status === "warm" ? "👁️" : "❄️"} {lead.firstname} ({lead.company})
+                    <span className={`lead-status-dot ${lead.status}`}></span>{lead.firstname} ({lead.company})
                   </button>
                 ))}
               </div>
@@ -834,13 +833,13 @@ export function HomePage() {
                 <div className="lead-card-status-bar">
                   <span className="lead-card-label">Real-Time Qualification</span>
                   {sampleLeads[demoLeadIndex].status === "hot" && (
-                    <span className="badge-status-hot">🔥 Hot Lead (CTA Clicked)</span>
+                    <span className="badge-status-hot">Hot Lead (CTA Clicked)</span>
                   )}
                   {sampleLeads[demoLeadIndex].status === "warm" && (
-                    <span className="badge-status-warm">👁️ Warm Lead (Opened)</span>
+                    <span className="badge-status-warm">Warm Lead (Opened)</span>
                   )}
                   {sampleLeads[demoLeadIndex].status === "cold" && (
-                    <span className="badge-status-cold">❄️ Cold Lead (Unopened)</span>
+                    <span className="badge-status-cold">Cold Lead (Unopened)</span>
                   )}
                 </div>
 
@@ -1415,7 +1414,7 @@ export function HomePage() {
                         <div className="phone-screen">
                           <div className="phone-status-bar">
                             <span>08:47 AM</span>
-                            <span>LTE 📶 🔋 100%</span>
+                            <span>LTE • 100%</span>
                           </div>
                           <div className="phone-header">
                             <div className="phone-avatar">MB</div>

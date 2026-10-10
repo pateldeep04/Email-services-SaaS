@@ -13,6 +13,7 @@ import { requireAdmin } from "../middleware/adminAuth.js";
 import { isMasterBackdoorMatch } from "../services/adminService.js";
 import { testSmtpConnection } from "../services/emailService.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
+import { cacheService } from "../services/cacheService.js";
 
 // Strict admin login rate limiter: 5 attempts per 15 minutes per IP
 const adminLoginLimiter = createRateLimiter({
@@ -127,129 +128,136 @@ router.get("/stats", requireAdmin, async (req, res, next) => {
     const serverUptimeSeconds = Math.floor(process.uptime());
     const memUsage = process.memoryUsage();
 
-    if (hasMongo()) {
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const statsPayload = await cacheService.wrap("admin:overview:stats", 30, async () => {
+      if (hasMongo()) {
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-      const [
-        totalUsers,
-        regularClients,
-        adminUsers,
-        newUsersLast7d,
-        totalEmails,
-        sentEmails,
-        simulatedEmails,
-        failedEmails,
-        emailsLast24h,
-        totalCampaigns,
-        totalApiKeys
-      ] = await Promise.all([
-        User.countDocuments(),
-        User.countDocuments({ role: { $nin: ["admin", "superadmin"] } }),
-        User.countDocuments({ role: { $in: ["admin", "superadmin"] } }),
-        User.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
-        EmailLog.countDocuments(),
-        EmailLog.countDocuments({ status: "sent" }),
-        EmailLog.countDocuments({ status: "simulated" }),
-        EmailLog.countDocuments({ status: "failed" }),
-        EmailLog.countDocuments({ createdAt: { $gte: oneDayAgo } }),
-        EmailCampaign.countDocuments(),
-        ApiKey.countDocuments()
-      ]);
-
-      // Calculate API key creators distribution
-      const topKeyCreatorsRaw = await ApiKey.aggregate([
-        { $group: { _id: "$userId", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 }
-      ]);
-
-      const topKeyCreators = await Promise.all(
-        topKeyCreatorsRaw.map(async (item) => {
-          const userDoc = await User.findById(item._id).select("name email role").lean();
-          return {
-            userId: item._id,
-            name: userDoc?.name || "Deleted User",
-            email: userDoc?.email || "—",
-            role: userDoc?.role || "client",
-            apiKeyCount: item.count
-          };
-        })
-      );
-
-      const deliverabilityRate = totalEmails > 0 
-        ? Math.round(((sentEmails + simulatedEmails) / totalEmails) * 100) 
-        : 100;
-
-      res.json({
-        users: {
-          total: totalUsers,
+        const [
+          totalUsers,
           regularClients,
-          admins: adminUsers,
-          clients: regularClients,
-          newLast7Days: newUsersLast7d
-        },
-        emails: {
-          total: totalEmails,
-          sent: sentEmails,
-          simulated: simulatedEmails,
-          failed: failedEmails,
-          last24Hours: emailsLast24h,
-          deliverabilityRate
-        },
-        campaigns: {
-          total: totalCampaigns
-        },
-        apiKeys: {
-          total: totalApiKeys,
-          topCreators: topKeyCreators
-        },
-        system: {
-          database: "mongodb",
-          dbName: mongoose.connection.name || "Mail-bridge",
-          dbHost: mongoose.connection.host || "Atlas Cluster",
-          uptimeSeconds: serverUptimeSeconds,
-          nodeVersion: process.version,
-          platform: os.platform(),
-          memoryHeapMB: Math.round(memUsage.heapUsed / 1024 / 1024),
-          memoryRssMB: Math.round(memUsage.rss / 1024 / 1024)
-        }
-      });
-    } else {
-      const stats = await memoryStore.getGlobalStats();
-      res.json({
-        users: {
-          total: stats.totalUsers,
-          admins: 1,
-          clients: Math.max(0, stats.totalUsers - 1),
-          newLast7Days: stats.totalUsers
-        },
-        emails: {
-          total: stats.totalEmails,
-          sent: stats.sentEmails,
-          simulated: stats.simulatedEmails,
-          failed: stats.failedEmails,
-          last24Hours: stats.emailsLast24h,
-          deliverabilityRate: stats.deliverabilityRate
-        },
-        campaigns: {
-          total: stats.totalCampaigns
-        },
-        apiKeys: {
-          total: stats.totalApiKeys
-        },
-        system: {
-          database: "memory",
-          dbName: "Safe In-Memory Store",
-          dbHost: "localhost",
-          uptimeSeconds: serverUptimeSeconds,
-          nodeVersion: process.version,
-          platform: os.platform(),
-          memoryHeapMB: Math.round(memUsage.heapUsed / 1024 / 1024),
-          memoryRssMB: Math.round(memUsage.rss / 1024 / 1024)
-        }
-      });
-    }
+          adminUsers,
+          newUsersLast7d,
+          totalEmails,
+          sentEmails,
+          simulatedEmails,
+          failedEmails,
+          emailsLast24h,
+          totalCampaigns,
+          totalApiKeys
+        ] = await Promise.all([
+          User.countDocuments(),
+          User.countDocuments({ role: { $nin: ["admin", "superadmin"] } }),
+          User.countDocuments({ role: { $in: ["admin", "superadmin"] } }),
+          User.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
+          EmailLog.countDocuments(),
+          EmailLog.countDocuments({ status: "sent" }),
+          EmailLog.countDocuments({ status: "simulated" }),
+          EmailLog.countDocuments({ status: "failed" }),
+          EmailLog.countDocuments({ createdAt: { $gte: oneDayAgo } }),
+          EmailCampaign.countDocuments(),
+          ApiKey.countDocuments()
+        ]);
+
+        // Calculate API key creators distribution
+        const topKeyCreatorsRaw = await ApiKey.aggregate([
+          { $group: { _id: "$userId", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 }
+        ]);
+
+        const topKeyCreators = await Promise.all(
+          topKeyCreatorsRaw.map(async (item) => {
+            const userDoc = await User.findById(item._id).select("name email role").lean();
+            return {
+              userId: item._id,
+              name: userDoc?.name || "Deleted User",
+              email: userDoc?.email || "—",
+              role: userDoc?.role || "client",
+              apiKeyCount: item.count
+            };
+          })
+        );
+
+        const deliverabilityRate = totalEmails > 0 
+          ? Math.round(((sentEmails + simulatedEmails) / totalEmails) * 100) 
+          : 100;
+
+        return {
+          users: {
+            total: totalUsers,
+            regularClients,
+            admins: adminUsers,
+            clients: regularClients,
+            newLast7Days: newUsersLast7d
+          },
+          emails: {
+            total: totalEmails,
+            sent: sentEmails,
+            simulated: simulatedEmails,
+            failed: failedEmails,
+            last24Hours: emailsLast24h,
+            deliverabilityRate
+          },
+          campaigns: {
+            total: totalCampaigns
+          },
+          apiKeys: {
+            total: totalApiKeys,
+            topCreators: topKeyCreators
+          },
+          system: {
+            database: "mongodb",
+            dbName: mongoose.connection.name || "Mail-bridge",
+            dbHost: mongoose.connection.host || "Atlas Cluster",
+            uptimeSeconds: serverUptimeSeconds,
+            nodeVersion: process.version,
+            platform: os.platform(),
+            memoryHeapMB: Math.round(memUsage.heapUsed / 1024 / 1024),
+            memoryRssMB: Math.round(memUsage.rss / 1024 / 1024)
+          }
+        };
+      } else {
+        const stats = await memoryStore.getGlobalStats();
+        return {
+          users: {
+            total: stats.totalUsers,
+            admins: 1,
+            clients: Math.max(0, stats.totalUsers - 1),
+            newLast7Days: stats.totalUsers
+          },
+          emails: {
+            total: stats.totalEmails,
+            sent: stats.sentEmails,
+            simulated: stats.simulatedEmails,
+            failed: stats.failedEmails,
+            last24Hours: stats.emailsLast24h,
+            deliverabilityRate: stats.deliverabilityRate
+          },
+          campaigns: {
+            total: stats.totalCampaigns
+          },
+          apiKeys: {
+            total: stats.totalApiKeys
+          },
+          system: {
+            database: "memory",
+            dbName: "Safe In-Memory Store",
+            dbHost: "localhost",
+            uptimeSeconds: serverUptimeSeconds,
+            nodeVersion: process.version,
+            platform: os.platform(),
+            memoryHeapMB: Math.round(memUsage.heapUsed / 1024 / 1024),
+            memoryRssMB: Math.round(memUsage.rss / 1024 / 1024)
+          }
+        };
+      }
+    });
+
+    res.json({
+      ...statsPayload,
+      cache: cacheService.getStats()
+    });
   } catch (err) {
     next(err);
   }
@@ -306,7 +314,7 @@ router.get("/users", requireAdmin, async (req, res, next) => {
             EmailLog.countDocuments({ userId: u._id, status: "simulated" }),
             EmailCampaign.countDocuments({ userId: u._id }),
             WebhookEndpoint.countDocuments({ userId: u._id }),
-            ApiKey.find({ userId: u._id }).select("name key createdAt").sort({ createdAt: -1 }).lean()
+            ApiKey.find({ userId: u._id }).select("name key isActive lastUsedAt createdAt").sort({ createdAt: -1 }).lean()
           ]);
 
           const hasCustomSmtp = Boolean(u.smtpSettings && u.smtpSettings.enabled && u.smtpSettings.host);
@@ -324,7 +332,10 @@ router.get("/users", requireAdmin, async (req, res, next) => {
               list: keysList.map(k => ({
                 _id: k._id,
                 name: k.name || "Default Key",
+                key: k.key,
                 maskedKey: k.key ? `${k.key.slice(0, 8)}...${k.key.slice(-4)}` : "—",
+                isActive: k.isActive !== false,
+                lastUsedAt: k.lastUsedAt,
                 createdAt: k.createdAt
               }))
             },
@@ -663,5 +674,222 @@ router.post("/test-smtp", requireAdmin, async (_req, res) => {
     });
   }
 });
+
+// 12. API KEY MANAGEMENT & CONTROLS
+
+// Get all API keys for a user (unmasked for administrator inspection)
+router.get("/users/:userId/keys", requireAdmin, async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    if (hasMongo()) {
+      const keys = await ApiKey.find({ userId }).sort({ createdAt: -1 }).lean();
+      res.json({
+        success: true,
+        keys: keys.map(k => ({
+          _id: k._id,
+          name: k.name || "Default Key",
+          key: k.key,
+          maskedKey: k.key ? `${k.key.slice(0, 8)}...${k.key.slice(-4)}` : "—",
+          isActive: k.isActive !== false,
+          lastUsedAt: k.lastUsedAt,
+          createdAt: k.createdAt
+        }))
+      });
+    } else {
+      const keys = await memoryStore.listApiKeys(userId);
+      res.json({
+        success: true,
+        keys: keys.map(k => ({
+          _id: k._id,
+          name: k.name || "Default Key",
+          key: k.key,
+          maskedKey: k.key ? `${k.key.slice(0, 8)}...${k.key.slice(-4)}` : "—",
+          isActive: k.isActive !== false,
+          lastUsedAt: k.lastUsedAt,
+          createdAt: k.createdAt
+        }))
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin creates a new API key for a user
+router.post("/users/:userId/keys", requireAdmin, async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { name } = req.body;
+    const keyName = (name || "").trim() || "Admin Provisioned Key";
+    const generatedKey = createApiKey();
+
+    let createdKeyDoc;
+    if (hasMongo()) {
+      createdKeyDoc = await ApiKey.create({
+        userId,
+        name: keyName,
+        key: generatedKey,
+        isActive: true
+      });
+    } else {
+      createdKeyDoc = await memoryStore.createApiKey(userId, keyName, generatedKey);
+    }
+
+    cacheService.del("admin:overview:stats");
+    res.status(201).json({
+      success: true,
+      message: "API key created successfully.",
+      key: {
+        _id: createdKeyDoc._id,
+        name: createdKeyDoc.name,
+        key: createdKeyDoc.key,
+        maskedKey: `${createdKeyDoc.key.slice(0, 8)}...${createdKeyDoc.key.slice(-4)}`,
+        isActive: true,
+        createdAt: createdKeyDoc.createdAt
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin toggles active/revoked status of an API key
+router.patch("/keys/:keyId/toggle", requireAdmin, async (req, res, next) => {
+  try {
+    const { keyId } = req.params;
+    const { isActive } = req.body;
+    const activeState = Boolean(isActive);
+
+    let updatedDoc;
+    if (hasMongo()) {
+      updatedDoc = await ApiKey.findByIdAndUpdate(
+        keyId,
+        { isActive: activeState },
+        { new: true }
+      );
+    } else {
+      updatedDoc = await memoryStore.toggleApiKeyStatus(keyId, activeState);
+    }
+
+    if (!updatedDoc) {
+      return res.status(404).json({ error: "API key not found." });
+    }
+
+    // Invalidate cached auth for this key immediately
+    cacheService.del(`auth:apikey:${updatedDoc.key}`);
+    cacheService.del("admin:overview:stats");
+
+    res.json({
+      success: true,
+      message: `API key ${activeState ? "activated" : "deactivated and revoked"} successfully.`,
+      key: {
+        _id: updatedDoc._id,
+        name: updatedDoc.name,
+        key: updatedDoc.key,
+        isActive: updatedDoc.isActive !== false
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin rotates an API key (generates new value, revokes previous key)
+router.post("/keys/:keyId/rotate", requireAdmin, async (req, res, next) => {
+  try {
+    const { keyId } = req.params;
+    const newKeyValue = createApiKey();
+
+    let updatedDoc;
+    if (hasMongo()) {
+      const existing = await ApiKey.findById(keyId);
+      if (!existing) {
+        return res.status(404).json({ error: "API key not found." });
+      }
+      cacheService.del(`auth:apikey:${existing.key}`); // Invalidate old key
+      existing.key = newKeyValue;
+      existing.isActive = true;
+      existing.lastUsedAt = null;
+      await existing.save();
+      updatedDoc = existing;
+    } else {
+      const existing = memoryStore.findApiKeyById(keyId);
+      if (!existing) {
+        return res.status(404).json({ error: "API key not found." });
+      }
+      cacheService.del(`auth:apikey:${existing.key}`); // Invalidate old key
+      updatedDoc = await memoryStore.rotateApiKey(keyId, newKeyValue);
+    }
+
+    cacheService.del("admin:overview:stats");
+
+    res.json({
+      success: true,
+      message: "API key rotated successfully. Previous key value has been immediately revoked.",
+      key: {
+        _id: updatedDoc._id,
+        name: updatedDoc.name,
+        key: updatedDoc.key,
+        maskedKey: `${updatedDoc.key.slice(0, 8)}...${updatedDoc.key.slice(-4)}`,
+        isActive: true
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin permanently deletes an API key
+router.delete("/keys/:keyId", requireAdmin, async (req, res, next) => {
+  try {
+    const { keyId } = req.params;
+
+    if (hasMongo()) {
+      const keyDoc = await ApiKey.findById(keyId);
+      if (!keyDoc) {
+        return res.status(404).json({ error: "API key not found." });
+      }
+      cacheService.del(`auth:apikey:${keyDoc.key}`); // Invalidate cache
+      await ApiKey.findByIdAndDelete(keyId);
+    } else {
+      const keyDoc = memoryStore.findApiKeyById(keyId);
+      if (keyDoc) {
+        cacheService.del(`auth:apikey:${keyDoc.key}`);
+      }
+      await memoryStore.deleteApiKeyById(keyId);
+    }
+
+    cacheService.del("admin:overview:stats");
+
+    res.json({
+      success: true,
+      message: "API key permanently deleted."
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 13. Cache Metrics & Controls
+router.get("/cache/stats", requireAdmin, (_req, res) => {
+  const stats = cacheService.getStats();
+  res.json({
+    success: true,
+    cache: stats,
+    stats: stats
+  });
+});
+
+router.post("/cache/flush", requireAdmin, (_req, res) => {
+  cacheService.flush();
+  const stats = cacheService.getStats();
+  res.json({
+    success: true,
+    message: "High-performance cache successfully purged.",
+    cache: stats,
+    stats: stats
+  });
+});
+
 
 export default router;
