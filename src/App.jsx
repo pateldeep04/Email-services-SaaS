@@ -5,6 +5,7 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 
+import { AdminRoute } from "./components/AdminRoute.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 const LoginPage = lazy(() => import("./pages/LoginPage.jsx").then(m => ({ default: m.LoginPage })));
 const RegisterPage = lazy(() => import("./pages/RegisterPage.jsx").then(m => ({ default: m.RegisterPage })));
@@ -12,6 +13,9 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx").then(m => (
 const DocumentationPage = lazy(() => import("./pages/DocumentationPage.jsx").then(m => ({ default: m.DocumentationPage })));
 const TesterPage = lazy(() => import("./pages/TesterPage.jsx").then(m => ({ default: m.TesterPage })));
 const BulkMailerPage = lazy(() => import("./pages/BulkMailerPage.jsx").then(m => ({ default: m.BulkMailerPage })));
+const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage.jsx").then(m => ({ default: m.AdminLoginPage })));
+const AdminPage = lazy(() => import("./pages/AdminPage.jsx").then(m => ({ default: m.AdminPage })));
+const TermsPage = lazy(() => import("./pages/TermsPage.jsx").then(m => ({ default: m.TermsPage })));
 
 function App() {
   return (
@@ -33,6 +37,12 @@ function App() {
               <Route path="/bulk-mail" element={<BulkMailerPage />} />
               <Route path="/docs" element={<DocumentationPage />} />
               <Route path="/tester" element={<TesterPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/privacy" element={<TermsPage />} />
+              <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+              <Route path="/super-admin/login" element={<Navigate to="/login" replace />} />
+              <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+              <Route path="/super-admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
             <Footer />

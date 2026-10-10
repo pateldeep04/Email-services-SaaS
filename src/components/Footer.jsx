@@ -25,6 +25,7 @@ export function Footer() {
           <Link to="/bulk-mail" className="footer-link">Bulk Mailer</Link>
           <Link to="/docs" className="footer-link">Documentation</Link>
           <Link to="/tester" className="footer-link">API Tester</Link>
+          <Link to="/terms" className="footer-link">Terms & Privacy</Link>
           <a href="https://github.com/pateldeep04/Email-services-SaaS" target="_blank" rel="noopener noreferrer" className="footer-link">GitHub</a>
         </div>
       </div>

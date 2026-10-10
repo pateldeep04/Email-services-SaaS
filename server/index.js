@@ -73,6 +73,8 @@ import smsRoutes from "./routes/smsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import campaignRoutes from "./routes/campaignRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import { initializeAdminUser } from "./services/adminService.js";
 import { createRateLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
@@ -80,11 +82,15 @@ const port = process.env.PORT || 5000;
 
 // Production Security Headers
 app.disable("x-powered-by");
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-XSS-Protection", "1; mode=block");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  if (req.secure || req.headers["x-forwarded-proto"] === "https") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  }
   next();
 });
 
@@ -254,6 +260,7 @@ app.use("/api/v1/sms", smsRoutes);
 app.use("/api/v1/ai", aiRoutes);
 app.use("/api/v1/campaigns", campaignRoutes);
 app.use("/api/v1/webhooks", webhookRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -414,18 +421,24 @@ if (process.env.NODE_ENV === "production" || hasDist) {
 }
 
 app.use((err, _req, res, _next) => {
-  if (!err.status || err.status >= 500) {
-    console.error(err);
+  const statusCode = Number(err.status) && err.status >= 400 && err.status < 600 ? err.status : 500;
+  
+  if (statusCode >= 500) {
+    console.error("Internal Server Error:", err.message);
   }
 
-  let errorMessage = err.message || "Something went wrong";
-  if (errorMessage.toLowerCase().includes("bad auth") || errorMessage.toLowerCase().includes("authentication failed")) {
-    errorMessage = "Database authentication failed. Please check your MongoDB username and password in .env.";
+  // Sanitize message: never expose internal database or environmental hints
+  let safeMessage = err.message || "An unexpected error occurred.";
+  if (statusCode === 500) {
+    if (process.env.NODE_ENV === "production") {
+      safeMessage = "An internal server error occurred. Please try again later.";
+    } else if (safeMessage.toLowerCase().includes("bad auth") || safeMessage.toLowerCase().includes("authentication failed")) {
+      safeMessage = "Database connectivity issue encountered.";
+    }
   }
 
-  res.status(err.status || 500).json({
-    error: errorMessage,
-    details: err.details
+  res.status(statusCode).json({
+    error: safeMessage
   });
 });
 
@@ -469,6 +482,9 @@ async function start() {
   } else {
     console.warn("No MongoDB URI configured. Using safe in-memory store.");
   }
+
+  // Ensure Administrator account exists and is ready
+  await initializeAdminUser();
 
   if (process.env.NODE_ENV !== "test") {
     const server = app.listen(port, () => {

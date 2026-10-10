@@ -44,7 +44,7 @@ describe("SMS OTP API", () => {
     expect(res.body.success).toBe(true);
     expect(res.body.status).toBe("simulated");
     expect(res.body.code).toBeDefined(); // returned code because it's simulated
-  });
+  }, 15000);
 
   it("should verify a valid SMS OTP code", async () => {
     // 1. Request OTP

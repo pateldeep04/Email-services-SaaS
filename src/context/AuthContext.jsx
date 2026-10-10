@@ -13,10 +13,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (token && !user) {
+    if (token) {
       fetchProfile();
     }
-  }, []);
+  }, [token]);
 
   async function fetchProfile() {
     try {
@@ -34,13 +34,31 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function register(email, name, password, companyName) {
+  async function sendRegisterOtp(email, name, companyName) {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/auth/register/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, companyName })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send verification code");
+      return data;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function register(email, name, password, companyName, otp = "") {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, password, companyName })
+        body: JSON.stringify({ email, name, password, companyName, otp })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
@@ -82,6 +100,32 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function adminLogin(email, password) {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Admin login failed");
+      setToken(data.token);
+      setUser(data.user);
+      if (data.user.apiKey) {
+        setApiKey(data.user.apiKey);
+        localStorage.setItem("mailbridge_api_key", data.user.apiKey);
+      }
+      localStorage.setItem("mailbridge_token", data.token);
+      localStorage.setItem("mailbridge_user", JSON.stringify(data.user));
+      return data.user;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function loginWithGoogle(credential) {
     if (!credential) {
       throw new Error("Google credential is missing. Please try again.");
@@ -105,7 +149,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("mailbridge_token", data.token);
       localStorage.setItem("mailbridge_user", JSON.stringify(data.user));
       localStorage.setItem("mailbridge_api_key", data.apiKey);
-      return true;
+      return data.user;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error.name === "AbortError") {
@@ -196,7 +240,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, apiKey, setApiKey, loading, register, login, logout, rotateKey, updateUserSettings, updateApiKeySettings, loginWithGoogle }}>
+    <AuthContext.Provider value={{ user, token, apiKey, setApiKey, loading, register, sendRegisterOtp, login, adminLogin, logout, rotateKey, updateUserSettings, updateApiKeySettings, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

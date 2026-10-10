@@ -27,10 +27,17 @@ export async function testSmtpConnection() {
   }
 }
 
+function cleanHeader(val) {
+  if (typeof val !== "string") return "";
+  return val.replace(/[\r\n]/g, "").trim();
+}
+
 export async function sendEmail({ to, subject, html, text }, customSmtp = null, senderProfile = null) {
+  const cleanTo = cleanHeader(to);
+  const cleanSubject = cleanHeader(subject);
   let transporter;
-  let fromName = process.env.FROM_NAME || "MailBridge";
-  let fromEmail = process.env.GMAIL_USER;
+  let fromName = cleanHeader(process.env.FROM_NAME || "MailBridge");
+  let fromEmail = cleanHeader(process.env.GMAIL_USER);
   let replyTo = undefined;
   let isSimulated = false;
 
@@ -78,8 +85,8 @@ export async function sendEmail({ to, subject, html, text }, customSmtp = null, 
     const info = await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
       replyTo,
-      to,
-      subject,
+      to: cleanTo,
+      subject: cleanSubject,
       text,
       html
     });

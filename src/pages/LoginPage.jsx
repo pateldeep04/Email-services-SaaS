@@ -34,8 +34,12 @@ export function LoginPage() {
     }
     setError("");
     try {
-      await loginWithGoogle(response.credential);
-      navigate(from, { replace: true });
+      const loggedUser = await loginWithGoogle(response.credential);
+      if (loggedUser && (loggedUser.role === "admin" || loggedUser.role === "superadmin")) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setError(err.message || "Google Sign-In failed. Please try email login instead.");
     }
@@ -105,7 +109,7 @@ export function LoginPage() {
     if (!email) {
       setEmailError("Please fill in this field.");
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (email.trim().toLowerCase() !== "admin" && !/\S+@\S+\.\S+/.test(email)) {
       setEmailError("Please enter a valid email address.");
       isValid = false;
     }
@@ -118,8 +122,12 @@ export function LoginPage() {
     if (!isValid) return;
 
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      const loggedUser = await login(email.trim(), password);
+      if (loggedUser && (loggedUser.role === "admin" || loggedUser.role === "superadmin")) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setError(err.message);
     }

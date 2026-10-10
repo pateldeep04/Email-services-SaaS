@@ -17,6 +17,30 @@ const VALID_EVENTS = [
   "sms.sent"
 ];
 
+function validateSafeWebhookUrl(urlString) {
+  try {
+    const parsed = new URL(urlString);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "Only HTTP and HTTPS webhook URLs are supported.";
+    }
+    const host = parsed.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host === "::1" || host === "[::1]") {
+      return "Localhost and loopback URLs are not permitted for security reasons.";
+    }
+    if (host === "169.254.169.254" || host.startsWith("169.254.")) {
+      return "Cloud metadata service endpoints are strictly prohibited.";
+    }
+    if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host) ||
+        /^192\.168\.\d{1,3}\.\d{1,3}$/.test(host) ||
+        /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(host)) {
+      return "Private network IP addresses are not permitted.";
+    }
+    return null;
+  } catch {
+    return "Invalid webhook URL format.";
+  }
+}
+
 // All webhook management routes require active user authentication
 router.use(requireAuth);
 
@@ -55,8 +79,9 @@ router.post("/", async (req, res, next) => {
     }
 
     const trimmedUrl = url.trim();
-    if (!/^https?:\/\/.+/i.test(trimmedUrl)) {
-      return res.status(400).json({ error: "Webhook URL must start with http:// or https://" });
+    const urlError = validateSafeWebhookUrl(trimmedUrl);
+    if (urlError) {
+      return res.status(400).json({ error: urlError });
     }
 
     // Filter events against valid event list
@@ -110,8 +135,9 @@ router.put("/:id", async (req, res, next) => {
     const updates = {};
     if (url !== undefined) {
       const trimmedUrl = String(url).trim();
-      if (!/^https?:\/\/.+/i.test(trimmedUrl)) {
-        return res.status(400).json({ error: "Webhook URL must start with http:// or https://" });
+      const urlError = validateSafeWebhookUrl(trimmedUrl);
+      if (urlError) {
+        return res.status(400).json({ error: urlError });
       }
       updates.url = trimmedUrl;
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Mail, LogOut, Sun, Moon, Menu, X } from "lucide-react";
+import { Mail, LogOut, Sun, Moon, Menu, X, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import "../styles/Navbar.css";
@@ -98,6 +98,22 @@ export function Navbar() {
                   <>
                     <span className="user-name">{user.name}</span>
                     <Link to="/dashboard" className={`app-nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
+                    {(user.role === "admin" || user.role === "superadmin") && (
+                      <Link
+                        to="/admin"
+                        className={`app-nav-link ${isActive("/admin")}`}
+                        onClick={handleLinkClick}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          fontWeight: 700,
+                          color: "#0f766e"
+                        }}
+                      >
+                        <Shield size={14} /> Admin
+                      </Link>
+                    )}
                     <button className="logout-btn" onClick={handleLogoutClick}>
                       <LogOut size={18} /> Logout
                     </button>

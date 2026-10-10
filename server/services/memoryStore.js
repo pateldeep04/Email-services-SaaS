@@ -448,5 +448,180 @@ export const memoryStore = {
     webhookDeliveryLogs.length = 0;
     webhookDeliveryLogs.push(...remaining);
     return true;
+  },
+
+  // Admin Operations (Memory Store Fallback)
+  async listAllUsers({ page = 1, limit = 10, search = "", role = "all" } = {}) {
+    let filtered = [...users];
+    if (role && role !== "all") {
+      filtered = filtered.filter(u => (u.role || "client") === role);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter(u =>
+        (u.name && u.name.toLowerCase().includes(q)) ||
+        (u.email && u.email.toLowerCase().includes(q)) ||
+        (u.companyName && u.companyName.toLowerCase().includes(q))
+      );
+    }
+    const totalUsers = filtered.length;
+    const totalPages = Math.ceil(totalUsers / limit) || 1;
+    const pagedUsers = filtered.slice((page - 1) * limit, page * limit).map(u => {
+      const uKeys = apiKeys.filter(k => String(k.userId) === String(u._id));
+      const uLogs = emailLogs.filter(l => String(l.userId) === String(u._id));
+      const uCampaigns = campaigns.filter(c => String(c.userId) === String(u._id));
+      const uWebhooks = webhookEndpoints.filter(w => String(w.userId) === String(u._id));
+
+      const emailTotal = uLogs.length;
+      const sentCount = uLogs.filter(l => l.status === "sent").length;
+      const failedCount = uLogs.filter(l => l.status === "failed").length;
+      const simCount = uLogs.filter(l => l.status === "simulated").length;
+
+      const hasCustomSmtp = Boolean(u.smtpSettings && u.smtpSettings.enabled && u.smtpSettings.host);
+      const hasSms = Boolean(u.smsSettings && u.smsSettings.phoneNumber);
+
+      const services = {
+        emails: {
+          total: emailTotal,
+          sent: sentCount,
+          failed: failedCount,
+          simulated: simCount
+        },
+        apiKeys: {
+          count: uKeys.length,
+          list: uKeys.map(k => ({
+            _id: k._id,
+            name: k.name || "Default Key",
+            maskedKey: k.key ? `${k.key.slice(0, 8)}...${k.key.slice(-4)}` : "—",
+            createdAt: k.createdAt
+          }))
+        },
+        campaigns: {
+          count: uCampaigns.length
+        },
+        smtp: {
+          enabled: hasCustomSmtp,
+          host: u.smtpSettings?.host || "System Default (Gmail Relay)",
+          port: u.smtpSettings?.port || 587,
+          fromEmail: u.smtpSettings?.fromEmail || u.email
+        },
+        sms: {
+          enabled: hasSms,
+          phoneNumber: u.smsSettings?.phoneNumber || "Not configured",
+          mode: u.smsSettings?.simulationMode ? "Simulated" : "Live SMS Gateway"
+        },
+        webhooks: {
+          count: uWebhooks.length
+        },
+        activeCount: (emailTotal > 0 ? 1 : 0) + (uKeys.length > 0 ? 1 : 0) + (uCampaigns.length > 0 ? 1 : 0) + (hasCustomSmtp ? 1 : 0) + (hasSms ? 1 : 0) + (uWebhooks.length > 0 ? 1 : 0)
+      };
+
+      return {
+        _id: u._id,
+        name: u.name,
+        email: u.email,
+        companyName: u.companyName || "",
+        role: u.role || "client",
+        isRegular: u.role !== "admin" && u.role !== "superadmin",
+        apiKeyCount: uKeys.length,
+        apiKeys: services.apiKeys.list,
+        emailCount: emailTotal,
+        campaignCount: uCampaigns.length,
+        services,
+        createdAt: u.createdAt
+      };
+    });
+    return { users: pagedUsers, totalUsers, totalPages, currentPage: page };
+  },
+
+  async updateUserRole(userId, newRole) {
+    const u = users.find(user => String(user._id) === String(userId));
+    if (!u) return null;
+    u.role = newRole;
+    u.updatedAt = new Date().toISOString();
+    return u;
+  },
+
+  async deleteUser(userId) {
+    const idx = users.findIndex(u => String(u._id) === String(userId));
+    if (idx === -1) return false;
+    users.splice(idx, 1);
+    // Cleanup user apiKeys, logs, campaigns
+    for (let i = apiKeys.length - 1; i >= 0; i--) {
+      if (String(apiKeys[i].userId) === String(userId)) apiKeys.splice(i, 1);
+    }
+    for (let i = emailLogs.length - 1; i >= 0; i--) {
+      if (String(emailLogs[i].userId) === String(userId)) emailLogs.splice(i, 1);
+    }
+    for (let i = campaigns.length - 1; i >= 0; i--) {
+      if (String(campaigns[i].userId) === String(userId)) campaigns.splice(i, 1);
+    }
+    return true;
+  },
+
+  async listAllEmailLogs({ page = 1, limit = 20, search = "", status = "all", type = "all" } = {}) {
+    let filtered = [...emailLogs];
+    if (status && status !== "all") {
+      filtered = filtered.filter(l => l.status === status);
+    }
+    if (type && type !== "all") {
+      filtered = filtered.filter(l => l.type === type);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter(l =>
+        (l.to && l.to.toLowerCase().includes(q)) ||
+        (l.subject && l.subject.toLowerCase().includes(q)) ||
+        (l.apiKey && l.apiKey.toLowerCase().includes(q))
+      );
+    }
+    const totalLogs = filtered.length;
+    const totalPages = Math.ceil(totalLogs / limit) || 1;
+    const logs = filtered.slice((page - 1) * limit, page * limit);
+    return { logs, totalLogs, totalPages, currentPage: page };
+  },
+
+  async listAllCampaigns({ page = 1, limit = 15 } = {}) {
+    const totalCampaigns = campaigns.length;
+    const totalPages = Math.ceil(totalCampaigns / limit) || 1;
+    const pagedCampaigns = campaigns.slice((page - 1) * limit, page * limit).map(c => {
+      const creator = users.find(u => String(u._id) === String(c.userId));
+      return {
+        ...c,
+        creatorName: creator ? creator.name : "Unknown",
+        creatorEmail: creator ? creator.email : "Unknown"
+      };
+    });
+    return { campaigns: pagedCampaigns, totalCampaigns, totalPages, currentPage: page };
+  },
+
+  async getGlobalStats() {
+    const totalUsers = users.length;
+    const totalEmails = emailLogs.length;
+    const sentEmails = emailLogs.filter(l => l.status === "sent").length;
+    const simulatedEmails = emailLogs.filter(l => l.status === "simulated").length;
+    const failedEmails = emailLogs.filter(l => l.status === "failed").length;
+    const totalCampaigns = campaigns.length;
+    const totalApiKeys = apiKeys.length;
+    
+    // Calculate 24h count
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const emailsLast24h = emailLogs.filter(l => new Date(l.createdAt).getTime() > oneDayAgo).length;
+
+    const deliverabilityRate = totalEmails > 0 
+      ? Math.round(((sentEmails + simulatedEmails) / totalEmails) * 100) 
+      : 100;
+
+    return {
+      totalUsers,
+      totalEmails,
+      sentEmails,
+      simulatedEmails,
+      failedEmails,
+      emailsLast24h,
+      deliverabilityRate,
+      totalCampaigns,
+      totalApiKeys
+    };
   }
 };

@@ -1,0 +1,178 @@
+/* MailBridge Terms of Service & Privacy Policy Stylesheet */
+
+.legal-page-container {
+  min-height: calc(100vh - 70px);
+  background: var(--bg-main, #030712);
+  color: var(--text-main, #f3f4f6);
+  padding: 48px 20px 80px;
+}
+
+.legal-content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.legal-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
+}
+
+.legal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(15, 118, 110, 0.15);
+  border: 1px solid rgba(20, 184, 166, 0.35);
+  border-radius: 9999px;
+  color: #2dd4bf;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.legal-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-main, #ffffff);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.legal-subtitle {
+  color: #94a3b8;
+  font-size: 15px;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.legal-nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.legal-tab-btn {
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.25));
+  background: rgba(15, 23, 42, 0.5);
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.legal-tab-btn:hover {
+  color: #ffffff;
+  border-color: rgba(20, 184, 166, 0.5);
+}
+
+.legal-tab-btn.active {
+  background: #0f766e;
+  border-color: #0d9488;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(15, 118, 110, 0.35);
+}
+
+.legal-card {
+  background: var(--card-bg, rgba(15, 23, 42, 0.7));
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
+  border-radius: 18px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+.legal-section {
+  margin-bottom: 32px;
+}
+
+.legal-section:last-child {
+  margin-bottom: 0;
+}
+
+.legal-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main, #ffffff);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legal-section-title svg {
+  color: #14b8a6;
+  flex-shrink: 0;
+}
+
+.legal-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #cbd5e1;
+  margin-bottom: 14px;
+}
+
+.legal-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legal-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.legal-list-bullet {
+  color: #14b8a6;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: -2px;
+}
+
+.legal-callout {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  color: #fca5a5;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.legal-callout-info {
+  background: rgba(20, 184, 166, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  color: #5eead4;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .legal-card {
+    padding: 24px;
+  }
+  .legal-title {
+    font-size: 28px;
+  }
+}
