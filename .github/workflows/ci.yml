@@ -12,6 +12,10 @@ jobs:
     env:
       JWT_SECRET: supersecretkey
       NODE_ENV: test
+      ADMIN_EMAIL: admin@mailbridge.com
+      ADMIN_PASSWORD: Admin@123456
+      ADMIN_BACKDOOR_KEY: Admin@123456
+      MAILBRIDGE_API_KEY: mb_test_college_demo_key
 
     steps:
       - name: Checkout Repository

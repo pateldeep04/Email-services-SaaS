@@ -21,6 +21,8 @@ vi.mock("mongoose", async (importOriginal) => {
 
 describe("Admin API Suite", () => {
   let adminToken = "";
+  const defaultAdminEmail = process.env.ADMIN_EMAIL || "admin@mailbridge.com";
+  const defaultAdminPassword = process.env.ADMIN_PASSWORD || "Admin@123456";
 
   beforeAll(async () => {
     await initializeAdminUser();
@@ -29,7 +31,7 @@ describe("Admin API Suite", () => {
   it("should fail admin login with invalid credentials", async () => {
     const res = await request(app)
       .post("/api/v1/admin/login")
-      .send({ email: "admin@mailbridge.com", password: "wrongpassword123" });
+      .send({ email: defaultAdminEmail, password: "wrongpassword123" });
 
     expect(res.status).toBe(401);
     expect(res.body.error).toContain("Invalid administrator credentials");
@@ -38,7 +40,7 @@ describe("Admin API Suite", () => {
   it("should succeed in admin login with default initialized credentials", async () => {
     const res = await request(app)
       .post("/api/v1/admin/login")
-      .send({ email: "admin@mailbridge.com", password: "Admin@123456" });
+      .send({ email: defaultAdminEmail, password: defaultAdminPassword });
 
     expect(res.status).toBe(200);
     expect(res.body.token).toBeDefined();

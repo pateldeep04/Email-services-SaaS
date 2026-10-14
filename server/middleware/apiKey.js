@@ -35,7 +35,7 @@ export async function requireApiKey(req, res, next) {
 
   const hasMongo = mongoose.connection.readyState === 1;
   let client = null;
-  let keyDoc = null;
+  let keyDoc;
 
   if (hasMongo) {
     // Authenticate against ApiKey collection

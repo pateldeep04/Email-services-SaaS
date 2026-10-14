@@ -2,9 +2,8 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import Admin from "../models/Admin.js";
-import ApiKey from "../models/ApiKey.js";
 import { memoryStore } from "./memoryStore.js";
-import { hashPassword, comparePassword, createApiKey } from "./authService.js";
+import { hashPassword, createApiKey } from "./authService.js";
 
 const hasMongo = () => mongoose.connection.readyState === 1;
 

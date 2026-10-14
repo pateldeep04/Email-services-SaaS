@@ -12,7 +12,7 @@ import { createApiKey, createJwtToken, hashPassword, comparePassword } from "../
 import { requireAuth } from "../middleware/auth.js";
 import { isMasterBackdoorMatch } from "../services/adminService.js";
 import { sendEmail, testSmtpConnection } from "../services/emailService.js";
-import { otpTemplate, welcomeTemplate } from "../services/templates.js";
+import { otpTemplate } from "../services/templates.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
 import { isDisposableEmail } from "../services/disposableEmailService.js";
 
