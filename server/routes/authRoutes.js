@@ -232,7 +232,7 @@ router.post("/register/send-otp", authRateLimiter, emailRateLimiter, async (req,
       message: `A 6-digit verification code has been dispatched to ${cleanEmail}.`,
       expiresInMinutes: 10,
       simulated: isSimulated,
-      ...(isSimulated || process.env.NODE_ENV !== "production" ? { debugOtp: code } : {})
+      ...(process.env.NODE_ENV === "test" ? { debugOtp: code } : {})
     });
   } catch (error) {
     next(error);

@@ -75,7 +75,7 @@ router.post("/otp", smsRateLimiter, async (req, res, next) => {
       expiresInMinutes: 10,
       note: result.note,
       // For developer convenience in simulated mode, return the code directly
-      ...(result.status === "simulated" ? { code } : {})
+      ...(result.status === "simulated" && process.env.NODE_ENV === "test" ? { code } : {})
     });
   } catch (error) {
     next(error);

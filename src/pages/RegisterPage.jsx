@@ -178,11 +178,7 @@ export function RegisterPage() {
       const res = await sendRegisterOtp(email, name, companyName);
       setStep("otp");
       setResendCooldown(60);
-      if (res.debugOtp) {
-        setOtpNotice(`Demo Sandbox Mode: OTP is ${res.debugOtp}`);
-      } else {
-        setOtpNotice("");
-      }
+      setOtpNotice("");
     } catch (err) {
       const msg = err.message || "Failed to initiate registration.";
       if (msg.toLowerCase().includes("disposable") || msg.toLowerCase().includes("temporary")) {
@@ -198,11 +194,8 @@ export function RegisterPage() {
     if (resendCooldown > 0) return;
     setError("");
     try {
-      const res = await sendRegisterOtp(email, name, companyName);
+      await sendRegisterOtp(email, name, companyName);
       setResendCooldown(60);
-      if (res.debugOtp) {
-        setOtpNotice(`Demo Sandbox Mode: OTP is ${res.debugOtp}`);
-      }
     } catch (err) {
       setError(err.message || "Failed to resend verification code.");
     }
