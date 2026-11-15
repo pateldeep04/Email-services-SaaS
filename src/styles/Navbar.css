@@ -232,9 +232,10 @@ html.dark .app-nav-link.active {
     top: 60px;
     left: 0;
     width: 100%;
+    box-sizing: border-box;
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border-main);
-    padding: 20px 24px;
+    padding: 16px 20px;
     flex-direction: column;
     gap: 16px;
     box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);

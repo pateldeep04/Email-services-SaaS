@@ -48,33 +48,33 @@ const features = [
   },
   { 
     icon: Zap, 
-    title: "Zero Paid Vendor Overhead", 
-    desc: "Use your existing Gmail SMTP credentials as your high-deliverability transactional & bulk email relay with $0 vendor markup." 
+    title: "No Monthly Subscriptions", 
+    desc: "Send through your existing Gmail or Google Workspace SMTP account with zero monthly vendor fees." 
   },
   { 
     icon: Shield, 
-    title: "Hardened API Authentication", 
-    desc: "Generate secure, scoped API keys to authenticate transactional email and SMS requests instantly over HTTPS." 
+    title: "Secure API Keys", 
+    desc: "Generate scoped API keys to send transactional emails and SMS OTPs securely over HTTPS." 
   },
   { 
     icon: BarChart3, 
-    title: "Precision Live Analytics", 
-    desc: "Monitor email open rates, CTA conversion metrics, delivery throughput, and recipient latency in real-time." 
+    title: "Live Open & Click Tracking", 
+    desc: "Monitor email open rates, CTA link clicks, and delivery status in real-time." 
   },
   {
     icon: Phone,
-    title: "Multi-Mode SMS Gateway",
-    desc: "Dispatch phone OTP verifications using direct Android USB ADB debugging, local HTTP mobile relays, or carrier SMTP gateways."
+    title: "SMS Gateway",
+    desc: "Send phone OTP verification codes via direct Android phone USB connection, local relay, or carrier gateway."
   },
   {
     icon: Palette,
-    title: "Bespoke Templates & Styling",
-    desc: "Craft distinguished correspondence with classical typographic hierarchy, custom brand palettes, and verified deliverability safeguards."
+    title: "Responsive Email Templates",
+    desc: "Pre-built, mobile-friendly HTML email layouts for login OTPs, welcome messages, and cold outreach."
   },
   {
     icon: Cpu,
-    title: "Sandbox & Emulator Mode",
-    desc: "Built-in in-memory database and test suites to prototype and develop locally without consuming email or SMS quotas."
+    title: "Local Testing Sandbox",
+    desc: "Test and preview your email templates and API requests in the browser without sending real emails."
   }
 ];
 
@@ -106,9 +106,9 @@ export function HomePage() {
   const { user, token } = useAuth();
   
   useSEO({
-    title: "MailBridge | Free Cold Email Outreach Platform & Gmail SMTP Relay API",
-    description: "MailBridge is a free, high-performance cold email outreach tool and transactional email API. Send personalized bulk email campaigns via Gmail SMTP, inspect email spam score, qualify hot leads live, and dispatch SMS with zero vendor fees.",
-    keywords: "cold email outreach software, free bulk mailer, gmail smtp relay, email spam checker, cold lead pipeline saas, transactional email api, email gateway, sms gateway, otp verification, excel mail merge, developer email service, lead tracking pipeline, mailbridge"
+    title: "MailBridge | Free Cold Email Outreach & Gmail SMTP Relay API",
+    description: "Send personalized bulk cold email campaigns through your Gmail SMTP with live open and click tracking. Free transactional email and carrier SMS API.",
+    keywords: "cold email outreach software, free bulk mailer, gmail smtp relay, email spam checker, cold lead pipeline, transactional email api, excel mail merge, developer email service, mailbridge"
   });
   
   // Hero Visual Mode: "pipeline" (Cold Outreach) vs "metrics" (Transactional API)
@@ -241,46 +241,87 @@ export function HomePage() {
 
   // Generate live email preview HTML dynamically based on sandbox selections
   const generateEmailHtml = () => {
-    const brand = brandName || "MailBridge";
-    const bgLight = "#f8fafc";
-    const btnBg = headerColor || "#d41514";
-    const textMainColor = headerTextColor || "#ffffff";
+    const brand = brandName || "Acme Corp";
+    const accent = headerColor || "#d41514";
 
-    let titleText = "Security Verification";
-    let bodyContent = `Your one-time verification code is shown below. Please do not share this code with anyone.`;
-    let buttonHtml = `<div style="text-align: center; margin: 30px 0;"><span style="background-color: #f1f5f9; border: 1px dashed #cbd5e1; color: #1e293b; padding: 12px 28px; border-radius: 8px; font-weight: 800; font-size: 24px; letter-spacing: 4px; display: inline-block;">823490</span></div>`;
+    let titleText = "Your Security Verification Code";
+    let bodyContent = `Enter this 6-digit verification code to complete your sign-in to ${brand}. This code is confidential and will expire in 10 minutes.`;
+    let visualComponent = `
+      <div style="margin: 24px 0; text-align: center;">
+        <div style="display: inline-block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 32px;">
+          <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 28px; font-weight: 800; letter-spacing: 6px; color: #09090b; display: block;">823490</span>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #64748b; margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase;">Valid for 10 minutes</span>
+        </div>
+      </div>
+    `;
 
     if (templateType === "welcome") {
       titleText = `Welcome to ${brand}!`;
-      bodyContent = `Hi John Doe,\n\nWe are absolutely thrilled to welcome you to ${brand}. Get ready to streamline your workflow and start closing more deals today.`;
-      buttonHtml = `<div style="text-align: center; margin: 30px 0;"><a href="https://acme.com" target="_blank" style="background-color: ${btnBg}; color: ${textMainColor}; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Explore Workspace</a></div>`;
+      bodyContent = `Hi Alex,\n\nWe're thrilled to have you on board with ${brand}. Your developer workspace is provisioned and ready for your first outbound outreach campaign.`;
+      visualComponent = `
+        <div style="margin: 24px 0; text-align: center;">
+          <a href="#" style="display: inline-block; background: ${accent}; color: #ffffff; padding: 11px 26px; border-radius: 8px; font-weight: 700; font-size: 13.5px; text-decoration: none;">
+            Launch Workspace →
+          </a>
+        </div>
+      `;
     } else if (templateType === "forgot-password") {
       titleText = "Reset Your Password";
-      bodyContent = `A request was made to reset your password. If you did not make this request, you can safely ignore this email. Otherwise, click below to update your credentials.`;
-      buttonHtml = `<div style="text-align: center; margin: 30px 0;"><a href="https://acme.com/reset" target="_blank" style="background-color: ${btnBg}; color: ${textMainColor}; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Set New Password</a></div>`;
+      bodyContent = `We received a request to reset the password for your ${brand} account. Click below to securely choose a new password:`;
+      visualComponent = `
+        <div style="margin: 24px 0; text-align: center;">
+          <a href="#" style="display: inline-block; background: ${accent}; color: #ffffff; padding: 11px 26px; border-radius: 8px; font-weight: 700; font-size: 13.5px; text-decoration: none;">
+            Reset Password
+          </a>
+        </div>
+      `;
     } else if (templateType === "notification") {
       titleText = `${brand} Security Alert`;
-      bodyContent = `Important update regarding your account security:\n\nA new login attempt was detected from a Chrome browser on a Linux client. If this wasn't you, please secure your API keys immediately.`;
-      buttonHtml = `<div style="text-align: center; margin: 30px 0;"><a href="https://acme.com/security" target="_blank" style="background-color: ${btnBg}; color: ${textMainColor}; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Review Active Sessions</a></div>`;
+      bodyContent = `A new sign-in was detected on your account from Chrome on macOS (IP: 192.0.2.1). If this was you, no action is needed.`;
+      visualComponent = `
+        <div style="margin: 20px 0; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 12px; font-size: 12.5px; color: #9f1239;">
+          ⚠️ <strong>Unrecognized device:</strong> If you did not authorize this login, revoke your API tokens immediately.
+        </div>
+      `;
     } else if (templateType === "custom") {
-      titleText = customSubject || "Branded Email";
-      bodyContent = `Hello! This is a fully customizable responsive email layout rendering dynamic template variables. Customize branding colors, headers, and Call-to-Action button links.`;
-      buttonHtml = `<div style="text-align: center; margin: 30px 0;"><a href="https://acme.com" target="_blank" style="background-color: ${btnBg}; color: ${textMainColor}; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Continue to Site</a></div>`;
+      titleText = customSubject || "Personalized Outreach";
+      bodyContent = `Hi {{firstname}},\n\nNoticed {{company}}'s recent expansion in outbound infrastructure. We built MailBridge to give your engineering team full relay independence with zero monthly subscription markups.`;
+      visualComponent = `
+        <div style="margin: 22px 0; text-align: center;">
+          <a href="#" style="display: inline-block; background: ${accent}; color: #ffffff; padding: 11px 24px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none;">
+            Book a 10-Minute Walkthrough →
+          </a>
+        </div>
+      `;
     }
 
     return `
-      <div style="font-family: 'Inter', system-ui, sans-serif; background-color: ${bgLight}; padding: 20px; margin: 0; border-radius: 8px;">
-        <div style="max-width: 500px; margin: auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.03);">
-          <div style="background-color: ${btnBg}; color: ${textMainColor}; padding: 20px; text-align: center;">
-            <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: ${textMainColor} !important;">${brand}</h2>
+      <div style="background-color: #f8fafc; padding: 20px 14px; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="max-width: 460px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <!-- Top Brand Bar -->
+          <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 26px; height: 26px; border-radius: 6px; background-color: ${accent}; color: #ffffff; font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center;">
+                ${brand.charAt(0).toUpperCase()}
+              </div>
+              <span style="font-size: 13.5px; font-weight: 800; color: #09090b; letter-spacing: -0.01em;">${brand}</span>
+            </div>
+            <span style="font-size: 10.5px; font-weight: 600; color: #94a3b8; text-transform: uppercase;">Official Notice</span>
           </div>
-          <div style="padding: 24px; color: #334155; line-height: 1.6; font-size: 14px;">
-            <h1 style="margin-top: 0; margin-bottom: 12px; font-size: 18px; color: #0f172a; font-weight: 700;">${titleText}</h1>
-            <p style="margin-bottom: 16px; color: #475569; white-space: pre-line;">${bodyContent}</p>
-            ${buttonHtml}
+
+          <!-- Body Content -->
+          <div style="padding: 24px 20px;">
+            <h3 style="margin: 0 0 10px; font-size: 17px; font-weight: 800; color: #09090b; letter-spacing: -0.01em;">${titleText}</h3>
+            <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #475569; white-space: pre-line;">${bodyContent}</p>
+            ${visualComponent}
+            <p style="margin: 16px 0 0; font-size: 11.5px; line-height: 1.5; color: #94a3b8;">
+              Dispatched via <strong>MailBridge</strong> Gmail SMTP secure TLS relay.
+            </p>
           </div>
-          <div style="padding: 12px 24px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 11px; text-align: center;">
-            © 2026 ${brand}. All rights reserved. Sent via MailBridge.
+
+          <!-- Footer -->
+          <div style="padding: 12px 20px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; font-size: 10.5px; color: #94a3b8; text-align: center;">
+            © 2026 ${brand}. All rights reserved. • <a href="#" style="color: #64748b; text-decoration: underline;">Security Center</a>
           </div>
         </div>
       </div>
@@ -494,17 +535,17 @@ export function HomePage() {
           <div className="hero-left-content">
             {/* Masthead Eyebrow */}
             <div className="hero-badge-pill">
-              <span className="badge-classic-bullet">◆</span>
-              <span>INDEPENDENT OUTREACH &amp; TRANSACTIONAL SMTP PLATFORM</span>
+              <span className="badge-classic-bullet">●</span>
+              <span>GMAIL SMTP RELAY &amp; COLD OUTREACH</span>
             </div>
 
             <h1 className="hero-title">
-              Independent Cold Outreach <br />
-              <em>&amp; Transactional Email Relays.</em>
+              Cold Email Outreach &amp; Transactional API. <br />
+              <em>Zero Monthly Fees.</em>
             </h1>
 
             <p className="hero-desc-text">
-              Dispatch personalized outreach campaigns from CSV or Excel spreadsheets with live engagement tracking — or trigger transactional verification OTPs and alerts over a unified HTTPS API, relayed directly through your own secure Gmail SMTP server.
+              Import contacts from CSV or Excel, personalize fields with dynamic tags, and track email opens and clicks live. Send cold outreach and developer verification emails directly through your own Gmail SMTP with 99.8% deliverability.
             </p>
             
             <div className="hero-cta-buttons">
@@ -574,17 +615,26 @@ export function HomePage() {
                   <div className="hero-pipeline-stats-grid">
                     <div className="h-pipe-stat">
                       <span className="h-stat-label">Total Targeted</span>
-                      <strong className="h-stat-val">250 Leads</strong>
+                      <strong className="h-stat-val">
+                        <span className="h-stat-num">250</span>
+                        <span className="h-stat-unit">Leads</span>
+                      </strong>
                       <span className="h-stat-sub">From CSV Import</span>
                     </div>
                     <div className="h-pipe-stat warm">
                       <span className="h-stat-label">Warm Leads</span>
-                      <strong className="h-stat-val text-emerald-400">148 Opens</strong>
+                      <strong className="h-stat-val">
+                        <span className="h-stat-num">148</span>
+                        <span className="h-stat-unit">Opens</span>
+                      </strong>
                       <span className="h-stat-sub">59.2% Open Rate</span>
                     </div>
                     <div className="h-pipe-stat hot">
                       <span className="h-stat-label">Hot Leads</span>
-                      <strong className="h-stat-val text-orange-400">32 Clicks</strong>
+                      <strong className="h-stat-val">
+                        <span className="h-stat-num">32</span>
+                        <span className="h-stat-unit">Clicks</span>
+                      </strong>
                       <span className="h-stat-sub">21.6% CTA Rate</span>
                     </div>
                   </div>
@@ -603,14 +653,14 @@ export function HomePage() {
                     </div>
                     <div className="lead-activity-row">
                       <span>Interactions: <strong>4 Opens, 2 CTA Clicks</strong></span>
-                      <span className="text-emerald-400 font-semibold">Ready for 1-on-1 closing</span>
+                      <span className="text-emerald-500 font-semibold">Ready for 1-on-1 closing</span>
                     </div>
                     <div className="lead-actions-bar">
                       <span className="quick-action-pill">
                         <Mail size={12} /> Direct Follow-up
                       </span>
-                      <span className="quick-action-pill">
-                        <CheckCircle2 size={12} /> Verified Delivery
+                      <span className="quick-action-pill verified">
+                        <CheckCircle2 size={12} className="text-emerald-500" /> Verified Delivery
                       </span>
                       <span className="quick-action-pill">
                         <Clock size={12} /> 3m ago
@@ -730,9 +780,9 @@ export function HomePage() {
               <div className="step-icon-circle">
                 <FileSpreadsheet size={24} />
               </div>
-              <h3>1-Click CSV/Excel Ingestion</h3>
+              <h3>Upload CSV or Excel Spreadsheet</h3>
               <p>
-                Drag and drop your contact spreadsheet. MailBridge parses unlimited custom headers like <code>firstname</code>, <code>company</code>, <code>role</code>, and <code>city</code> automatically.
+                Drag and drop your spreadsheet. MailBridge automatically recognizes your columns like <code>firstname</code>, <code>company</code>, <code>role</code>, and <code>email</code>.
               </p>
             </div>
 
@@ -741,9 +791,9 @@ export function HomePage() {
               <div className="step-icon-circle">
                 <Layers size={24} />
               </div>
-              <h3>Dynamic Merge Variables</h3>
+              <h3>Personalize Every Email</h3>
               <p>
-                Personalize every single dispatch with <code>&#123;&#123;firstname&#125;&#125;</code> and <code>&#123;&#123;company&#125;&#125;</code>. Every prospect receives a 100% human, customized email.
+                Insert tags like <code>&#123;&#123;firstname&#125;&#125;</code> and <code>&#123;&#123;company&#125;&#125;</code> in your message. Every recipient gets an email tailored to them.
               </p>
             </div>
 
@@ -752,9 +802,9 @@ export function HomePage() {
               <div className="step-icon-circle">
                 <Target size={24} />
               </div>
-              <h3>Zero-Latency Lead Tracking</h3>
+              <h3>Live Open &amp; Click Tracking</h3>
               <p>
-                Our built-in pixel and link tracker categorize responses instantly into <strong>Hot Leads</strong> (clicked CTA), <strong>Warm Leads</strong> (opened), and <strong>Cold</strong>.
+                Track engagement in real time. Prospects are automatically sorted into <strong>Hot Leads</strong> (clicked links), <strong>Warm Leads</strong> (opened email), and <strong>Cold</strong>.
               </p>
             </div>
 
@@ -763,9 +813,9 @@ export function HomePage() {
               <div className="step-icon-circle">
                 <TrendingUp size={24} />
               </div>
-              <h3>Instant 1-on-1 Sales Follow-Up</h3>
+              <h3>Export Leads &amp; Close Deals</h3>
               <p>
-                Trigger personalized 1-on-1 follow-ups with 1 click directly from the lead table, or export the qualified pipeline to CSV for your sales CRM.
+                Follow up directly with hot prospects or export your qualified lead data to CSV for your CRM in one click.
               </p>
             </div>
           </div>
@@ -910,7 +960,7 @@ export function HomePage() {
             onClick={() => setActiveServiceTab("templates")}
           >
             <Palette size={18} />
-            <span>Bespoke Templates &amp; Styling</span>
+            <span>Responsive Email Templates</span>
           </button>
         </div>
 
@@ -956,24 +1006,57 @@ export function HomePage() {
               <div className="service-detail-graphic">
                 <div className="services-visual-card">
                   <div className="services-visual-header">
-                    <span className="visual-badge">CSV Outreach</span>
-                    <span className="visual-title">Campaign Active</span>
+                    <div className="svc-header-left">
+                      <span className="visual-badge-live">
+                        <span className="pulse-dot"></span> Campaign Active
+                      </span>
+                      <span className="visual-title">Q4_Enterprise_Outreach.csv</span>
+                    </div>
+                    <span className="visual-time-badge">Just now</span>
                   </div>
-                  <div className="visual-content">
-                    <div className="visual-stat-line">
-                      <span>Delivered:</span>
-                      <strong className="text-emerald-400">100%</strong>
+                  
+                  <div className="services-visual-body">
+                    <div className="svc-metrics-trio">
+                      <div className="svc-m-box">
+                        <span className="svc-m-lbl">Delivered</span>
+                        <strong className="svc-m-val text-emerald-500">250 / 250</strong>
+                        <span className="svc-m-sub">100% Inbox Rate</span>
+                      </div>
+                      <div className="svc-m-box">
+                        <span className="svc-m-lbl">Unique Opens</span>
+                        <strong className="svc-m-val text-emerald-500">148</strong>
+                        <span className="svc-m-sub">59.2% Open Rate</span>
+                      </div>
+                      <div className="svc-m-box">
+                        <span className="svc-m-lbl">Hot CTA Clicks</span>
+                        <strong className="svc-m-val text-rose-500">54</strong>
+                        <span className="svc-m-sub">21.6% Conversion</span>
+                      </div>
                     </div>
-                    <div className="visual-stat-line">
-                      <span>Unique Opens:</span>
-                      <strong className="text-emerald-400">59.2%</strong>
+
+                    <div className="svc-lead-snapshot-table">
+                      <div className="svc-lead-row">
+                        <div className="svc-avatar-circle">SJ</div>
+                        <div className="svc-lead-info">
+                          <span className="svc-name">Sarah Jenkins</span>
+                          <span className="svc-org">Acme Corp • VP Growth</span>
+                        </div>
+                        <span className="svc-status-pill hot">Clicked CTA (Hot)</span>
+                      </div>
+                      <div className="svc-lead-row">
+                        <div className="svc-avatar-circle alt">MC</div>
+                        <div className="svc-lead-info">
+                          <span className="svc-name">Michael Chen</span>
+                          <span className="svc-org">TechStart IO • CTO</span>
+                        </div>
+                        <span className="svc-status-pill warm">Opened 2x (Warm)</span>
+                      </div>
                     </div>
-                    <div className="visual-stat-line">
-                      <span>CTA Clicks:</span>
-                      <strong className="text-orange-400">21.6% (Hot)</strong>
+
+                    <div className="svc-visual-footer">
+                      <CheckCircle2 size={14} className="text-emerald-500" />
+                      <span>Gmail SMTP Relay Protected • Human-like 3-7s delay active</span>
                     </div>
-                    <div className="visual-line accent"></div>
-                    <div className="visual-line w-80"></div>
                   </div>
                 </div>
               </div>
@@ -1021,14 +1104,37 @@ export function HomePage() {
               <div className="service-detail-graphic">
                 <div className="services-visual-card">
                   <div className="services-visual-header">
-                    <span className="visual-badge">Gmail SMTP Relay</span>
-                    <span className="visual-title">Connected</span>
+                    <div className="svc-header-left">
+                      <span className="visual-badge-method">POST</span>
+                      <span className="visual-title">/api/v1/emails/otp</span>
+                    </div>
+                    <span className="visual-status-code">200 OK (38ms)</span>
                   </div>
-                  <div className="visual-content">
-                    <div className="visual-line accent"></div>
-                    <div className="visual-line w-80"></div>
-                    <div className="visual-line w-60"></div>
-                    <div className="visual-line w-80"></div>
+                  
+                  <div className="services-visual-body">
+                    <div className="svc-api-snippet">
+                      <div className="svc-json-row"><span className="json-key">"status":</span> <span className="json-str">"success"</span>,</div>
+                      <div className="svc-json-row"><span className="json-key">"messageId":</span> <span className="json-str">"msg_9f81a7d2e3"</span>,</div>
+                      <div className="svc-json-row"><span className="json-key">"recipient":</span> <span className="json-str">"alex@acme.com"</span>,</div>
+                      <div className="svc-json-row"><span className="json-key">"relay":</span> <span className="json-str">"smtp.gmail.com:587 (TLS)"</span>,</div>
+                      <div className="svc-json-row"><span className="json-key">"latency":</span> <span className="json-num">38</span></div>
+                    </div>
+
+                    <div className="svc-email-render-card">
+                      <div className="svc-email-header">
+                        <div className="svc-brand-mini">Acme Corp Security</div>
+                        <span className="svc-time-mini">Just now</span>
+                      </div>
+                      <div className="svc-otp-preview-code">
+                        <span>Your Login Code:</span>
+                        <strong>849 — 201</strong>
+                      </div>
+                    </div>
+
+                    <div className="svc-visual-footer">
+                      <CheckCircle2 size={14} className="text-emerald-500" />
+                      <span>Zero vendor fee markup • Direct Google Workspace TLS relay</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1076,49 +1182,79 @@ export function HomePage() {
               <div className="service-detail-graphic">
                 <div className="services-visual-card">
                   <div className="services-visual-header">
-                    <span className="visual-badge">ADB Relay</span>
-                    <span className="visual-title">Cellular Online</span>
+                    <div className="svc-header-left">
+                      <span className="visual-badge-live">
+                        <span className="pulse-dot"></span> SIM Relay Active
+                      </span>
+                      <span className="visual-title">Android ADB Gateway</span>
+                    </div>
+                    <span className="visual-time-badge">Device Connected</span>
                   </div>
-                  <div className="visual-content">
-                    <div className="visual-line accent"></div>
-                    <div className="visual-line w-60"></div>
-                    <div className="visual-line w-80"></div>
-                    <div className="visual-line w-80"></div>
+                  
+                  <div className="services-visual-body">
+                    <div className="svc-sms-phone-mockup">
+                      <div className="svc-sms-bubble-header">
+                        <span className="svc-sms-sender">Messages • Today 10:42 AM</span>
+                      </div>
+                      <div className="svc-sms-bubble">
+                        <p><strong>MailBridge Verification:</strong> Your one-time login code is <strong>492018</strong>. Valid for 5 minutes. Never share this pin with anyone.</p>
+                      </div>
+                    </div>
+
+                    <div className="svc-metrics-trio compact">
+                      <div className="svc-m-box">
+                        <span className="svc-m-lbl">Device</span>
+                        <strong className="svc-m-val">Pixel 8</strong>
+                      </div>
+                      <div className="svc-m-box">
+                        <span className="svc-m-lbl">Carrier Cost</span>
+                        <strong className="svc-m-val text-emerald-500">$0.00 / SMS</strong>
+                      </div>
+                      <div className="svc-m-box">
+                        <span className="svc-m-lbl">Delivery Rate</span>
+                        <strong className="svc-m-val text-emerald-500">100%</strong>
+                      </div>
+                    </div>
+
+                    <div className="svc-visual-footer">
+                      <CheckCircle2 size={14} className="text-emerald-500" />
+                      <span>Bypasses costly $0.07/SMS Twilio fees using your local SIM card</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Service 4: Bespoke Templates & Design Studio */}
+          {/* Service 4: Responsive Email Templates */}
           {activeServiceTab === "templates" && (
             <div className="service-detail-grid">
               <div className="service-detail-info">
-                <p className="service-tagline">Bespoke Templates &amp; Typography</p>
-                <h3>Distinguished correspondence crafted to command attention.</h3>
+                <p className="service-tagline">Responsive Email Templates</p>
+                <h3>Clean HTML email layouts tested across all inboxes.</h3>
                 <p className="service-desc">
-                  Move beyond cookie-cutter automation. Deliver beautifully structured messages with classical serif hierarchy, custom brand palettes, and adaptive recipient tokens engineered to land directly in primary inboxes.
+                  Deliver lightweight, responsive emails that look great on iPhones, Android devices, and desktop clients without getting flagged or dumped into spam tabs.
                 </p>
                 <div className="service-features-list">
                   <div className="service-feature-item">
                     <CheckCircle2 className="feature-check-icon" size={18} />
                     <div>
-                      <h4>Classical Typographic Hierarchy</h4>
-                      <p>Carefully balanced font scales and line heights optimized for effortless readability.</p>
+                      <h4>Mobile-First Responsive Layouts</h4>
+                      <p>Clean table-based HTML designed for Gmail, Apple Mail, and Outlook.</p>
                     </div>
                   </div>
                   <div className="service-feature-item">
                     <CheckCircle2 className="feature-check-icon" size={18} />
                     <div>
-                      <h4>Adaptive Variable Tokens</h4>
-                      <p>Seamlessly merge recipient names, company profiles, and bespoke data fields.</p>
+                      <h4>Dynamic Personalization Tags</h4>
+                      <p>Easily insert names, custom links, and order details with curly tags.</p>
                     </div>
                   </div>
                   <div className="service-feature-item">
                     <CheckCircle2 className="feature-check-icon" size={18} />
                     <div>
-                      <h4>Zero Bot Fingerprints</h4>
-                      <p>Clean HTML structure and verified headers that evade promotional filters and spam flags.</p>
+                      <h4>Spam Filter Protection</h4>
+                      <p>Clean markup and standard headers to maintain high sender reputation.</p>
                     </div>
                   </div>
                 </div>
@@ -1131,14 +1267,37 @@ export function HomePage() {
               <div className="service-detail-graphic">
                 <div className="services-visual-card">
                   <div className="services-visual-header">
-                    <span className="visual-badge">Verified Layout</span>
-                    <span className="visual-title">Classical Print Spec</span>
+                    <div className="svc-header-left">
+                      <span className="visual-badge">HTML5 Spec</span>
+                      <span className="visual-title">Responsive Email Layout</span>
+                    </div>
+                    <span className="visual-status-code">Tested 100%</span>
                   </div>
-                  <div className="visual-content">
-                    <div className="visual-line accent"></div>
-                    <div className="visual-line w-80"></div>
-                    <div className="visual-line w-60"></div>
-                    <div className="visual-line w-80"></div>
+                  
+                  <div className="services-visual-body">
+                    <div className="svc-template-card-preview">
+                      <div className="svc-template-top">
+                        <div className="svc-template-logo">MailBridge</div>
+                        <span className="svc-template-tag">Transactional</span>
+                      </div>
+                      <div className="svc-template-body-text">
+                        <h4>Welcome to the platform, Alex!</h4>
+                        <p>Your team workspace is ready. Click the button below to confirm your setup and start sending.</p>
+                        <div className="svc-template-btn">Confirm Email Address →</div>
+                      </div>
+                    </div>
+
+                    <div className="svc-client-badges">
+                      <span className="svc-client-pill"><CheckCircle2 size={12} className="text-emerald-500" /> Gmail</span>
+                      <span className="svc-client-pill"><CheckCircle2 size={12} className="text-emerald-500" /> Apple Mail</span>
+                      <span className="svc-client-pill"><CheckCircle2 size={12} className="text-emerald-500" /> Outlook</span>
+                      <span className="svc-client-pill"><CheckCircle2 size={12} className="text-emerald-500" /> iOS / Android</span>
+                    </div>
+
+                    <div className="svc-visual-footer">
+                      <CheckCircle2 size={14} className="text-emerald-500" />
+                      <span>Table-based inline CSS guarantees zero layout shifts across inboxes</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1176,42 +1335,42 @@ export function HomePage() {
             <tbody>
               <tr>
                 <td><strong>Monthly Cost</strong></td>
-                <td className="highlight-col text-emerald-400 font-bold">$0.00 / month</td>
+                <td className="highlight-col"><span className="comp-positive"><CheckCircle2 size={14} /> $0.00 / month</span></td>
                 <td>$35 - $90 / mo</td>
                 <td>$49 - $120 / mo</td>
                 <td>$0.0079 per SMS</td>
               </tr>
               <tr>
                 <td><strong>Personalized Bulk Mailer</strong></td>
-                <td className="highlight-col text-emerald-400 font-semibold">Included (CSV &amp; Excel)</td>
+                <td className="highlight-col"><span className="comp-positive"><CheckCircle2 size={14} /> Included (CSV &amp; Excel)</span></td>
                 <td>Add-on / Extra fee</td>
                 <td>Included</td>
                 <td>Not supported</td>
               </tr>
               <tr>
                 <td><strong>Real-Time Open &amp; CTA Tracking</strong></td>
-                <td className="highlight-col text-emerald-400 font-semibold">Built-in (Hot/Warm/Cold)</td>
+                <td className="highlight-col"><span className="comp-positive"><CheckCircle2 size={14} /> Built-in (Hot / Warm / Cold)</span></td>
                 <td>Basic webhooks</td>
                 <td>Basic clicks</td>
                 <td>Not supported</td>
               </tr>
               <tr>
                 <td><strong>Setup Time</strong></td>
-                <td className="highlight-col text-emerald-400 font-semibold">2 Minutes</td>
+                <td className="highlight-col"><span className="comp-positive"><CheckCircle2 size={14} /> 2 Minutes</span></td>
                 <td>DNS/Domain ordeal</td>
                 <td>DNS setup purgatory</td>
                 <td>A2P 10DLC registration</td>
               </tr>
               <tr>
                 <td><strong>Cellular SMS OTP Relay</strong></td>
-                <td className="highlight-col text-emerald-400 font-semibold">Free (Direct ADB / Carrier)</td>
+                <td className="highlight-col"><span className="comp-positive"><CheckCircle2 size={14} /> Free (Direct ADB / Carrier)</span></td>
                 <td>Not supported</td>
                 <td>Not supported</td>
                 <td>Paid per message</td>
               </tr>
               <tr>
                 <td><strong>Vendor Lock-In</strong></td>
-                <td className="highlight-col text-emerald-400 font-semibold">Zero (Your Gmail SMTP)</td>
+                <td className="highlight-col"><span className="comp-positive"><CheckCircle2 size={14} /> Zero (Your Gmail SMTP)</span></td>
                 <td>High</td>
                 <td>High</td>
                 <td>High</td>
@@ -1225,16 +1384,19 @@ export function HomePage() {
       {/* 5. INTERACTIVE DEVELOPER API SANDBOX                                      */}
       {/* ========================================================================= */}
       <section className="sandbox-playground-section">
-        <div className="section-title-wrapper">
+        <div className="section-title-wrapper text-center">
           <span className="section-eyebrow">Developer Playground</span>
           <h2 className="section-main-heading">Interactive API Sandbox</h2>
-          <p className="section-sub-heading">Configure styling, modify payload properties, and test live code generation or console execution.</p>
+          <p className="section-sub-heading">Configure styling, test live code generation, and preview responsive email templates in real time.</p>
         </div>
 
         <div className="sandbox-workspace-grid">
           {/* Controls - Left Pane */}
           <div className="sandbox-controls-card">
-            <h3>Sandbox Configuration</h3>
+            <div className="sandbox-card-header">
+              <h3>Sandbox Configuration</h3>
+              <span className="sandbox-mode-badge">Live Emulation</span>
+            </div>
 
             {/* Template Selector */}
             <div className="sandbox-control-group">
@@ -1266,40 +1428,36 @@ export function HomePage() {
                 <label className="control-label">Brand Name</label>
                 <input 
                   type="text" 
+                  className="sandbox-input-field"
                   value={brandName}
                   onChange={(e) => setBrandName(e.target.value)}
-                  placeholder="e.g. Acme Inc"
+                  placeholder="e.g. Acme Corp"
                 />
               </div>
 
               {templateType !== "sms-otp" && (
-                <>
-                  <div className="sandbox-control-group">
-                    <label className="control-label" htmlFor="header-bg-color">Header BG Theme</label>
-                    <div className="color-picker-control">
-                      <input 
-                        id="header-bg-color"
-                        type="color" 
-                        value={headerColor}
-                        onChange={(e) => setHeaderColor(e.target.value)}
+                <div className="sandbox-control-group">
+                  <label className="control-label">Brand Color Accent</label>
+                  <div className="color-swatches-row">
+                    {[
+                      { color: "#d41514", name: "Crimson Red" },
+                      { color: "#080808", name: "Obsidian" },
+                      { color: "#4f46e5", name: "Indigo" },
+                      { color: "#059669", name: "Emerald" },
+                      { color: "#0284c7", name: "Sky" },
+                      { color: "#7c3aed", name: "Purple" }
+                    ].map((c) => (
+                      <button
+                        key={c.color}
+                        type="button"
+                        className={`color-swatch-dot ${headerColor.toLowerCase() === c.color.toLowerCase() ? "active" : ""}`}
+                        style={{ backgroundColor: c.color }}
+                        title={c.name}
+                        onClick={() => setHeaderColor(c.color)}
                       />
-                      <code>{headerColor}</code>
-                    </div>
+                    ))}
                   </div>
-
-                  <div className="sandbox-control-group">
-                    <label className="control-label" htmlFor="header-text-color">Header Text Theme</label>
-                    <div className="color-picker-control">
-                      <input 
-                        id="header-text-color"
-                        type="color" 
-                        value={headerTextColor}
-                        onChange={(e) => setHeaderTextColor(e.target.value)}
-                      />
-                      <code>{headerTextColor}</code>
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
 
               {templateType === "sms-otp" ? (
@@ -1307,6 +1465,7 @@ export function HomePage() {
                   <label className="control-label">Recipient Phone Number</label>
                   <input 
                     type="text" 
+                    className="sandbox-input-field"
                     value={recipientPhone}
                     onChange={(e) => setRecipientPhone(e.target.value)}
                     placeholder="+919876543210"
@@ -1317,6 +1476,7 @@ export function HomePage() {
                   <label className="control-label">Recipient Email</label>
                   <input 
                     type="email" 
+                    className="sandbox-input-field"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
                     placeholder="email@domain.com"
@@ -1329,6 +1489,7 @@ export function HomePage() {
                   <label className="control-label">Custom Subject Line</label>
                   <input 
                     type="text" 
+                    className="sandbox-input-field"
                     value={customSubject}
                     onChange={(e) => setCustomSubject(e.target.value)}
                     placeholder="Enter email subject"
@@ -1345,7 +1506,7 @@ export function HomePage() {
                 onClick={executeSandboxRequest}
                 disabled={isExecuting}
               >
-                <Terminal size={16} /> {isExecuting ? "Executing..." : "Execute API Request"}
+                <Terminal size={15} /> {isExecuting ? "Executing..." : "Execute API Request"}
               </button>
               
               {token && (
@@ -1355,7 +1516,7 @@ export function HomePage() {
                   onClick={sendRealEmail}
                   disabled={isSendingReal}
                 >
-                  <Mail size={16} /> {isSendingReal ? "Sending..." : "Send Actual Email"}
+                  <Mail size={15} /> {isSendingReal ? "Sending..." : "Send Actual Email"}
                 </button>
               )}
             </div>
@@ -1371,27 +1532,29 @@ export function HomePage() {
           <div className="sandbox-viewer-card">
             {/* Viewer Headers */}
             <div className="viewer-tabs-header">
-              <button 
-                type="button"
-                className={`viewer-tab-btn ${activePane === "preview" ? "active" : ""}`}
-                onClick={() => setActivePane("preview")}
-              >
-                <Eye size={14} /> {templateType === "sms-otp" ? "Live SMS Preview" : "Live Email Preview"}
-              </button>
-              <button 
-                type="button"
-                className={`viewer-tab-btn ${activePane === "code" ? "active" : ""}`}
-                onClick={() => setActivePane("code")}
-              >
-                <Code size={14} /> Code Integration
-              </button>
-              <button 
-                type="button"
-                className={`viewer-tab-btn ${activePane === "terminal" ? "active" : ""}`}
-                onClick={() => setActivePane("terminal")}
-              >
-                <Terminal size={14} /> Sandbox Console
-              </button>
+              <div className="viewer-tabs-pill-container">
+                <button 
+                  type="button"
+                  className={`viewer-tab-btn ${activePane === "preview" ? "active" : ""}`}
+                  onClick={() => setActivePane("preview")}
+                >
+                  <Eye size={13} /> {templateType === "sms-otp" ? "Live SMS Preview" : "Live Email Preview"}
+                </button>
+                <button 
+                  type="button"
+                  className={`viewer-tab-btn ${activePane === "code" ? "active" : ""}`}
+                  onClick={() => setActivePane("code")}
+                >
+                  <Code size={13} /> Code Integration
+                </button>
+                <button 
+                  type="button"
+                  className={`viewer-tab-btn ${activePane === "terminal" ? "active" : ""}`}
+                  onClick={() => setActivePane("terminal")}
+                >
+                  <Terminal size={13} /> Sandbox Console
+                </button>
+              </div>
             </div>
 
             {/* Pane Viewports */}
@@ -1429,13 +1592,15 @@ export function HomePage() {
                     <>
                       <div className="preview-browser-bar">
                         <div className="browser-dots">
-                          <span></span>
-                          <span></span>
-                          <span></span>
+                          <span className="dot red"></span>
+                          <span className="dot yellow"></span>
+                          <span className="dot green"></span>
                         </div>
                         <div className="browser-location">
-                          <code>recipient: {recipientEmail || "visitor@example.com"}</code>
+                          <span className="envelope-to-label">To:</span>
+                          <span className="envelope-to-val">{recipientEmail || "visitor@example.com"}</span>
                         </div>
+                        <span className="preview-live-badge">Live Render</span>
                       </div>
                       <div className="preview-body-email-scroller">
                         <div dangerouslySetInnerHTML={{ __html: generateEmailHtml() }} />

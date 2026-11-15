@@ -1,22 +1,26 @@
 User-agent: *
 Allow: /
 Allow: /bulk-mail
+Allow: /tester
 Allow: /docs
-Disallow: /login
-Disallow: /register
+Allow: /terms
+Allow: /login
+Allow: /register
 Disallow: /dashboard
-Disallow: /tester
+Disallow: /admin
 Disallow: /api/
 
-# Crawler-specific guidelines for maximum search visibility
+# Crawler-specific guidelines for search engines
 User-agent: Googlebot
 Allow: /
 Allow: /bulk-mail
+Allow: /tester
 Allow: /docs
-Disallow: /login
-Disallow: /register
+Allow: /terms
+Allow: /login
+Allow: /register
 Disallow: /dashboard
-Disallow: /tester
+Disallow: /admin
 Disallow: /api/
 
 User-agent: Googlebot-Image
@@ -24,10 +28,16 @@ Allow: /
 Allow: /favicon.ico
 Allow: /*.png
 Allow: /*.svg
+Allow: /*.jpg
 
 User-agent: Bingbot
 Allow: /
 Allow: /bulk-mail
+Allow: /tester
 Allow: /docs
+Allow: /terms
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://mail-bridge.email/sitemap.xml

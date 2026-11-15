@@ -3,14 +3,15 @@ import {
   ShieldCheck, 
   AlertTriangle, 
   CheckCircle2, 
+  XCircle,
   Smartphone, 
   Monitor, 
   Copy, 
   Check, 
-  RefreshCw,
-  HelpCircle,
-  ExternalLink,
-  ChevronRight
+  RefreshCw, 
+  HelpCircle, 
+  ExternalLink, 
+  ChevronRight 
 } from "lucide-react";
 import "../styles/DeliverabilityInspector.css";
 
@@ -214,7 +215,7 @@ export function DeliverabilityInspector() {
                     Email Subject Line
                   </label>
                   <span className={`char-counter ${analysis.subjectLength > 55 ? "warn" : ""}`}>
-                    {analysis.subjectLength} / 60 chars optimal
+                    {analysis.subjectLength} / 60 chars
                   </span>
                 </div>
                 <input
@@ -249,10 +250,17 @@ export function DeliverabilityInspector() {
               {/* Detected Trigger Warnings */}
               <div className="analysis-summary-box">
                 <h4 className="analysis-box-title">
-                  <AlertTriangle size={16} /> 
-                  {analysis.detectedSpamWords.length > 0 
-                    ? `Detected ${analysis.detectedSpamWords.length} Spam Red Flags` 
-                    : "No Harmful Spam Keywords Detected"}
+                  {analysis.detectedSpamWords.length > 0 ? (
+                    <>
+                      <AlertTriangle size={18} className="text-amber-500" /> 
+                      <span>Detected {analysis.detectedSpamWords.length} Spam Red Flags</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck size={18} className="text-emerald-500" />
+                      <span>No Harmful Spam Keywords Detected</span>
+                    </>
+                  )}
                 </h4>
 
                 {analysis.detectedSpamWords.length > 0 ? (
@@ -265,19 +273,50 @@ export function DeliverabilityInspector() {
                   </div>
                 ) : (
                   <p className="clean-status-text">
-                    ✅ Your copy avoids high-risk sales triggers and phishing keywords.
+                    <CheckCircle2 size={16} className="text-emerald-500 inline-check-icon" />
+                    <span>Your copy avoids high-risk sales triggers and phishing keywords.</span>
                   </p>
                 )}
 
                 <div className="quick-tips-grid">
                   <div className={`tip-item ${analysis.hasMergeTags ? "good" : "warn"}`}>
-                    {analysis.hasMergeTags ? "✓ Personalized ({{firstname}} tags detected)" : "⚠️ Add merge tags like {{company}} to improve reply rates"}
+                    {analysis.hasMergeTags ? (
+                      <>
+                        <CheckCircle2 size={14} className="tip-icon text-emerald-500" />
+                        <span>Personalized (&#123;&#123;firstname&#125;&#125; tags detected)</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle size={14} className="tip-icon text-amber-500" />
+                        <span>Add merge tags like &#123;&#123;company&#125;&#125; to improve reply rates</span>
+                      </>
+                    )}
                   </div>
                   <div className={`tip-item ${analysis.isAllCaps ? "bad" : "good"}`}>
-                    {analysis.isAllCaps ? "❌ Too many capital letters" : "✓ Clean typography"}
+                    {analysis.isAllCaps ? (
+                      <>
+                        <XCircle size={14} className="tip-icon text-rose-500" />
+                        <span>Too many capital letters</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={14} className="tip-icon text-emerald-500" />
+                        <span>Clean typography</span>
+                      </>
+                    )}
                   </div>
                   <div className={`tip-item ${analysis.excessivePunctuation ? "bad" : "good"}`}>
-                    {analysis.excessivePunctuation ? "❌ Excessive punctuation (!!)" : "✓ Natural punctuation"}
+                    {analysis.excessivePunctuation ? (
+                      <>
+                        <XCircle size={14} className="tip-icon text-rose-500" />
+                        <span>Excessive punctuation (!!)</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={14} className="tip-icon text-emerald-500" />
+                        <span>Natural punctuation</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
