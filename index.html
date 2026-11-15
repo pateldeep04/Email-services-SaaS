@@ -6,8 +6,7 @@
       (function() {
         try {
           var saved = localStorage.getItem("mailbridge-theme");
-          var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-          var theme = saved || (prefersDark ? "dark" : "light");
+          var theme = saved || "light";
           if (theme === "dark") {
             document.documentElement.classList.add("dark");
             document.documentElement.classList.remove("light");
@@ -16,7 +15,7 @@
             document.documentElement.classList.remove("dark");
           }
         } catch (e) {
-          document.documentElement.classList.add("dark");
+          document.documentElement.classList.add("light");
         }
       })();
     </script>
@@ -48,15 +47,15 @@
     <meta name="keywords" content="cold email outreach tool, free bulk mailer, gmail smtp relay, email spam checker, cold lead pipeline saas, transactional email api, email gateway, sms gateway, otp verification, excel mail merge, developer email service, lead tracking pipeline, mailbridge" />
     <meta name="author" content="Deep Patel" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#080808" />
 
     <!-- Canonical URL & Mobile Manifest -->
     <link rel="canonical" href="https://mail-bridge.email/" />
     <link rel="manifest" href="/site.webmanifest" />
-    <!-- Typography: Plus Jakarta Sans (Headings), Inter (Body UI), JetBrains Mono (Code/APIs) -->
+    <!-- High-Performance Modern Typography: Plus Jakarta Sans (Headings & UI), Inter (Body), JetBrains Mono (Monospace/Code) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
 
     <!-- Favicon & Mobile Touch Icons for Google Search & Browsers -->
     <link rel="shortcut icon" href="/favicon.ico" />

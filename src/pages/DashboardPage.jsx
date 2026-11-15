@@ -22,8 +22,11 @@ import {
   X,
   Search,
   Settings,
-  Sparkles,
+  Palette,
+  PenTool,
+  Layout,
   Smartphone,
+  RefreshCw,
   Webhook
 } from "lucide-react";
 import { WebhookManager } from "../components/WebhookManager.jsx";
@@ -1480,12 +1483,12 @@ export function DashboardPage() {
         }
 
         if (data.isMock) {
-          setAiNote(data.note + ` (applied content & color theme to preview)`);
+          setAiNote(data.note + ` (applied content & palette to preview)`);
         } else {
-          setAiNote(`✨ AI generated content and color theme applied to ${aiType} template successfully!`);
+          setAiNote(`Draft content and palette applied to ${aiType} template successfully!`);
         }
       } else {
-        alert(data.error || "Failed to generate AI content");
+        alert(data.error || "Failed to generate draft content");
       }
     } catch (error) {
       alert("Error generating content: " + error.message);
@@ -1517,7 +1520,7 @@ export function DashboardPage() {
         if (data.theme.colorHeaderText) setColorHeaderText(data.theme.colorHeaderText);
         if (data.theme.colorButtonBg) setColorButtonBg(data.theme.colorButtonBg);
         if (data.theme.colorBgLight) setColorBgLight(data.theme.colorBgLight);
-        setAiNote(`AI theme suggestions successfully applied for "${brandName}"!`);
+        setAiNote(`Palette suggestions successfully applied for "${brandName}"!`);
       } else {
         alert("Failed to suggest brand colors. Make sure you set a Brand Name first!");
       }
@@ -2153,7 +2156,7 @@ export function DashboardPage() {
       <div className="onboarding-modal-overlay">
         <div className="onboarding-modal-card">
           <div className="onboarding-modal-icon">
-            <Sparkles size={32} style={{ color: "#14b8a6" }} />
+            <Mail size={32} style={{ color: "var(--accent-primary)" }} />
           </div>
           <h2>Welcome to MailBridge!</h2>
           <p>Please provide your company or brand name to initialize your dashboard workspace.</p>
@@ -2204,20 +2207,20 @@ export function DashboardPage() {
                 className="btn-ai-trigger-inline"
                 onClick={() => setShowAiCard(true)}
               >
-                <Sparkles size={13} /> Write with AI Assistant
+                <PenTool size={13} /> Template Draft Assistant
               </button>
             </div>
           ) : (
             <div className="ai-assistant-card">
               <div className="ai-header-row">
                 <span className="ai-title">
-                  <Sparkles size={16} /> AI Email Writer
+                  <PenTool size={16} /> Template Draft Assistant
                 </span>
                 <button
                   type="button"
                   className="ai-close-btn"
                   onClick={() => setShowAiCard(false)}
-                  title="Close AI Assistant"
+                  title="Close Assistant"
                 >
                   <X size={16} />
                 </button>
@@ -2271,7 +2274,7 @@ export function DashboardPage() {
                 onClick={handleAiGenerate}
                 disabled={generatingAi || !aiPrompt.trim()}
               >
-                {generatingAi ? "Generating content..." : "✨ Generate & Apply Content"}
+                {generatingAi ? "Generating draft..." : "Generate & Apply Draft"}
               </button>
 
               {aiNote && (
@@ -2410,7 +2413,7 @@ export function DashboardPage() {
                     boxShadow: "0 2px 4px rgba(15, 118, 110, 0.2)"
                   }}
                 >
-                  <SparklesIcon size={12} /> {generatingAi ? "Analyzing..." : "Auto-Theme with AI"}
+                  <Palette size={12} /> {generatingAi ? "Harmonizing..." : "Auto-Theme Palette"}
                 </button>
               </div>
               <input
@@ -2627,8 +2630,8 @@ export function DashboardPage() {
           <h2 style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
             <Eye size={20} /> Live Preview
             {aiNote && aiNote.includes("applied") && (
-              <span className="log-style-badge" style={{ fontSize: "11px", background: "linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%)", color: "#c084fc", border: "1px solid rgba(168, 85, 247, 0.3)", marginLeft: "auto", textTransform: "none", letterSpacing: "normal" }}>
-                ✨ AI Generated
+              <span className="log-style-badge" style={{ fontSize: "11px", background: "rgba(27, 67, 50, 0.08)", color: "#1b4332", border: "1px solid #1b4332", marginLeft: "auto", textTransform: "none", letterSpacing: "normal" }}>
+                Bespoke Draft
               </span>
             )}
           </h2>
@@ -2712,7 +2715,7 @@ export function DashboardPage() {
           className={`dashboard-tab-btn ${activeTab === "customizer" ? "active" : ""}`}
           onClick={() => setActiveTab("customizer")}
         >
-          <SparklesIcon size={18} /> Email Template Builder
+          <Layout size={18} /> Email Template Studio
         </button>
         <button
           className={`dashboard-tab-btn ${activeTab === "smtp" ? "active" : ""}`}
@@ -2756,7 +2759,7 @@ export function DashboardPage() {
 
             <div className="metric-card">
               <div className="metric-icon simulated">
-                <SparklesIcon size={22} />
+                <RefreshCw size={22} />
               </div>
               <div className="metric-info">
                 <label>Simulated</label>
@@ -2869,27 +2872,5 @@ export function DashboardPage() {
 
       {selectedLog && renderLogDetailModal()}
     </div>
-  );
-}
-
-// Sparkles icon local definition to handle icon compatibility cleanly
-function SparklesIcon({ size }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="lucide lucide-sparkles"
-    >
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z" />
-      <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z" />
-      <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z" />
-    </svg>
   );
 }

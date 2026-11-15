@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
 import {
-  Sparkles,
+  Palette,
   Zap,
   Shield,
   BarChart3,
@@ -67,9 +67,9 @@ const features = [
     desc: "Dispatch phone OTP verifications using direct Android USB ADB debugging, local HTTP mobile relays, or carrier SMTP gateways."
   },
   {
-    icon: Sparkles,
-    title: "Gemini AI Copy & Styling",
-    desc: "Generate high-converting cold outreach copy and brand-compliant visual color themes automatically with Google Gemini AI."
+    icon: Palette,
+    title: "Bespoke Templates & Styling",
+    desc: "Craft distinguished correspondence with classical typographic hierarchy, custom brand palettes, and verified deliverability safeguards."
   },
   {
     icon: Cpu,
@@ -153,12 +153,12 @@ export function HomePage() {
   ];
 
   // Interactive Services Hub Tab State
-  const [activeServiceTab, setActiveServiceTab] = useState("bulk"); // "bulk" | "email" | "sms" | "ai"
+  const [activeServiceTab, setActiveServiceTab] = useState("bulk"); // "bulk" | "email" | "sms" | "templates"
 
   // Interactive Sandbox State
   const [templateType, setTemplateType] = useState("otp");
   const [brandName, setBrandName] = useState("Acme Corp");
-  const [headerColor, setHeaderColor] = useState("#0f766e");
+  const [headerColor, setHeaderColor] = useState("#d41514");
   const [headerTextColor, setHeaderTextColor] = useState("#ffffff");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("+919876543210");
@@ -243,7 +243,7 @@ export function HomePage() {
   const generateEmailHtml = () => {
     const brand = brandName || "MailBridge";
     const bgLight = "#f8fafc";
-    const btnBg = headerColor || "#0f766e";
+    const btnBg = headerColor || "#d41514";
     const textMainColor = headerTextColor || "#ffffff";
 
     let titleText = "Security Verification";
@@ -486,37 +486,29 @@ export function HomePage() {
         })}
       </script>
 
-      {/* Atmospheric Ambient Mesh Background */}
-      <div className="mesh-gradient-container" aria-hidden="true">
-        <div className="mesh-circle circle-1"></div>
-        <div className="mesh-circle circle-2"></div>
-        <div className="mesh-circle circle-3"></div>
-      </div>
-
       {/* ========================================================================= */}
       {/* 1. HERO SECTION (DUAL PROPOSITION: BULK OUTREACH + TRANSACTIONAL API)     */}
       {/* ========================================================================= */}
       <header className="hero-section-new">
         <div className="hero-grid">
           <div className="hero-left-content">
-            {/* Feature Announcement Badge */}
+            {/* Masthead Eyebrow */}
             <div className="hero-badge-pill">
-              <span className="badge-spark-indicator"></span>
-              <Sparkles size={14} className="badge-spark" />
-              <span>NEW: Personalized Bulk Mailer &amp; Lead Tracker</span>
+              <span className="badge-classic-bullet">◆</span>
+              <span>INDEPENDENT OUTREACH &amp; TRANSACTIONAL SMTP PLATFORM</span>
             </div>
 
             <h1 className="hero-title">
-              Cold Email Outreach &amp; Developer APIs. <br />
-              <span className="hero-title-highlight">Zero Vendor Fees.</span>
+              Independent Cold Outreach <br />
+              <em>&amp; Transactional Email Relays.</em>
             </h1>
 
             <p className="hero-desc-text">
-              Run personalized cold outreach campaigns from CSV or Excel spreadsheets with real-time open and CTA tracking — or trigger instantaneous transactional OTPs and system alerts over a unified HTTPS API. Powered by your own secure Gmail SMTP server.
+              Dispatch personalized outreach campaigns from CSV or Excel spreadsheets with live engagement tracking — or trigger transactional verification OTPs and alerts over a unified HTTPS API, relayed directly through your own secure Gmail SMTP server.
             </p>
             
             <div className="hero-cta-buttons">
-              <Link to="/bulk-mail" className="btn btn-hero-primary glow-btn">
+              <Link to="/bulk-mail" className="btn btn-hero-primary">
                 <FileSpreadsheet size={18} /> Launch Bulk Mailer
               </Link>
               {user ? (
@@ -529,7 +521,7 @@ export function HomePage() {
                 </Link>
               )}
               <Link to="/docs" className="btn-hero-text-link">
-                API Docs &amp; SDKs <ChevronRight size={15} />
+                API Docs &amp; Specifications <ChevronRight size={15} />
               </Link>
             </div>
 
@@ -671,8 +663,8 @@ export function HomePage() {
                     <svg className="dashboard-svg-graph" viewBox="0 0 400 130" aria-label="API Delivery graph">
                       <defs>
                         <linearGradient id="hero-gradient-area" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.35" />
-                          <stop offset="100%" stopColor="#14b8a6" stopOpacity="0" />
+                          <stop offset="0%" stopColor="#d41514" stopOpacity="0.35" />
+                          <stop offset="100%" stopColor="#d41514" stopOpacity="0" />
                         </linearGradient>
                       </defs>
                       <line x1="20" y1="20" x2="380" y2="20" className="graph-grid-line" strokeDasharray="3 3" />
@@ -680,9 +672,9 @@ export function HomePage() {
                       <line x1="20" y1="90" x2="380" y2="90" className="graph-grid-line" strokeDasharray="3 3" />
                       
                       <path d="M 20 80 Q 80 45, 140 65 T 260 25 T 380 18 L 380 100 L 20 100 Z" fill="url(#hero-gradient-area)" />
-                      <path d="M 20 80 Q 80 45, 140 65 T 260 25 T 380 18" fill="none" stroke="#14b8a6" strokeWidth="3" />
+                      <path d="M 20 80 Q 80 45, 140 65 T 260 25 T 380 18" fill="none" stroke="#d41514" strokeWidth="3" />
                       
-                      <circle cx="260" cy="25" r="5" fill="#14b8a6" stroke="#ffffff" strokeWidth="2" />
+                      <circle cx="260" cy="25" r="5" fill="#d41514" stroke="#ffffff" strokeWidth="2" />
                       
                       {/* Tooltip on active point */}
                       <g className="graph-tooltip">
@@ -914,11 +906,11 @@ export function HomePage() {
           </button>
           <button 
             type="button"
-            className={`services-tab-btn ${activeServiceTab === "ai" ? "active" : ""}`}
-            onClick={() => setActiveServiceTab("ai")}
+            className={`services-tab-btn ${activeServiceTab === "templates" ? "active" : ""}`}
+            onClick={() => setActiveServiceTab("templates")}
           >
-            <Sparkles size={18} />
-            <span>Gemini AI Copy Engine</span>
+            <Palette size={18} />
+            <span>Bespoke Templates &amp; Styling</span>
           </button>
         </div>
 
@@ -956,7 +948,7 @@ export function HomePage() {
                   </div>
                 </div>
                 <div style={{ marginTop: "24px" }}>
-                  <Link to="/bulk-mail" className="btn btn-hero-primary glow-btn">
+                  <Link to="/bulk-mail" className="btn btn-hero-primary">
                     Open Bulk Mailer <ArrowRight size={16} />
                   </Link>
                 </div>
@@ -1098,49 +1090,49 @@ export function HomePage() {
             </div>
           )}
 
-          {/* Service 4: Gemini AI Copywriting */}
-          {activeServiceTab === "ai" && (
+          {/* Service 4: Bespoke Templates & Design Studio */}
+          {activeServiceTab === "templates" && (
             <div className="service-detail-grid">
               <div className="service-detail-info">
-                <p className="service-tagline">Gemini AI Copywriter &amp; Style Engine</p>
-                <h3>Write persuasive cold emails and brand styling in one click.</h3>
+                <p className="service-tagline">Bespoke Templates &amp; Typography</p>
+                <h3>Distinguished correspondence crafted to command attention.</h3>
                 <p className="service-desc">
-                  Powered by advanced Google Gemini models. Enter custom prompts to draft highly persuasive, urgent, or friendly copy and receive accessible, brand-compliant visual themes.
+                  Move beyond cookie-cutter automation. Deliver beautifully structured messages with classical serif hierarchy, custom brand palettes, and adaptive recipient tokens engineered to land directly in primary inboxes.
                 </p>
                 <div className="service-features-list">
                   <div className="service-feature-item">
                     <CheckCircle2 className="feature-check-icon" size={18} />
                     <div>
-                      <h4>Semantic Color Recommender</h4>
-                      <p>Generates brand palette selections based on business text analysis.</p>
+                      <h4>Classical Typographic Hierarchy</h4>
+                      <p>Carefully balanced font scales and line heights optimized for effortless readability.</p>
                     </div>
                   </div>
                   <div className="service-feature-item">
                     <CheckCircle2 className="feature-check-icon" size={18} />
                     <div>
-                      <h4>Diverse Tone Profiles</h4>
-                      <p>Switch message vibes instantly among Friendly, Professional, Urgent, or Persuasive.</p>
+                      <h4>Adaptive Variable Tokens</h4>
+                      <p>Seamlessly merge recipient names, company profiles, and bespoke data fields.</p>
                     </div>
                   </div>
                   <div className="service-feature-item">
                     <CheckCircle2 className="feature-check-icon" size={18} />
                     <div>
-                      <h4>Robust Fallback Heuristics</h4>
-                      <p>Maintains reliable layout capabilities even without external AI keys.</p>
+                      <h4>Zero Bot Fingerprints</h4>
+                      <p>Clean HTML structure and verified headers that evade promotional filters and spam flags.</p>
                     </div>
                   </div>
                 </div>
                 <div style={{ marginTop: "24px" }}>
                   <Link to="/dashboard" className="btn btn-hero-secondary">
-                    Try AI Generator <ArrowRight size={16} />
+                    Open Template Studio <ArrowRight size={16} />
                   </Link>
                 </div>
               </div>
               <div className="service-detail-graphic">
                 <div className="services-visual-card">
                   <div className="services-visual-header">
-                    <span className="visual-badge">Gemini Flash</span>
-                    <span className="visual-title">Optimized</span>
+                    <span className="visual-badge">Verified Layout</span>
+                    <span className="visual-title">Classical Print Spec</span>
                   </div>
                   <div className="visual-content">
                     <div className="visual-line accent"></div>
@@ -1594,7 +1586,7 @@ export function HomePage() {
           <h2>Start Sending Cold Outreach &amp; Transactional Emails for Free.</h2>
           <p>Zero credit card required. Connect your Gmail SMTP in 2 minutes and start closing leads today.</p>
           <div className="cta-buttons-row">
-            <Link to="/bulk-mail" className="btn btn-hero-primary glow-btn">
+            <Link to="/bulk-mail" className="btn btn-hero-primary">
               <FileSpreadsheet size={18} /> Launch Bulk Mailer Now
             </Link>
             {user ? (

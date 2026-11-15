@@ -1,8 +1,8 @@
-/* Modern Dashboard Design System */
+/* Modern Dashboard Design System - Black, Silver & Red */
 :root {
-  --primary-color: #0f766e;
-  --primary-hover: #115e59;
-  --primary-light: #f0fdfa;
+  --primary-color: #d41514;
+  --primary-hover: #b8100f;
+  --primary-light: rgba(212, 21, 20, 0.08);
   
   --success-color: #10b981;
   --success-light: #ecfdf5;
@@ -12,14 +12,14 @@
   --warning-light: #fffbeb;
   --warning-border: #fde68a;
   
-  --danger-color: #ef4444;
+  --danger-color: #d41514;
   --danger-light: #fef2f2;
   --danger-border: #fca5a5;
   
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --bg-main: #f9fafb;
-  --border-color: #e5e7eb;
+  --text-main: #080808;
+  --text-muted: #5e5c5b;
+  --bg-main: #f7f7f8;
+  --border-color: #dedcdc;
 }
 
 .dashboard-page {
@@ -1678,46 +1678,37 @@ input:checked + .slider:before {
   }
 }
 
-/* Dark theme overrides for Dashboard page */
+/* Dark theme overrides for Dashboard page - Black #080808, Silver #CDCBCA, Red #d41514 */
 html.dark {
-  --bg-main: #0b0f19;
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --bg-main: #080808;
+  --text-main: #f4f4f4;
+  --text-muted: #cdcbca;
+  --border-color: rgba(205, 203, 202, 0.16);
 
-  --primary-color: #14b8a6;
-  --primary-hover: #2dd4bf;
-  --primary-light: rgba(20, 184, 166, 0.10);
+  --primary-color: #d41514;
+  --primary-hover: #e8201f;
+  --primary-light: rgba(212, 21, 20, 0.15);
 
   --success-color: #34d399;
-  --success-light: rgba(16, 185, 129, 0.06);
-  --success-border: rgba(16, 185, 129, 0.20);
+  --success-light: rgba(16, 185, 129, 0.08);
+  --success-border: rgba(16, 185, 129, 0.25);
 
   --warning-color: #fbbf24;
-  --warning-light: rgba(245, 158, 11, 0.06);
-  --warning-border: rgba(245, 158, 11, 0.20);
+  --warning-light: rgba(245, 158, 11, 0.08);
+  --warning-border: rgba(245, 158, 11, 0.25);
 
-  --danger-color: #f87171;
-  --danger-light: rgba(239, 68, 68, 0.06);
-  --danger-border: rgba(239, 68, 68, 0.20);
+  --danger-color: #d41514;
+  --danger-light: rgba(212, 21, 20, 0.12);
+  --danger-border: rgba(212, 21, 20, 0.35);
 }
 
 html.dark .dashboard-page {
-  background-color: #030712;
-  color: #f3f4f6;
+  background-color: #080808;
+  color: #f4f4f4;
 }
 
 html.dark .dashboard-page::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 10%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(20, 184, 166, 0.06) 0%, transparent 70%);
-  filter: blur(100px);
-  pointer-events: none;
-  z-index: 0;
+  display: none !important;
 }
 
 html.dark .dashboard-header h1 {
@@ -2629,15 +2620,15 @@ html.dark .smtp-actions-bar {
   border-top-color: rgba(255, 255, 255, 0.08);
 }
 
-/* AI Assistant Styles */
+/* Template Draft Assistant Styles */
 .ai-assistant-card {
-  background: #fdfeff;
-  border: 1px dashed #c084fc;
-  border-radius: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
   padding: 18px;
   margin-bottom: 24px;
-  box-shadow: 0 4px 20px rgba(192, 132, 252, 0.05);
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -2647,9 +2638,9 @@ html.dark .smtp-actions-bar {
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 3px;
   height: 100%;
-  background: linear-gradient(to bottom, #a855f7, #6366f1);
+  background: var(--accent-primary);
 }
 
 .ai-header-row {
@@ -2660,9 +2651,10 @@ html.dark .smtp-actions-bar {
 }
 
 .ai-title {
+  font-family: var(--font-heading);
   font-size: 15px;
   font-weight: 700;
-  color: #581c87;
+  color: var(--accent-primary);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2671,7 +2663,7 @@ html.dark .smtp-actions-bar {
 .ai-close-btn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -2682,8 +2674,8 @@ html.dark .smtp-actions-bar {
 }
 
 .ai-close-btn:hover {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-surface-raised);
+  color: var(--text-main);
 }
 
 .ai-form-group {
@@ -2692,44 +2684,49 @@ html.dark .smtp-actions-bar {
 
 .ai-form-group label {
   display: block;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
   margin-bottom: 4px;
 }
 
 .ai-prompt-textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
   font-size: 13px;
-  font-family: inherit;
+  font-family: var(--font-sans);
   resize: vertical;
   min-height: 70px;
+  background: var(--bg-surface);
+  color: var(--text-main);
   transition: border-color 0.2s ease;
 }
 
 .ai-prompt-textarea:focus {
   outline: none;
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary);
 }
 
 .ai-select {
   width: 100%;
   padding: 8px 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
   font-size: 13px;
-  background-color: #fff;
+  font-family: var(--font-sans);
+  background-color: var(--bg-surface);
+  color: var(--text-main);
 }
 
 .ai-select:focus {
   outline: none;
-  border-color: #a855f7;
+  border-color: var(--accent-primary);
 }
 
 .ai-row {
@@ -2745,11 +2742,12 @@ html.dark .smtp-actions-bar {
 
 .btn-ai-generate {
   width: 100%;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: var(--accent-primary);
   color: #fff;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 4px;
   padding: 10px;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -2757,11 +2755,11 @@ html.dark .smtp-actions-bar {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: opacity 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .btn-ai-generate:hover:not(:disabled) {
-  opacity: 0.95;
+  background: var(--accent-primary-hover);
 }
 
 .btn-ai-generate:disabled {
@@ -2774,11 +2772,12 @@ html.dark .smtp-actions-bar {
   align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
-  background-color: #faf5ff;
-  border: 1px solid #f3e8ff;
-  color: #6b21a8;
-  border-radius: 8px;
-  font-size: 11px;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-main);
+  color: var(--text-muted);
+  border-radius: 4px;
+  font-family: var(--font-serif);
+  font-size: 13px;
   margin-top: 12px;
   line-height: 1.4;
 }
@@ -2787,11 +2786,12 @@ html.dark .smtp-actions-bar {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
-  color: #7c3aed;
-  border: 1px solid rgba(168, 85, 247, 0.25);
-  border-radius: 6px;
+  background: var(--bg-surface-raised);
+  color: var(--accent-primary);
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
   padding: 4px 10px;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -2799,55 +2799,55 @@ html.dark .smtp-actions-bar {
 }
 
 .btn-ai-trigger-inline:hover {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(99, 102, 241, 0.18) 100%);
-  border-color: rgba(168, 85, 247, 0.4);
+  background: var(--bg-surface);
+  border-color: var(--accent-primary);
   transform: translateY(-1px);
 }
 
-/* Dark mode overrides for AI assistant */
+/* Dark mode overrides for assistant */
 html.dark .ai-assistant-card {
-  background: rgba(15, 23, 42, 0.5);
-  border-color: rgba(168, 85, 247, 0.3);
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.05);
+  background: var(--bg-surface);
+  border-color: var(--border-main);
+  box-shadow: none;
 }
 
 html.dark .ai-title {
-  color: #c084fc;
+  color: var(--accent-primary);
 }
 
 html.dark .ai-close-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #cbd5e1;
+  background: var(--bg-surface-raised);
+  color: var(--text-main);
 }
 
 html.dark .ai-form-group label {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 html.dark .ai-prompt-textarea {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  color: #fff !important;
+  background: var(--bg-surface) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-main) !important;
 }
 
 html.dark .ai-prompt-textarea:focus {
-  border-color: #a855f7 !important;
+  border-color: var(--accent-primary) !important;
 }
 
 html.dark .ai-select {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  color: #fff !important;
+  background: var(--bg-surface) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-main) !important;
 }
 
 html.dark .ai-select option {
-  background-color: #0f172a !important;
+  background-color: var(--bg-surface) !important;
 }
 
 html.dark .ai-banner-info {
-  background-color: rgba(168, 85, 247, 0.08) !important;
-  border-color: rgba(168, 85, 247, 0.2) !important;
-  color: #d8b4fe !important;
+  background-color: var(--bg-surface-raised) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-muted) !important;
 }
 
 /* OTP Verification Input Styles */

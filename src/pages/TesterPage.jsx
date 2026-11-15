@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { API_URL } from "../config.js";
 import { Link, useLocation } from "react-router-dom";
-import { Send, CheckCircle, AlertCircle, Mail, Copy, Plus, Trash2, Sparkles } from "lucide-react";
+import { Send, CheckCircle, AlertCircle, Mail, Copy, Plus, Trash2, PenTool } from "lucide-react";
 import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Tester.css";
 
@@ -250,10 +250,10 @@ export function TesterPage() {
         if (data.isMock) {
           setAiNote(data.note);
         } else {
-          setAiNote("✨ Content generated successfully!");
+          setAiNote("Draft content generated successfully!");
         }
       } else {
-        alert(data.error || "Failed to generate AI content");
+        alert(data.error || "Failed to generate draft content");
       }
     } catch (error) {
       alert("Error: " + error.message);
@@ -407,7 +407,7 @@ export function TesterPage() {
                       onClick={() => setShowAiAssist(!showAiAssist)}
                       style={{ padding: "4px 8px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}
                     >
-                      <Sparkles size={14} /> AI Assist
+                      <PenTool size={13} /> Draft Assistant
                     </button>
                     <button
                       type="button"
@@ -423,7 +423,7 @@ export function TesterPage() {
                 {showAiAssist && (
                   <div className="tester-ai-container">
                     <div className="tester-ai-title">
-                      <Sparkles size={16} /> AI Writing Assistant
+                      <PenTool size={15} /> Template Draft Assistant
                     </div>
 
                     <div className="tester-ai-form-group full" style={{ marginBottom: "12px" }}>

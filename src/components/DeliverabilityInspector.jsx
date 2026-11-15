@@ -5,7 +5,6 @@ import {
   CheckCircle2, 
   Smartphone, 
   Monitor, 
-  Sparkles, 
   Copy, 
   Check, 
   RefreshCw,
@@ -157,7 +156,7 @@ export function DeliverabilityInspector() {
         {/* Section Header */}
         <div className="inspector-header">
           <span className="inspector-badge">
-            <Sparkles size={14} /> Free SEO & Deliverability Tool
+            <ShieldCheck size={14} /> Editorial Spam &amp; Deliverability Inspector
           </span>
           <h2 className="inspector-title">
             Free Cold Email Spam Word & Deliverability Inspector

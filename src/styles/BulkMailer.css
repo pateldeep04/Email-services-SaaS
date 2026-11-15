@@ -1,11 +1,32 @@
-/* Bulk Mailer & Campaign Tracking Styling */
+/* Bulk Mailer & Campaign Tracking Styling - Black, Silver & Red */
+:root {
+  --primary-color: #d41514;
+  --primary-hover: #b8100f;
+  --primary-light: rgba(212, 21, 20, 0.08);
+  --card-bg: #ffffff;
+  --border-color: #dedcdc;
+  --bg-alt: #f0f0f2;
+}
+
+html.dark {
+  --primary-color: #d41514;
+  --primary-hover: #e8201f;
+  --primary-light: rgba(212, 21, 20, 0.15);
+  --card-bg: #111111;
+  --border-color: rgba(205, 203, 202, 0.16);
+  --bg-main: #080808;
+  --bg-alt: #161616;
+  --text-main: #f4f4f4;
+  --text-muted: #cdcbca;
+}
+
 .bulk-mailer-page {
   min-height: 100vh;
-  background: var(--bg-main, #f9fafb);
+  background: var(--bg-main, #f7f7f8);
   padding: 40px 24px;
   font-family: var(--font-sans);
-  color: var(--text-main, #1f2937);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: var(--text-main, #080808);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .bulk-mailer-container {
@@ -72,7 +93,7 @@
 
 .bulk-tab-btn.active {
   background: var(--card-bg, #ffffff);
-  color: var(--primary-color, #0f766e);
+  color: var(--primary-color, #d41514);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
@@ -123,14 +144,14 @@
 
 .dropzone:hover,
 .dropzone.drag-active {
-  border-color: var(--primary-color, #0f766e);
+  border-color: var(--primary-color, #d41514);
   background: rgba(15, 118, 110, 0.04);
 }
 
 .dropzone-icon {
   width: 44px;
   height: 44px;
-  color: var(--primary-color, #0f766e);
+  color: var(--primary-color, #d41514);
   margin-bottom: 12px;
 }
 
@@ -163,7 +184,7 @@
   margin-top: 14px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--primary-color, #0f766e);
+  color: var(--primary-color, #d41514);
 }
 
 /* Variable Tags */
@@ -182,15 +203,15 @@
   font-size: 12px;
   font-family: var(--font-mono);
   font-weight: 600;
-  color: var(--primary-color, #0f766e);
+  color: var(--primary-color, #d41514);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .tag-btn:hover {
-  background: var(--primary-color, #0f766e);
+  background: var(--primary-color, #d41514);
   color: #ffffff;
-  border-color: var(--primary-color, #0f766e);
+  border-color: var(--primary-color, #d41514);
 }
 
 /* Form inputs */
@@ -224,7 +245,7 @@
 .bulk-input:focus,
 .bulk-textarea:focus,
 .bulk-select:focus {
-  border-color: var(--primary-color, #0f766e);
+  border-color: var(--primary-color, #d41514);
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
 }
 
@@ -314,9 +335,9 @@
 }
 
 .stepper-btn:hover:not(:disabled) {
-  background: var(--primary-color, #0f766e);
+  background: var(--primary-color, #d41514);
   color: #ffffff;
-  border-color: var(--primary-color, #0f766e);
+  border-color: var(--primary-color, #d41514);
 }
 
 .stepper-btn:disabled {
@@ -352,7 +373,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0f766e, #0d9488);
+  background: linear-gradient(135deg, #d41514, #b8100f);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -433,7 +454,7 @@
 }
 
 .email-card-banner {
-  background: linear-gradient(135deg, #0f766e, #115e59);
+  background: linear-gradient(135deg, #d41514, #9e0e0d);
   padding: 16px 20px;
   text-align: center;
 }
@@ -480,14 +501,14 @@
 }
 
 .progress-bar {
-  background: var(--primary-color, #0f766e);
+  background: var(--primary-color, #d41514);
   height: 100%;
   transition: width 0.3s ease;
 }
 
 /* Buttons */
 .btn-bulk-primary {
-  background: var(--primary-color, #0f766e);
+  background: var(--primary-color, #d41514);
   color: #ffffff;
   padding: 10px 20px;
   border-radius: 8px;
@@ -502,7 +523,7 @@
 }
 
 .btn-bulk-primary:hover:not(:disabled) {
-  background: var(--primary-hover, #115e59);
+  background: var(--primary-hover, #b8100f);
 }
 
 .btn-bulk-primary:disabled {
@@ -709,7 +730,7 @@ html.dark .dropzone {
 
 html.dark .dropzone:hover {
   background: rgba(20, 184, 166, 0.06) !important;
-  border-color: #14b8a6 !important;
+  border-color: #d41514 !important;
 }
 
 html.dark .dropzone-icon {
@@ -729,7 +750,7 @@ html.dark .tag-btn {
 }
 
 html.dark .tag-btn:hover {
-  background: #14b8a6 !important;
+  background: #d41514 !important;
   color: #ffffff !important;
 }
 
@@ -744,7 +765,7 @@ html.dark .bulk-select {
 html.dark .bulk-input:focus,
 html.dark .bulk-textarea:focus,
 html.dark .bulk-select:focus {
-  border-color: #14b8a6 !important;
+  border-color: #d41514 !important;
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25) !important;
 }
 
@@ -776,7 +797,7 @@ html.dark .stepper-btn {
 }
 
 html.dark .stepper-btn:hover:not(:disabled) {
-  background: #14b8a6 !important;
+  background: #d41514 !important;
   color: #ffffff !important;
 }
 
@@ -983,7 +1004,7 @@ html.dark .badge-cold-lead {
 .lead-cta-tip {
   grid-column: 1 / -1;
   font-size: 12px;
-  color: #0f766e;
+  color: #d41514;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   border-radius: 8px;
@@ -1223,7 +1244,7 @@ html.dark .login-popup-card {
   height: 44px;
   border-radius: 12px;
   background: rgba(15, 118, 110, 0.12);
-  color: #0f766e;
+  color: #d41514;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1304,7 +1325,7 @@ html.dark .login-popup-field label {
 .login-popup-btn {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+  background: linear-gradient(135deg, #d41514 0%, #b8100f 100%);
   color: #ffffff;
   border: none;
   border-radius: 9px;
@@ -1340,7 +1361,7 @@ html.dark .login-popup-footer {
 }
 
 .login-popup-link {
-  color: #0f766e;
+  color: #d41514;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
