@@ -63,8 +63,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0fdfa;
-  color: #0f766e;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
 }
 
 .webhook-metric-icon.success {
@@ -123,11 +123,11 @@
 }
 
 .webhook-subnav-btn:hover {
-  color: var(--primary-color, #0f766e);
+  color: var(--accent-primary, #ffffff);
 }
 
 .webhook-subnav-btn.active {
-  color: var(--primary-color, #0f766e);
+  color: var(--accent-primary, #ffffff);
   font-weight: 700;
 }
 
@@ -138,7 +138,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--primary-color, #0f766e);
+  background: var(--accent-primary, #ffffff);
 }
 
 /* Endpoint Card */
@@ -178,15 +178,15 @@
 }
 
 .webhook-endpoint-url {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
-  color: #0f766e;
-  background: #f0fdfa;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.04);
   padding: 4px 10px;
   border-radius: 6px;
   display: inline-block;
   word-break: break-all;
-  border: 1px solid #ccfbf1;
+  border: 1px solid var(--border-subtle);
 }
 
 .webhook-endpoint-actions {
@@ -383,7 +383,7 @@
 
 .webhook-event-checkbox-label input {
   margin-top: 2px;
-  accent-color: var(--primary-color, #0f766e);
+  accent-color: var(--accent-primary, #ffffff);
 }
 
 /* Delivery Logs Table */

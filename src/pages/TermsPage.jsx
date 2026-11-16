@@ -22,7 +22,7 @@ export function TermsPage() {
               display: "inline-flex",
               alignItems: "center",
               gap: "6px",
-              color: "#14b8a6",
+              color: "#2563eb",
               textDecoration: "none",
               fontSize: "14px",
               fontWeight: 600
@@ -200,9 +200,13 @@ export function TermsPage() {
 
           <div style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--border-color, rgba(148, 163, 184, 0.2))", textAlign: "center", fontSize: "14px", color: "#94a3b8" }}>
             Questions regarding our terms or deliverability policies? Contact our compliance desk at{" "}
-            <a href="mailto:compliance@mail-bridge.email" style={{ color: "#2dd4bf", textDecoration: "none", fontWeight: 600 }}>
+            <a href="mailto:compliance@mail-bridge.email" style={{ color: "#2563eb", textDecoration: "none", fontWeight: 600 }}>
               compliance@mail-bridge.email
             </a>
+            {" "}or call our support hotline at{" "}
+            <a href="tel:+18005550199" style={{ color: "#2563eb", textDecoration: "none", fontWeight: 600 }}>
+              +1 (800) 555-0199
+            </a>.
           </div>
         </div>
       </div>

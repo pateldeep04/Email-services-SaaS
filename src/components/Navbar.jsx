@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Mail, LogOut, Sun, Moon, Menu, X, Shield } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Mail, Phone, LogOut, Menu, X, Shield, FileSpreadsheet, ShieldCheck, BookOpen, Terminal, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useTheme } from "../context/ThemeContext.jsx";
 import "../styles/Navbar.css";
 
 function MailBridgeLogo({ size = 24, className }) {
@@ -34,15 +33,27 @@ function MailBridgeLogo({ size = 24, className }) {
 }
 
 export function Navbar() {
+  const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Close menu on route change & handle escape key
   useEffect(() => {
     setIsMenuOpen(false);
-  }, [location]);
+  }, [location.pathname]);
+
+  // Lock background scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -54,50 +65,79 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMenuOpen]);
 
-  const isActive = (path) => location.pathname === path ? "active" : "";
+  const isActive = (path) => (location.pathname === path ? "active" : "");
 
   const handleLinkClick = () => setIsMenuOpen(false);
+
   const handleLogoutClick = () => {
     logout();
     setIsMenuOpen(false);
+  };
+
+  const handleSpamInspectorClick = (e) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    if (location.pathname === "/") {
+      const el = document.getElementById("spam-checker");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/#spam-checker");
+    }
   };
 
   return (
     <>
       <nav className="app-navbar">
         <div className="app-nav-container">
-          <Link to="/" className="app-nav-brand" onClick={handleLinkClick}>
-            <MailBridgeLogo size={24} />
-            <span>MailBridge</span>
+          {/* Clickable Brand Logo */}
+          <Link to="/" className="app-nav-brand" onClick={handleLinkClick} aria-label="MailBridge Home">
+            <span className="nav-logo-badge">
+              <MailBridgeLogo size={22} />
+            </span>
+            <span className="nav-brand-title">MailBridge</span>
           </Link>
-          
-          <button 
-            className="mobile-menu-toggle" 
+
+          {/* Mobile Hamburger Toggle Button */}
+          <button
+            type="button"
+            className="mobile-menu-toggle"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle navigation menu"
+            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMenuOpen}
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
+          {/* Navigation Links & Action Controls */}
           <div className={`app-nav-menu-wrapper ${isMenuOpen ? "open" : ""}`}>
             <div className="nav-menu-content">
               <div className="app-nav-links">
-                <Link to="/" className={`app-nav-link ${isActive("/")}`} onClick={handleLinkClick}>Home</Link>
-                <Link to="/bulk-mail" className={`app-nav-link ${isActive("/bulk-mail")}`} onClick={handleLinkClick}>Bulk Mailer</Link>
-                <a href="/#spam-checker" className="app-nav-link" onClick={handleLinkClick}>Spam Inspector</a>
-                <Link to="/docs" className={`app-nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>Documentation</Link>
-                <Link to="/tester" className={`app-nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>API Tester</Link>
+                <Link to="/" className={`app-nav-link ${isActive("/")}`} onClick={handleLinkClick}>
+                  Home
+                </Link>
+                <Link to="/bulk-mail" className={`app-nav-link ${isActive("/bulk-mail")}`} onClick={handleLinkClick}>
+                  Bulk Mailer
+                </Link>
+                <a href="/#spam-checker" className="app-nav-link" onClick={handleSpamInspectorClick}>
+                  Spam Inspector
+                </a>
+                <Link to="/docs" className={`app-nav-link ${isActive("/docs")}`} onClick={handleLinkClick}>
+                  Documentation
+                </Link>
+                <Link to="/tester" className={`app-nav-link ${isActive("/tester")}`} onClick={handleLinkClick}>
+                  API Tester
+                </Link>
               </div>
 
               <div className="app-nav-auth">
-                <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
-                  {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-                </button>
                 {user ? (
                   <>
                     <span className="user-name">{user.name}</span>
-                    <Link to="/dashboard" className={`app-nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>Dashboard</Link>
+                    <Link to="/dashboard" className={`app-nav-link ${isActive("/dashboard")}`} onClick={handleLinkClick}>
+                      Dashboard
+                    </Link>
                     {(user.role === "admin" || user.role === "superadmin") && (
                       <Link
                         to="/admin"
@@ -108,31 +148,46 @@ export function Navbar() {
                           alignItems: "center",
                           gap: "4px",
                           fontWeight: 700,
-                          color: "#0f766e"
+                          color: "#ef233c"
                         }}
                       >
                         <Shield size={14} /> Admin
                       </Link>
                     )}
-                    <button className="logout-btn" onClick={handleLogoutClick}>
-                      <LogOut size={18} /> Logout
+                    <button type="button" className="logout-btn" onClick={handleLogoutClick}>
+                      <LogOut size={16} /> Logout
                     </button>
                   </>
                 ) : (
                   <>
-                    <Link to="/login" className={`app-nav-link ${isActive("/login")}`} onClick={handleLinkClick}>Login</Link>
-                    <Link to="/register" className="app-nav-button register-btn" onClick={handleLinkClick}>Register</Link>
+                    <Link to="/login" className={`app-nav-link ${isActive("/login")}`} onClick={handleLinkClick}>
+                      Login
+                    </Link>
+                    <Link to="/register" className="app-nav-button register-btn" onClick={handleLinkClick}>
+                      Create Account <ArrowRight size={14} />
+                    </Link>
                   </>
                 )}
+              </div>
+
+              {/* Mobile Drawer Footer Contacts */}
+              <div className="mobile-drawer-contact">
+                <a href="mailto:support@mail-bridge.email" className="mobile-contact-pill">
+                  <Mail size={13} /> support@mail-bridge.email
+                </a>
+                <a href="tel:+18005550199" className="mobile-contact-pill">
+                  <Phone size={13} /> +1 (800) 555-0199
+                </a>
               </div>
             </div>
           </div>
         </div>
       </nav>
+
       {/* Mobile Drawer Backdrop */}
       {isMenuOpen && (
-        <div 
-          className="app-nav-backdrop" 
+        <div
+          className="app-nav-backdrop"
           onClick={() => setIsMenuOpen(false)}
           aria-hidden="true"
         />

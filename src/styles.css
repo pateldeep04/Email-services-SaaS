@@ -1,75 +1,49 @@
 @import "tailwindcss";
 
-:root {
-  --font-heading: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
-
-  /* Black, Silver & Red Theme - Light Mode */
-  --bg-main: #f7f7f8;
-  --bg-surface: #ffffff;
-  --bg-surface-raised: #f0f0f2;
-  --bg-card: #ffffff;
-  --border-main: #dedcdc;
-  --border-subtle: #eae8e7;
-  --border-strong: #080808;
-  --border-silver: #cdcbca;
-
-  --silver: #7d7b7a;
-  --silver-light: #cdcbca;
-  --silver-dark: #4b4a49;
-
-  --text-main: #080808;
-  --text-muted: #5e5c5b;
-  --text-faint: #8e8c8a;
-
-  /* Red Accents */
-  --accent-primary: #d41514;
-  --accent-primary-hover: #b8100f;
-  --accent-primary-active: #9e0e0d;
-  --accent-red-glow: rgba(212, 21, 20, 0.15);
-  --accent-red-subtle: rgba(212, 21, 20, 0.08);
-
-  /* Status Accents */
-  --accent-silver: #cdcbca;
-  --accent-black: #080808;
-  --accent-success: #10b981;
-  --accent-warning: #f59e0b;
-
-  --transition-speed: 0.2s;
-}
-
+:root,
 html.dark {
-  /* Black, Silver & Red Theme - Dark Mode (Deep Black #080808, Silver #CDCBCA, Red #d41514) */
-  --bg-main: #080808;
-  --bg-surface: #101010;
-  --bg-surface-raised: #181818;
-  --bg-card: #121212;
-  --border-main: #242424;
-  --border-subtle: #191919;
-  --border-strong: #cdcbca;
-  --border-silver: rgba(205, 203, 202, 0.25);
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
 
-  --silver: #cdcbca;
-  --silver-light: #e6e5e4;
-  --silver-dark: #7a7877;
+  /* MailBridge Permanent Creator Theme (Charcoal Black #111318, Pure White #FFFFFF, Electric Blue #2563EB, Vibrant Red #EF233C) */
+  --bg-main: #111318;
+  --bg-surface: #181b22;
+  --bg-surface-raised: #20242e;
+  --bg-card: #181b22;
+  --border-main: #2b3142;
+  --border-subtle: #222633;
+  --border-strong: #3d465e;
+  --border-silver: rgba(255, 255, 255, 0.12);
 
-  --text-main: #f4f4f4;
-  --text-muted: #cdcbca;
-  --text-faint: #787675;
+  --silver: #94a3b8;
+  --silver-light: #cbd5e1;
+  --silver-dark: #64748b;
 
-  /* Red Accents */
-  --accent-primary: #d41514;
-  --accent-primary-hover: #e8201f;
-  --accent-primary-active: #ff3332;
-  --accent-red-glow: rgba(212, 21, 20, 0.28);
-  --accent-red-subtle: rgba(212, 21, 20, 0.14);
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  /* Primary Vibrant Red */
+  --accent-primary: #ef233c;
+  --accent-primary-hover: #dc2626;
+  --accent-primary-active: #b91c1c;
+  --accent-glow: rgba(239, 35, 60, 0.35);
+  --accent-subtle: rgba(239, 35, 60, 0.14);
+
+  /* Electric Blue */
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #3b82f6;
+  --accent-blue-tint: rgba(37, 99, 235, 0.14);
+  --accent-blue-border: rgba(37, 99, 235, 0.4);
 
   /* Status Accents */
-  --accent-silver: #cdcbca;
-  --accent-black: #080808;
+  --accent-silver: #94a3b8;
+  --accent-black: #111318;
   --accent-success: #10b981;
   --accent-warning: #f59e0b;
+
+  --transition-speed: 0.15s;
 }
 
 * {
@@ -78,14 +52,26 @@ html.dark {
   box-sizing: border-box;
 }
 
-html, body {
+html, body, #root, main, .home-page-redesign, .bulk-page-container, .dashboard-container, .tester-container, .docs-container, .legal-page-container {
   scroll-behavior: smooth;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  overflow-x: hidden;
+  overflow-x: clip !important;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   -webkit-text-size-adjust: 100%;
   touch-action: pan-y;
+  box-sizing: border-box;
+}
+
+img, video, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+pre, code, .table-wrapper, .table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -145,10 +131,10 @@ code, kbd, samp, pre {
   min-height: 100vh;
 }
 
-/* Custom Selection Highlight in Red */
+/* Custom Selection Highlight in Studio Titanium */
 ::selection {
-  background: #d41514;
-  color: #ffffff;
+  background: #ffffff;
+  color: #0c0d12;
 }
 
 /* Scrollbar Styling for Precision Dark Aesthetic */
@@ -160,12 +146,12 @@ code, kbd, samp, pre {
   background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: var(--border-main);
   border-radius: 4px;
   border: 1px solid var(--border-subtle);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3d3d3d;
+  background: var(--border-strong);
 }
 
 /* ContentEditable styling in Email Preview */
@@ -197,9 +183,9 @@ code, kbd, samp, pre {
 .page-loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(212, 21, 20, 0.15);
+  border: 3px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  border-top-color: #d41514;
+  border-top-color: #ffffff;
   animation: page-spin 1s ease-in-out infinite;
   margin-bottom: 12px;
 }

@@ -7,31 +7,61 @@
   padding: 30px 20px;
 }
 
+.auth-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  transition: opacity 0.2s;
+}
+
+.auth-brand-badge:hover {
+  opacity: 0.85;
+}
+
+.auth-brand-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: #ef233c;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(239, 35, 60, 0.45);
+}
+
 .auth-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-main);
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 44px 38px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .auth-card h1 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-family: var(--font-heading);
-  font-size: 28px;
+  font-size: 26px;
   color: var(--text-main);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
 .auth-subtitle {
   color: var(--text-muted);
-  font-family: var(--font-serif);
-  font-size: 15.5px;
+  font-family: var(--font-sans);
+  font-size: 14px;
   line-height: 1.5;
-  margin: 0 0 26px;
+  margin: 0 0 24px;
 }
 
 .auth-form {
@@ -52,24 +82,25 @@
   font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .form-group input {
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1px solid var(--border-main);
-  border-radius: 3px;
-  font-size: 14.5px;
+  border-radius: 8px;
+  font-size: 14px;
   font-family: var(--font-sans);
   color: var(--text-main);
-  background: var(--bg-surface);
+  background: var(--bg-surface-raised);
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 .form-group input::placeholder {
@@ -79,22 +110,22 @@
 
 .auth-error {
   padding: 10px 14px;
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-  border-radius: 3px;
-  font-size: 13.5px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef233c;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .btn {
   padding: 11px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -114,11 +145,13 @@
   color: #ffffff;
   border: 1px solid var(--accent-primary);
   margin-top: 8px;
+  box-shadow: 0 4px 14px var(--accent-glow);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-primary-hover);
   border-color: var(--accent-primary-hover);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -129,7 +162,7 @@
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--bg-surface);
-  border-color: var(--accent-primary);
+  border-color: var(--silver);
 }
 
 .auth-form .btn-primary,
@@ -140,8 +173,8 @@
 .auth-footer {
   text-align: center;
   color: var(--text-muted);
-  font-family: var(--font-serif);
-  font-size: 14.5px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
   margin-top: 24px;
 }
 
@@ -235,7 +268,7 @@ html.dark .auth-container {
   background: var(--bg-main);
 }
 
-html.dark .auth-card {
+.auth-card {
   background: var(--bg-surface);
   border-color: var(--border-main);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -253,13 +286,14 @@ html.dark .form-group input:focus {
 }
 
 html.dark .btn-primary {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: #ffffff;
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #111318;
 }
 
 html.dark .btn-primary:hover:not(:disabled) {
-  background: var(--accent-primary-hover);
+  background: #e4e4e7;
+  border-color: #e4e4e7;
 }
 
 html.dark .btn-secondary {

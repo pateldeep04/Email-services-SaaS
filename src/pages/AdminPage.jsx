@@ -494,7 +494,7 @@ export function AdminPage() {
       <div className="admin-hero-banner">
         <div className="admin-hero-left">
           <h1>
-            <Shield size={28} color="#0f766e" />
+            <Shield size={28} color="#ef233c" />
             <span>MailBridge Console</span>
             <span className="admin-hero-badge">Admin</span>
           </h1>
@@ -597,7 +597,7 @@ export function AdminPage() {
             <div className="admin-stat-card">
               <div className="admin-stat-top">
                 <span className="admin-stat-label">Total Users</span>
-                <div className="admin-stat-icon-wrapper" style={{ background: "rgba(15, 118, 110, 0.12)", color: "#0f766e" }}>
+                <div className="admin-stat-icon-wrapper" style={{ background: "rgba(239, 35, 60, 0.12)", color: "#ef233c" }}>
                   <Users size={20} />
                 </div>
               </div>
@@ -612,7 +612,7 @@ export function AdminPage() {
             <div className="admin-stat-card">
               <div className="admin-stat-top">
                 <span className="admin-stat-label">Total Emails Sent</span>
-                <div className="admin-stat-icon-wrapper" style={{ background: "rgba(59, 130, 246, 0.12)", color: "#3b82f6" }}>
+                <div className="admin-stat-icon-wrapper" style={{ background: "rgba(59, 130, 246, 0.12)", color: "#2563eb" }}>
                   <Mail size={20} />
                 </div>
               </div>
@@ -653,7 +653,7 @@ export function AdminPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px", marginBottom: "30px" }}>
             <div className="admin-card-section" style={{ margin: 0 }}>
               <h3 className="admin-section-title" style={{ marginBottom: "16px" }}>
-                <Activity size={18} color="#0f766e" /> Delivery Breakdown
+                <Activity size={18} color="#ef233c" /> Delivery Breakdown
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div>
@@ -681,7 +681,7 @@ export function AdminPage() {
                     <div
                       style={{
                         height: "100%",
-                        background: "#3b82f6",
+                        background: "#2563eb",
                         width: `${stats?.emails?.total ? Math.round((stats.emails.simulated / stats.emails.total) * 100) : 0}%`
                       }}
                     />
@@ -691,13 +691,13 @@ export function AdminPage() {
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", marginBottom: "6px" }}>
                     <span>Failed Deliveries</span>
-                    <strong style={{ color: "#ef4444" }}>{stats?.emails?.failed || 0}</strong>
+                    <strong style={{ color: "#ef233c" }}>{stats?.emails?.failed || 0}</strong>
                   </div>
                   <div style={{ height: "8px", background: "rgba(148, 163, 184, 0.2)", borderRadius: "9999px", overflow: "hidden" }}>
                     <div
                       style={{
                         height: "100%",
-                        background: "#ef4444",
+                        background: "#ef233c",
                         width: `${stats?.emails?.total ? Math.round((stats.emails.failed / stats.emails.total) * 100) : 0}%`
                       }}
                     />
@@ -708,7 +708,7 @@ export function AdminPage() {
 
             <div className="admin-card-section" style={{ margin: 0 }}>
               <h3 className="admin-section-title" style={{ marginBottom: "16px" }}>
-                <Server size={18} color="#0f766e" /> System Health Status
+                <Server size={18} color="#ef233c" /> System Health Status
               </h3>
               <div className="admin-key-value-list">
                 <div className="admin-kv-row">
@@ -732,7 +732,7 @@ export function AdminPage() {
                 <div className="admin-kv-row">
                   <span className="admin-kv-label">Cache Engine</span>
                   <span className="badge badge-success" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                    <Zap size={11} /> High-Speed TTL Cache
+                    <Server size={11} /> High-Speed TTL Cache
                   </span>
                 </div>
                 <div className="admin-kv-row">
@@ -750,7 +750,7 @@ export function AdminPage() {
                     disabled={cacheFlushing}
                     title="Purge cached stats and API key authentication lookup cache"
                   >
-                    <Zap size={12} color="#0f766e" /> {cacheFlushing ? "Purging..." : "Flush Cache"}
+                    <RotateCw size={12} /> {cacheFlushing ? "Purging..." : "Flush Cache"}
                   </button>
                 </div>
               </div>
@@ -763,7 +763,7 @@ export function AdminPage() {
             <div className="admin-card-section" style={{ margin: 0 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                 <h3 className="admin-section-title" style={{ margin: 0 }}>
-                  <Users size={18} color="#0f766e" /> User Type Breakdown
+                  <Users size={18} color="#ef233c" /> User Type Breakdown
                 </h3>
                 <span style={{ fontSize: "12px", color: "#94a3b8" }}>Total: {stats?.users?.total || 0}</span>
               </div>
@@ -885,7 +885,7 @@ export function AdminPage() {
           <div className="admin-card-section" style={{ marginTop: 0, marginBottom: "30px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <h3 className="admin-section-title" style={{ margin: 0 }}>
-                <Layers size={18} color="#0f766e" /> Platform Multi-Service Architecture
+                <Layers size={18} color="#ef233c" /> Platform Multi-Service Architecture
               </h3>
               <span style={{ fontSize: "12px", color: "#94a3b8" }}>6 Core SaaS Services Available</span>
             </div>
@@ -893,7 +893,7 @@ export function AdminPage() {
             <div className="admin-services-grid">
               <div className="admin-service-card is-active">
                 <div className="admin-service-card-header">
-                  <div className="admin-service-title"><Mail size={16} color="#0f766e" /> Transactional Email Relay</div>
+                  <div className="admin-service-title"><Mail size={16} color="#ef233c" /> Transactional Email Relay</div>
                   <span className="badge badge-success">Core Service</span>
                 </div>
                 <div className="admin-service-metric"><span>Global Dispatches:</span><strong>{stats?.emails?.total || 0}</strong></div>
@@ -911,7 +911,7 @@ export function AdminPage() {
 
               <div className="admin-service-card is-active">
                 <div className="admin-service-card-header">
-                  <div className="admin-service-title"><Send size={16} color="#3b82f6" /> Bulk Cold Outreach</div>
+                  <div className="admin-service-title"><Send size={16} color="#2563eb" /> Bulk Cold Outreach</div>
                   <span className="badge badge-success">Active</span>
                 </div>
                 <div className="admin-service-metric"><span>Campaigns Launched:</span><strong>{stats?.campaigns?.total || 0}</strong></div>
@@ -1035,7 +1035,7 @@ export function AdminPage() {
                             </div>
                             <div>
                               <div className="admin-user-info-name">
-                                {u.name} {isSelf && <span style={{ fontSize: "11px", color: "#0f766e" }}>(You)</span>}
+                                {u.name} {isSelf && <span style={{ fontSize: "11px", color: "#ef233c" }}>(You)</span>}
                               </div>
                               <div className="admin-user-info-sub">{u.email}</div>
                             </div>
@@ -1057,7 +1057,7 @@ export function AdminPage() {
                               <span
                                 style={{
                                   background: (u.services?.activeCount ?? 0) > 0 ? "rgba(15, 118, 110, 0.15)" : "rgba(148, 163, 184, 0.15)",
-                                  color: (u.services?.activeCount ?? 0) > 0 ? "#0f766e" : "#64748b",
+                                  color: (u.services?.activeCount ?? 0) > 0 ? "#ef233c" : "#64748b",
                                   padding: "2px 8px",
                                   borderRadius: "9999px",
                                   fontSize: "11px",
@@ -1347,7 +1347,7 @@ export function AdminPage() {
         <div className="admin-card-section">
           <div className="admin-section-header">
             <h3 className="admin-section-title">
-              <Send size={18} color="#0f766e" /> Global Platform Campaigns
+              <Send size={18} color="#ef233c" /> Global Platform Campaigns
             </h3>
           </div>
 
@@ -1390,7 +1390,7 @@ export function AdminPage() {
                       <td>{c.totalRecipients || 0}</td>
                       <td>
                         <span style={{ color: "#16a34a", fontWeight: 600 }}>{c.sentCount || 0}</span> /{" "}
-                        <span style={{ color: "#ef4444", fontWeight: 600 }}>{c.failedCount || 0}</span>
+                        <span style={{ color: "#ef233c", fontWeight: 600 }}>{c.failedCount || 0}</span>
                       </td>
                       <td>{c.openedCount || 0}</td>
                       <td>{c.clickedCount || 0}</td>
@@ -1467,7 +1467,7 @@ export function AdminPage() {
                   borderRadius: "8px",
                   fontSize: "13px",
                   background: smtpResult.success ? "rgba(34, 197, 94, 0.12)" : "rgba(239, 68, 68, 0.12)",
-                  color: smtpResult.success ? "#16a34a" : "#ef4444",
+                  color: smtpResult.success ? "#16a34a" : "#ef233c",
                   border: `1px solid ${smtpResult.success ? "rgba(34, 197, 94, 0.3)" : "rgba(239, 68, 68, 0.3)"}`
                 }}
               >
@@ -1638,7 +1638,7 @@ export function AdminPage() {
         <div className="admin-modal-overlay" onClick={() => setDeleteCandidate(null)}>
           <div className="admin-modal" style={{ maxWidth: "440px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3 style={{ color: "#ef4444", display: "flex", alignItems: "center", gap: "8px" }}>
+              <h3 style={{ color: "#ef233c", display: "flex", alignItems: "center", gap: "8px" }}>
                 <Trash2 size={20} /> Delete User
               </h3>
               <button className="admin-modal-close" onClick={() => setDeleteCandidate(null)}>
@@ -1669,7 +1669,7 @@ export function AdminPage() {
           <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
               <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Info size={18} color="#0f766e" /> Email Delivery Inspection
+                <Info size={18} color="#ef233c" /> Email Delivery Inspection
               </h3>
               <button className="admin-modal-close" onClick={() => setSelectedLog(null)}>
                 <X size={20} />
@@ -1712,7 +1712,7 @@ export function AdminPage() {
                 </span>
               </div>
               {selectedLog.error && (
-                <div style={{ marginTop: "10px", padding: "12px", background: "rgba(239, 68, 68, 0.12)", color: "#ef4444", borderRadius: "8px", fontSize: "13px" }}>
+                <div style={{ marginTop: "10px", padding: "12px", background: "rgba(239, 68, 68, 0.12)", color: "#ef233c", borderRadius: "8px", fontSize: "13px" }}>
                   <strong>Error Trace:</strong> {selectedLog.error}
                 </div>
               )}
@@ -1873,7 +1873,7 @@ export function AdminPage() {
                             alignItems: "center",
                             gap: "5px",
                             borderColor: isActive ? "rgba(239, 68, 68, 0.4)" : undefined,
-                            color: isActive ? "#ef4444" : undefined
+                            color: isActive ? "#ef233c" : undefined
                           }}
                           onClick={() => handleToggleKey(k._id, isActive)}
                           title={isActive ? "Disable this key immediately to block all incoming requests" : "Re-activate this API key"}
@@ -1922,7 +1922,7 @@ export function AdminPage() {
           <div className="admin-modal" style={{ maxWidth: "780px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
               <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Layers size={20} color="#0f766e" /> Platform Services Consumed by {viewUserServicesModal.name}
+                <Layers size={20} color="#ef233c" /> Platform Services Consumed by {viewUserServicesModal.name}
               </h3>
               <button className="admin-modal-close" onClick={() => setViewUserServicesModal(null)}>
                 <X size={20} />
@@ -1958,7 +1958,7 @@ export function AdminPage() {
                 <span
                   style={{
                     background: "rgba(15, 118, 110, 0.15)",
-                    color: "#0f766e",
+                    color: "#ef233c",
                     padding: "4px 12px",
                     borderRadius: "9999px",
                     fontSize: "12px",
@@ -1975,7 +1975,7 @@ export function AdminPage() {
               <div className={`admin-service-card ${(viewUserServicesModal.services?.emails?.total || 0) > 0 ? "is-active" : ""}`}>
                 <div className="admin-service-card-header">
                   <div className="admin-service-title">
-                    <Mail size={16} color="#0f766e" /> Transactional Email Relay
+                    <Mail size={16} color="#ef233c" /> Transactional Email Relay
                   </div>
                   <span className={`badge badge-${(viewUserServicesModal.services?.emails?.total || 0) > 0 ? "success" : "client"}`}>
                     {(viewUserServicesModal.services?.emails?.total || 0) > 0 ? "Active" : "Idle"}
@@ -1991,11 +1991,11 @@ export function AdminPage() {
                 </div>
                 <div className="admin-service-metric">
                   <span>Simulated:</span>
-                  <strong style={{ color: "#3b82f6" }}>{viewUserServicesModal.services?.emails?.simulated ?? 0}</strong>
+                  <strong style={{ color: "#2563eb" }}>{viewUserServicesModal.services?.emails?.simulated ?? 0}</strong>
                 </div>
                 <div className="admin-service-metric">
                   <span>Failed:</span>
-                  <strong style={{ color: "#ef4444" }}>{viewUserServicesModal.services?.emails?.failed ?? 0}</strong>
+                  <strong style={{ color: "#ef233c" }}>{viewUserServicesModal.services?.emails?.failed ?? 0}</strong>
                 </div>
               </div>
 
@@ -2035,7 +2035,7 @@ export function AdminPage() {
               <div className={`admin-service-card ${(viewUserServicesModal.services?.campaigns?.count || 0) > 0 ? "is-active" : ""}`}>
                 <div className="admin-service-card-header">
                   <div className="admin-service-title">
-                    <Send size={16} color="#3b82f6" /> Bulk Outreach Campaigns
+                    <Send size={16} color="#2563eb" /> Bulk Outreach Campaigns
                   </div>
                   <span className={`badge badge-${(viewUserServicesModal.services?.campaigns?.count || 0) > 0 ? "success" : "client"}`}>
                     {(viewUserServicesModal.services?.campaigns?.count || 0) > 0 ? "Active" : "Idle"}

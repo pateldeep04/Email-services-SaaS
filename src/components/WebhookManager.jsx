@@ -269,7 +269,7 @@ export function WebhookManager({ token }) {
       <div className="webhook-header-card">
         <div className="webhook-header-info">
           <h2>
-            <Webhook size={24} style={{ color: "var(--primary-color, #0f766e)" }} />
+            <Webhook size={24} style={{ color: "var(--accent-blue, #2563eb)" }} />
             Webhooks & Event Streams
           </h2>
           <p>
@@ -683,7 +683,7 @@ export function WebhookManager({ token }) {
               <div className="webhook-modal-body">
                 <div className="form-group">
                   <label style={{ fontWeight: 700, fontSize: "13px", marginBottom: "6px", display: "block" }}>
-                    Destination URL <span style={{ color: "#ef4444" }}>*</span>
+                    Destination URL <span style={{ color: "#ef233c" }}>*</span>
                   </label>
                   <input
                     type="url"

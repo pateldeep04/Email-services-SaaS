@@ -108,9 +108,9 @@ export function DashboardPage() {
   const [brandName, setBrandName] = useState("My Brand");
   const [logoUrl, setLogoUrl] = useState("");
   const [logoWarning, setLogoWarning] = useState("");
-  const [colorHeaderBg, setColorHeaderBg] = useState("#0f766e");
+  const [colorHeaderBg, setColorHeaderBg] = useState("#ef233c");
   const [colorHeaderText, setColorHeaderText] = useState("#ffffff");
-  const [colorButtonBg, setColorButtonBg] = useState("#0f766e");
+  const [colorButtonBg, setColorButtonBg] = useState("#ef233c");
   const [colorBgLight, setColorBgLight] = useState("#f1f5f9");
   const [showButton, setShowButton] = useState(true);
 
@@ -706,12 +706,12 @@ export function DashboardPage() {
 
   const renderChart = () => {
     const chartData = [
-      { name: "OTP", value: stats?.byType?.otp || 0, color: "#3b82f6" },
+      { name: "OTP", value: stats?.byType?.otp || 0, color: "#ffffff" },
       { name: "Welcome", value: stats?.byType?.welcome || 0, color: "#10b981" },
       { name: "Forgot Pw", value: stats?.byType?.["forgot-password"] || 0, color: "#f59e0b" },
-      { name: "Notification", value: stats?.byType?.notification || 0, color: "#8b5cf6" },
-      { name: "Custom", value: stats?.byType?.custom || 0, color: "#ec4899" },
-      { name: "SMS OTP", value: stats?.byType?.["sms-otp"] || 0, color: "#14b8a6" }
+      { name: "Notification", value: stats?.byType?.notification || 0, color: "#94a3b8" },
+      { name: "Custom", value: stats?.byType?.custom || 0, color: "#e4e4e7" },
+      { name: "SMS OTP", value: stats?.byType?.["sms-otp"] || 0, color: "#64748b" }
     ];
 
     const maxValue = Math.max(...chartData.map((d) => d.value), 5);
@@ -722,10 +722,10 @@ export function DashboardPage() {
         <div className="svg-chart-wrapper">
           <svg viewBox="0 0 500 200" className="svg-chart">
             {/* Draw Y-axis grid lines */}
-            <line x1="40" y1="20" x2="480" y2="20" stroke="#f3f4f6" strokeDasharray="4 4" />
-            <line x1="40" y1="70" x2="480" y2="70" stroke="#f3f4f6" strokeDasharray="4 4" />
-            <line x1="40" y1="120" x2="480" y2="120" stroke="#f3f4f6" strokeDasharray="4 4" />
-            <line x1="40" y1="170" x2="480" y2="170" stroke="#e5e7eb" strokeWidth="2" />
+            <line x1="40" y1="20" x2="480" y2="20" stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 4" />
+            <line x1="40" y1="70" x2="480" y2="70" stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 4" />
+            <line x1="40" y1="120" x2="480" y2="120" stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 4" />
+            <line x1="40" y1="170" x2="480" y2="170" stroke="currentColor" strokeOpacity="0.25" strokeWidth="1.5" />
 
             {/* Grid line labels */}
             <text x="15" y="24" className="chart-label-y">{Math.round(maxValue)}</text>
@@ -2347,8 +2347,8 @@ export function DashboardPage() {
               </select>
             </div>
 
-            <div className="logo-themer-section" style={{ background: "rgba(15, 118, 110, 0.03)", border: "1px dashed rgba(15, 118, 110, 0.2)", borderRadius: "8px", padding: "16px", marginBottom: "20px" }}>
-              <h4 style={{ display: "flex", alignItems: "center", gap: "8px", margin: "0 0 8px 0", fontSize: "14px", fontWeight: "bold", color: "#0f766e" }}>
+            <div className="logo-themer-section" style={{ background: "rgba(37, 99, 235, 0.05)", border: "1px dashed rgba(37, 99, 235, 0.25)", borderRadius: "8px", padding: "16px", marginBottom: "20px" }}>
+              <h4 style={{ display: "flex", alignItems: "center", gap: "8px", margin: "0 0 8px 0", fontSize: "14px", fontWeight: "bold", color: "#2563eb" }}>
                 <Mail size={16} /> Brand Logo (Optional)
               </h4>
               <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "12px", lineHeight: "1.4" }}>
@@ -2383,7 +2383,7 @@ export function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => setLogoUrl("")}
-                    style={{ marginLeft: "auto", background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "11px", fontWeight: "bold" }}
+                    style={{ marginLeft: "auto", background: "none", border: "none", color: "#ef233c", cursor: "pointer", fontSize: "11px", fontWeight: "bold" }}
                   >
                     Clear
                   </button>
@@ -2399,7 +2399,7 @@ export function DashboardPage() {
                   onClick={handleAiTheme}
                   disabled={generatingAi || !brandName.trim()}
                   style={{
-                    background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+                    background: "#ef233c",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "6px",
@@ -2410,7 +2410,7 @@ export function DashboardPage() {
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
-                    boxShadow: "0 2px 4px rgba(15, 118, 110, 0.2)"
+                    boxShadow: "0 2px 4px rgba(239, 35, 60, 0.25)"
                   }}
                 >
                   <Palette size={12} /> {generatingAi ? "Harmonizing..." : "Auto-Theme Palette"}
@@ -2842,7 +2842,7 @@ export function DashboardPage() {
                 <a 
                   href="/bulk-mail" 
                   className="btn btn-primary" 
-                  style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "8px", background: "var(--primary-color, #0f766e)" }}
+                  style={{ width: "100%", justifyContent: "center", display: "flex", alignItems: "center", gap: "8px", background: "var(--accent-primary, #ef233c)" }}
                 >
                   <Mail size={16} /> Bulk Mailer & Campaigns
                 </a>

@@ -263,7 +263,7 @@
 }
 
 .admin-hero-badge {
-  background: linear-gradient(135deg, #d41514, #b8100f);
+  background: #ffffff;
   color: #ffffff;
   font-size: 12px;
   padding: 4px 10px;
@@ -345,12 +345,12 @@
 }
 
 .admin-tab-btn.active {
-  color: #d41514;
+  color: #ffffff;
   font-weight: 700;
 }
 
 html.dark .admin-tab-btn.active {
-  color: #ff3b38;
+  color: #ef233c;
 }
 
 .admin-tab-btn.active::after {
@@ -360,12 +360,12 @@ html.dark .admin-tab-btn.active {
   left: 0;
   right: 0;
   height: 3px;
-  background: #d41514;
+  background: #ffffff;
   border-radius: 3px 3px 0 0;
 }
 
 html.dark .admin-tab-btn.active::after {
-  background: #ff3b38;
+  background: #ef233c;
 }
 
 /* Stat Grid */
@@ -510,7 +510,7 @@ html.dark .admin-card-section {
 }
 
 .admin-search-input:focus {
-  border-color: #d41514;
+  border-color: #ffffff;
 }
 
 .admin-filter-group {
@@ -547,12 +547,14 @@ html.dark .admin-card-section {
 }
 
 .admin-btn-primary {
-  background: #d41514;
+  background: var(--accent-primary, #ef233c);
   color: #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 35, 60, 0.35);
 }
 
 .admin-btn-primary:hover {
-  background: #0d9488;
+  background: var(--accent-primary-hover, #dc2626);
+  box-shadow: 0 6px 20px rgba(239, 35, 60, 0.45);
 }
 
 .admin-btn-outline {
@@ -567,7 +569,7 @@ html.dark .admin-card-section {
 
 .admin-btn-danger {
   background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  color: #ef233c;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
@@ -629,15 +631,15 @@ html.dark .admin-card-section {
 }
 
 .badge-admin {
-  background: rgba(15, 118, 110, 0.18);
-  color: #d41514;
-  border: 1px solid rgba(15, 118, 110, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 html.dark .badge-admin {
-  background: rgba(45, 212, 191, 0.15);
-  color: #2dd4bf;
-  border-color: rgba(45, 212, 191, 0.3);
+  background: rgba(255, 255, 255, 0.10);
+  color: #ef233c;
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .badge-client {
@@ -654,7 +656,7 @@ html.dark .badge-admin {
 
 .badge-danger {
   background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  color: #ef233c;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
@@ -666,7 +668,7 @@ html.dark .badge-admin {
 
 .badge-info {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #2563eb;
   border: 1px solid rgba(59, 130, 246, 0.25);
 }
 
@@ -681,7 +683,7 @@ html.dark .badge-admin {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d41514, #b8100f);
+  background: #ffffff;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -894,9 +896,9 @@ html.dark .admin-modal {
 }
 
 .admin-service-chip.active {
-  background: rgba(15, 118, 110, 0.12);
-  border-color: rgba(15, 118, 110, 0.3);
-  color: #d41514;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 }
 
 .admin-services-grid {
@@ -918,11 +920,11 @@ html.dark .admin-modal {
 }
 
 .admin-service-card:hover {
-  border-color: rgba(15, 118, 110, 0.35);
+  border-color: rgba(255, 255, 255, 0.23);
 }
 
 .admin-service-card.is-active {
-  border-left: 3px solid #d41514;
+  border-left: 3px solid #ffffff;
 }
 
 .admin-service-card-header {

@@ -136,6 +136,17 @@ export function LoginPage() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <Link to="/" className="auth-brand-badge" aria-label="MailBridge Home">
+          <span className="auth-brand-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M 4 19 C 7 13.5, 17 13.5, 20 19" />
+              <rect x="6" y="4" width="12" height="8" rx="1.5" />
+              <path d="M 6 4 L 12 8 L 18 4" />
+            </svg>
+          </span>
+          <span>MailBridge</span>
+        </Link>
+
         <h1>Welcome back</h1>
         <p className="auth-subtitle">Login to your MailBridge account</p>
         

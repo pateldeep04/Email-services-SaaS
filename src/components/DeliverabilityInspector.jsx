@@ -142,7 +142,7 @@ export function DeliverabilityInspector() {
   const getScoreColor = (score) => {
     if (score >= 85) return "#10b981"; // Emerald
     if (score >= 65) return "#f59e0b"; // Amber
-    return "#ef4444"; // Red
+    return "#ef233c"; // Red
   };
 
   const getScoreLabel = (score) => {

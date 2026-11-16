@@ -73,10 +73,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(20, 184, 166, 0.15);
-  color: #2dd4bf;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ef233c;
   border-radius: 12px;
-  border: 1px solid rgba(20, 184, 166, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .tester-auth-state h2 {
@@ -118,15 +118,17 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #d41514 0%, #b8100f 100%);
+  background: #ef233c;
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: #ef233c;
+  box-shadow: 0 4px 14px rgba(239, 35, 60, 0.35);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ff4d4d 0%, #d41514 100%);
+  background: #dc2626;
+  border-color: #dc2626;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.3);
+  box-shadow: 0 6px 20px rgba(239, 35, 60, 0.5);
 }
 
 .btn-secondary {
@@ -184,13 +186,13 @@
 }
 
 .tester-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 184, 166, 0.5);
+  background: rgba(255, 255, 255, 0.33);
 }
 
 .tester-sidebar h3 {
   font-size: 12px;
   font-weight: 800;
-  color: #d41514;
+  color: #ffffff;
   margin: 0 0 16px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -220,22 +222,22 @@
 
 .endpoint-btn:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: #d41514;
-  color: #2dd4bf;
+  border-color: #ffffff;
+  color: #ffffff;
 }
 
 .endpoint-btn.active {
-  background: linear-gradient(135deg, #d41514 0%, #b8100f 100%);
-  border-color: #d41514;
+  background: rgba(37, 99, 235, 0.12);
+  border-color: #2563eb;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .endpoint-btn .method {
   font-size: 10px;
   font-weight: 800;
   background: rgba(255, 255, 255, 0.08);
-  color: #2dd4bf;
+  color: #ef233c;
   padding: 3px 6px;
   border-radius: 4px;
   min-width: 44px;
@@ -288,7 +290,7 @@
 }
 
 .sender-email svg {
-  color: #2dd4bf;
+  color: #ffffff;
 }
 
 .tester-section {
@@ -327,8 +329,8 @@
 
 .endpoint-info .method {
   display: inline-block;
-  background: rgba(20, 184, 166, 0.15);
-  color: #2dd4bf;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ef233c;
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 11.5px;
@@ -370,7 +372,7 @@
 }
 
 .api-key-header code {
-  color: #2dd4bf;
+  color: #ef233c;
   font-weight: 700;
 }
 
@@ -391,8 +393,8 @@
 
 .code-input:focus {
   outline: none;
-  border-color: #d41514;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
 }
 
 .code-block-container {
@@ -486,7 +488,7 @@
 
 .status-badge.error {
   background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: #ef233c;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
@@ -507,7 +509,7 @@
 }
 
 .empty-state svg {
-  color: #d41514;
+  color: #ffffff;
   opacity: 0.7;
 }
 
@@ -525,7 +527,7 @@
 .tester-sidebar-section h3 {
   font-size: 12px;
   font-weight: 800;
-  color: #d41514;
+  color: #ffffff;
   margin: 0 0 16px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -556,7 +558,7 @@
 }
 
 .template-item-row:hover {
-  border-color: #d41514;
+  border-color: #ffffff;
 }
 
 .template-select-btn {
@@ -576,14 +578,14 @@
 }
 
 .template-select-btn:hover {
-  color: #2dd4bf;
+  color: #ef233c;
 }
 
 .template-badge {
   font-size: 9px;
   font-weight: 800;
-  background: rgba(20, 184, 166, 0.15);
-  color: #2dd4bf;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ef233c;
   padding: 2px 6px;
   border-radius: 4px;
   text-transform: uppercase;
@@ -609,7 +611,7 @@
 }
 
 .template-delete-btn:hover {
-  color: #ef4444;
+  color: #ef233c;
   background: rgba(239, 68, 68, 0.15);
 }
 
@@ -636,7 +638,7 @@
 }
 
 .template-name-input:focus {
-  border-color: #d41514;
+  border-color: #ffffff;
 }
 
 @media (max-width: 1100px) {
@@ -713,9 +715,9 @@ html.light .tester-auth-state p {
 }
 
 html.light .auth-state-icon {
-  background: rgba(15, 118, 110, 0.08);
-  color: #d41514;
-  border-color: rgba(15, 118, 110, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 html.light .btn-secondary {
@@ -737,7 +739,7 @@ html.light .tester-sidebar {
 }
 
 html.light .tester-sidebar h3 {
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .endpoint-btn {
@@ -749,18 +751,18 @@ html.light .endpoint-btn {
 html.light .endpoint-btn:hover {
   background: #f1f5f9;
   border-color: #cbd5e1;
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .endpoint-btn.active {
-  background: linear-gradient(135deg, #d41514 0%, #b8100f 100%);
-  border-color: #d41514;
+  background: #ffffff;
+  border-color: #ffffff;
   color: #ffffff;
 }
 
 html.light .endpoint-btn .method {
   background: rgba(0, 0, 0, 0.05);
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .endpoint-btn.active .method {
@@ -784,7 +786,7 @@ html.light .account-name {
 }
 
 html.light .sender-email svg {
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .tester-section {
@@ -803,8 +805,8 @@ html.light .endpoint-info {
 }
 
 html.light .endpoint-info .method {
-  background: rgba(15, 118, 110, 0.08);
-  color: #d41514;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 html.light .endpoint-info code {
@@ -822,7 +824,7 @@ html.light .headers-display {
 }
 
 html.light .api-key-header code {
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .code-input {
@@ -868,7 +870,7 @@ html.light .empty-state {
 }
 
 html.light .empty-state svg {
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .tester-sidebar-section {
@@ -876,7 +878,7 @@ html.light .tester-sidebar-section {
 }
 
 html.light .tester-sidebar-section h3 {
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .template-item-row {
@@ -885,7 +887,7 @@ html.light .template-item-row {
 }
 
 html.light .template-item-row:hover {
-  border-color: #d41514;
+  border-color: #ffffff;
 }
 
 html.light .template-select-btn {
@@ -893,12 +895,12 @@ html.light .template-select-btn {
 }
 
 html.light .template-select-btn:hover {
-  color: #d41514;
+  color: #ffffff;
 }
 
 html.light .template-badge {
-  background: rgba(15, 118, 110, 0.08);
-  color: #d41514;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 html.light .template-delete-btn {
@@ -906,7 +908,7 @@ html.light .template-delete-btn {
 }
 
 html.light .template-delete-btn:hover {
-  color: #ef4444;
+  color: #ef233c;
   background: rgba(239, 68, 68, 0.08);
 }
 
@@ -922,7 +924,7 @@ html.light .template-name-input {
 }
 
 html.light .template-name-input:focus {
-  border-color: #d41514;
+  border-color: #ffffff;
 }
 
 /* Template Draft Assistant Styles for Tester Page */
@@ -953,7 +955,7 @@ html.light .tester-ai-container {
 }
 
 html.light .tester-ai-title {
-  color: #1b4332;
+  color: #ffffff;
 }
 
 .tester-ai-row {

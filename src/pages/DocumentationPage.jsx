@@ -1,5 +1,5 @@
 import React from "react";
-import { Code2, Copy, CheckCircle } from "lucide-react";
+import { Code2, Copy, CheckCircle, Mail, Phone } from "lucide-react";
 import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Documentation.css";
 
@@ -357,6 +357,36 @@ export function DocumentationPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div style={{
+          marginTop: "48px",
+          padding: "24px",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-main)",
+          borderRadius: "12px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "16px"
+        }}>
+          <div>
+            <h4 style={{ color: "#fff", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>
+              Need Help with API Integration or Custom Webhooks?
+            </h4>
+            <p style={{ color: "var(--text-muted)", fontSize: "13.5px", margin: 0 }}>
+              Our developer support engineers provide rapid response for technical implementation questions.
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <a href="mailto:support@mail-bridge.email" style={{ color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: "13.5px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Mail size={15} /> support@mail-bridge.email
+            </a>
+            <a href="tel:+18005550199" style={{ color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: "13.5px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Phone size={15} /> +1 (800) 555-0199
+            </a>
+          </div>
         </div>
       </section>
     </div>

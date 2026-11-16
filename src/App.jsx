@@ -16,6 +16,7 @@ const BulkMailerPage = lazy(() => import("./pages/BulkMailerPage.jsx").then(m =>
 const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage.jsx").then(m => ({ default: m.AdminLoginPage })));
 const AdminPage = lazy(() => import("./pages/AdminPage.jsx").then(m => ({ default: m.AdminPage })));
 const TermsPage = lazy(() => import("./pages/TermsPage.jsx").then(m => ({ default: m.TermsPage })));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage.jsx").then(m => ({ default: m.NotFoundPage })));
 
 function App() {
   return (
@@ -43,7 +44,7 @@ function App() {
               <Route path="/super-admin/login" element={<Navigate to="/login" replace />} />
               <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
               <Route path="/super-admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <Footer />
           </Suspense>

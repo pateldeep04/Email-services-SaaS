@@ -1,5 +1,5 @@
 .app-navbar {
-  background: var(--bg-surface);
+  background: rgba(17, 19, 24, 0.92);
   border-bottom: 1px solid var(--border-main);
   position: sticky;
   top: 0;
@@ -10,12 +10,7 @@
 }
 
 html.dark .app-navbar {
-  background: rgba(8, 8, 8, 0.88);
-  border-bottom: 1px solid rgba(205, 203, 202, 0.14);
-}
-
-html.light .app-navbar {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(17, 19, 24, 0.92);
   border-bottom: 1px solid var(--border-main);
 }
 
@@ -43,14 +38,13 @@ html.light .app-navbar {
 }
 
 .app-nav-brand svg {
-  color: var(--accent-primary);
-  filter: drop-shadow(0 0 8px rgba(212, 21, 20, 0.4));
-  transition: transform 0.2s, filter 0.2s;
+  color: #ef233c;
+  filter: drop-shadow(0 0 8px rgba(239, 35, 60, 0.45));
+  transition: transform 0.2s;
 }
 
 .app-nav-brand:hover svg {
   transform: scale(1.05);
-  filter: drop-shadow(0 0 12px rgba(212, 21, 20, 0.6));
 }
 
 .app-nav-links {
@@ -87,9 +81,9 @@ html.dark .app-nav-link.active {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--accent-primary);
+  background: #ef233c;
   border-radius: 2px;
-  box-shadow: 0 0 6px rgba(212, 21, 20, 0.6);
+  box-shadow: 0 0 10px rgba(239, 35, 60, 0.5);
 }
 
 .app-nav-auth {
@@ -113,9 +107,9 @@ html.dark .app-nav-link.active {
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: rgba(212, 21, 20, 0.1);
-  color: #d41514;
-  border: 1px solid rgba(212, 21, 20, 0.25);
+  background: rgba(239, 35, 60, 0.1);
+  color: #ef233c;
+  border: 1px solid rgba(239, 35, 60, 0.25);
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
@@ -124,17 +118,17 @@ html.dark .app-nav-link.active {
 }
 
 .logout-btn:hover {
-  background: #d41514;
+  background: #ef233c;
   color: #ffffff;
-  border-color: #d41514;
+  border-color: #ef233c;
 }
 
 .app-nav-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 7px 16px;
-  border-radius: 6px;
+  padding: 7px 18px;
+  border-radius: 8px;
   font-family: var(--font-sans);
   font-weight: 600;
   font-size: 13.5px;
@@ -149,42 +143,57 @@ html.dark .app-nav-link.active {
 }
 
 .login-btn:hover {
-  border-color: var(--silver);
-  color: #ffffff;
+  border-color: var(--border-strong);
+  color: var(--text-main);
 }
 
 .register-btn {
-  background: var(--accent-primary);
+  background: #ef233c;
   color: #ffffff;
-  border: 1px solid var(--accent-primary);
-  box-shadow: 0 2px 8px rgba(212, 21, 20, 0.3);
+  border: 1px solid #ef233c;
+  box-shadow: 0 0 16px rgba(239, 35, 60, 0.4);
 }
 
 .register-btn:hover {
-  background: var(--accent-primary-hover);
-  border-color: var(--accent-primary-hover);
+  background: #dc2626;
+  border-color: #dc2626;
   color: #ffffff;
+  box-shadow: 0 0 24px rgba(239, 35, 60, 0.6);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(212, 21, 20, 0.45);
 }
 
-.theme-toggle-btn {
-  background: transparent;
-  border: 1px solid var(--border-main);
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 7px;
-  border-radius: 6px;
-  display: flex;
+html.dark .register-btn {
+  background: #ef233c;
+  color: #ffffff;
+  border-color: #ef233c;
+  box-shadow: 0 0 16px rgba(239, 35, 60, 0.4);
+}
+
+html.dark .register-btn:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 0 24px rgba(239, 35, 60, 0.6);
+}
+
+.nav-logo-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ef233c;
+  color: #ffffff;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  box-shadow: 0 0 14px rgba(239, 35, 60, 0.45);
+  transition: transform 0.2s ease;
 }
 
-.theme-toggle-btn:hover {
-  background: var(--bg-surface-raised);
-  color: var(--accent-primary);
-  border-color: rgba(212, 21, 20, 0.3);
+.app-nav-brand:hover .nav-logo-badge {
+  transform: scale(1.05);
+}
+
+.mobile-drawer-contact {
+  display: none;
 }
 
 /* Mobile responsive navigation */
@@ -232,23 +241,78 @@ html.dark .app-nav-link.active {
     top: 60px;
     left: 0;
     width: 100%;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
-    background: var(--bg-surface);
-    border-bottom: 1px solid var(--border-main);
-    padding: 16px 20px;
+    background: #141720;
+    border-bottom: 1px solid #282f42;
+    padding: 20px;
     flex-direction: column;
     gap: 16px;
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
     z-index: 99;
+    animation: slideDownMenu 0.22s ease-out;
+  }
+
+  @keyframes slideDownMenu {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   html.dark .app-nav-menu-wrapper {
-    background: #0d0d0d;
-    border-bottom: 1px solid rgba(205, 203, 202, 0.18);
+    background: #141720;
+    border-bottom: 1px solid #282f42;
   }
 
   .app-nav-menu-wrapper.open {
     display: flex;
+  }
+
+  .app-nav-backdrop {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 98;
+  }
+
+  .mobile-drawer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-contact-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .mobile-contact-pill:hover {
+    color: #ffffff;
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
   }
 
   .nav-menu-content {

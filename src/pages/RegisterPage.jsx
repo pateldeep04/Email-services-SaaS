@@ -26,6 +26,7 @@ export function RegisterPage() {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [termsError, setTermsError] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [otpNotice, setOtpNotice] = useState("");
 
   const { register, sendRegisterOtp, loginWithGoogle, loading } = useAuth();
@@ -177,6 +178,7 @@ export function RegisterPage() {
     try {
       const res = await sendRegisterOtp(email, name, companyName);
       setStep("otp");
+      setSuccessMessage("Verification code sent to " + email + ". Please check your inbox or spam folder.");
       setResendCooldown(60);
       setOtpNotice("");
     } catch (err) {
@@ -195,6 +197,7 @@ export function RegisterPage() {
     setError("");
     try {
       await sendRegisterOtp(email, name, companyName);
+      setSuccessMessage("Fresh 6-digit verification code sent to " + email);
       setResendCooldown(60);
     } catch (err) {
       setError(err.message || "Failed to resend verification code.");
@@ -222,6 +225,36 @@ export function RegisterPage() {
   return (
     <div className="auth-container">
       <div className="auth-card" style={{ maxWidth: step === "otp" ? "440px" : "480px" }}>
+        <Link to="/" className="auth-brand-badge" aria-label="MailBridge Home">
+          <span className="auth-brand-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M 4 19 C 7 13.5, 17 13.5, 20 19" />
+              <rect x="6" y="4" width="12" height="8" rx="1.5" />
+              <path d="M 6 4 L 12 8 L 18 4" />
+            </svg>
+          </span>
+          <span>MailBridge</span>
+        </Link>
+
+        {successMessage && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "10px 14px",
+            background: "rgba(16, 185, 129, 0.12)",
+            border: "1px solid rgba(16, 185, 129, 0.3)",
+            color: "#10b981",
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 600,
+            marginBottom: "16px"
+          }}>
+            <CheckCircle2 size={16} />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
         {step === "form" ? (
           <>
             <h1>Create Account</h1>
@@ -318,15 +351,15 @@ export function RegisterPage() {
                       setTermsAccepted(e.target.checked);
                       if (termsError) setTermsError("");
                     }}
-                    style={{ marginTop: "3px", accentColor: "#0f766e", width: "16px", height: "16px" }}
+                    style={{ marginTop: "3px", accentColor: "#ef233c", width: "16px", height: "16px" }}
                   />
                   <span>
                     I agree to the{" "}
-                    <Link to="/terms" target="_blank" style={{ color: "#0f766e", fontWeight: 600, textDecoration: "underline" }}>
+                    <Link to="/terms" target="_blank" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "underline" }}>
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link to="/privacy" target="_blank" style={{ color: "#0f766e", fontWeight: 600, textDecoration: "underline" }}>
+                    <Link to="/privacy" target="_blank" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "underline" }}>
                       Privacy Policy
                     </Link>.
                   </span>
@@ -370,8 +403,8 @@ export function RegisterPage() {
               <div style={{
                 width: "56px",
                 height: "56px",
-                background: "rgba(15, 118, 110, 0.12)",
-                color: "#0f766e",
+                background: "rgba(239, 35, 60, 0.12)",
+                color: "#ef233c",
                 borderRadius: "50%",
                 display: "inline-flex",
                 alignItems: "center",
@@ -386,11 +419,11 @@ export function RegisterPage() {
               </p>
               <div style={{
                 display: "inline-block",
-                background: "rgba(15, 118, 110, 0.08)",
+                background: "rgba(37, 99, 235, 0.12)",
                 padding: "4px 12px",
                 borderRadius: "6px",
                 fontWeight: 700,
-                color: "#0f766e",
+                color: "#60a5fa",
                 fontSize: "14px"
               }}>
                 {email}
@@ -438,7 +471,7 @@ export function RegisterPage() {
               {error && <div className="auth-error">{error}</div>}
 
               <button type="submit" className="btn btn-primary" disabled={loading || otp.length !== 6}>
-                {loading ? "Verifying & Creating..." : "Complete Registration ✓"}
+                {loading ? "Verifying & Creating..." : "Complete Registration"}
               </button>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", fontSize: "13px" }}>
@@ -469,7 +502,7 @@ export function RegisterPage() {
                   style={{
                     background: "none",
                     border: "none",
-                    color: resendCooldown > 0 ? "#9ca3af" : "#0f766e",
+                    color: resendCooldown > 0 ? "#9ca3af" : "#ef233c",
                     cursor: resendCooldown > 0 ? "not-allowed" : "pointer",
                     fontWeight: 600,
                     display: "flex",

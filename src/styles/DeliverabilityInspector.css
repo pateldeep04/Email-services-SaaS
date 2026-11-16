@@ -1,6 +1,6 @@
 /* ========================================================================= */
 /* DELIVERABILITY INSPECTOR & SPAM CHECKER STYLES                            */
-/* PALETTE: BLACK (#080808) • SILVER (#CDCBCA) • RED (#d41514)               */
+/* PALETTE: BLACK (#080808) • SILVER (#CDCBCA) • RED (#ffffff)               */
 /* ========================================================================= */
 
 .deliverability-inspector-section {
@@ -9,6 +9,7 @@
   padding: 80px 24px;
   max-width: 1280px;
   margin: 0 auto;
+  scroll-margin-top: 80px;
 }
 
 .inspector-header {
@@ -91,9 +92,9 @@ html.dark .btn-preset-chip {
 }
 
 .btn-preset-chip:hover {
-  background: rgba(212, 21, 20, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   border-color: var(--accent-primary);
-  color: #ff3b38;
+  color: #ef233c;
 }
 
 /* Navigation Tabs */
@@ -129,7 +130,7 @@ html.dark .inspector-nav-tab {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
   color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(212, 21, 20, 0.35);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
 }
 
 /* Main Grid */
@@ -224,7 +225,7 @@ html.dark .inspector-textarea {
 .inspector-input:focus,
 .inspector-textarea:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(212, 21, 20, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .analysis-summary-box {
@@ -265,9 +266,9 @@ html.dark .analysis-summary-box {
 }
 
 .spam-tag.tag-high {
-  background: rgba(212, 21, 20, 0.15);
-  border: 1px solid rgba(212, 21, 20, 0.4);
-  color: #ff3b38;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  color: #ef233c;
 }
 
 .spam-tag.tag-medium {
@@ -337,7 +338,7 @@ html.dark .tip-item.bad {
   color: #f87171;
 }
 .tip-item.bad .tip-icon {
-  color: #ef4444;
+  color: #ef233c;
 }
 
 /* Right Column: Score Meter */
@@ -441,9 +442,9 @@ html.dark .device-btn {
 }
 
 .device-btn.active {
-  background: rgba(212, 21, 20, 0.15);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--accent-primary);
-  color: #ff3b38;
+  color: #ef233c;
 }
 
 /* Mobile Simulator */
@@ -678,7 +679,7 @@ html.dark .dns-record-card {
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgba(212, 21, 20, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--accent-primary);
   font-family: var(--font-mono);
 }

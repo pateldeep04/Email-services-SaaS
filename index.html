@@ -1,22 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
-    <!-- Prevent theme flash before paint: respect user preference, fallback to system theme -->
+    <!-- Permanent Dark Charcoal Creator Theme (#111318) -->
     <script>
       (function() {
         try {
-          var saved = localStorage.getItem("mailbridge-theme");
-          var theme = saved || "light";
-          if (theme === "dark") {
-            document.documentElement.classList.add("dark");
-            document.documentElement.classList.remove("light");
-          } else {
-            document.documentElement.classList.add("light");
-            document.documentElement.classList.remove("dark");
-          }
-        } catch (e) {
-          document.documentElement.classList.add("light");
-        }
+          localStorage.removeItem("mailbridge-theme");
+          document.documentElement.classList.add("dark");
+          document.documentElement.classList.remove("light");
+        } catch (e) {}
       })();
     </script>
 
@@ -43,29 +35,28 @@
     
     <!-- Primary SEO Metadata -->
     <title>MailBridge | Free Cold Email Outreach & Gmail SMTP Relay API</title>
-    <meta name="description" content="Send personalized bulk email campaigns via your Gmail SMTP with real-time open and click tracking. Free developer transactional email and SMS API with zero vendor subscriptions." />
+    <meta name="description" content="MailBridge: Free cold email outreach platform and developer Gmail SMTP relay API. Ingest CSV spreadsheets, map merge variables, track opens and clicks, and qualify leads with 99.8% inbox placement." />
     <meta name="keywords" content="cold email outreach, free bulk mailer, gmail smtp relay, email spam checker, cold lead pipeline, transactional email api, excel mail merge, developer email service, mailbridge" />
     <meta name="author" content="Deep Patel" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="theme-color" content="#080808" />
+    <meta name="theme-color" content="#111318" />
 
     <!-- Canonical URL & Mobile Manifest -->
     <link rel="canonical" href="https://mail-bridge.email/" />
     <link rel="manifest" href="/site.webmanifest" />
-    <!-- High-Performance Modern Typography: Geist (Headings & UI), Inter (Body), Geist Mono (Code) -->
+    <!-- High-Performance Modern Typography: Plus Jakarta Sans, JetBrains Mono, Geist & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <!-- Favicon & Mobile Touch Icons for Google Search & Browsers -->
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="MailBridge" />
     <meta name="application-name" content="MailBridge" />

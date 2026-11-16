@@ -23,6 +23,7 @@ import {
   Target,
   Lock,
   LogIn,
+  Settings,
   Copy
 } from "lucide-react";
 import { API_URL } from "../config.js";
@@ -625,12 +626,37 @@ The Team`
                 <h3 className="bulk-card-title"><Send size={20} /> 2. Customize & Personalize Email</h3>
 
                 {composerFeedback.message && (
-                  <div className={`p-3 rounded-lg mb-4 text-sm font-medium ${
-                    composerFeedback.type === "success" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" :
-                    composerFeedback.type === "danger" ? "bg-red-50 text-red-800 border border-red-200" :
-                    "bg-blue-50 text-blue-800 border border-blue-200"
-                  }`}>
-                    {composerFeedback.message}
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "12px 16px",
+                    borderRadius: "8px",
+                    marginBottom: "18px",
+                    fontSize: "13.5px",
+                    fontWeight: 600,
+                    background: composerFeedback.type === "success" 
+                      ? "rgba(16, 185, 129, 0.12)" 
+                      : composerFeedback.type === "danger" 
+                        ? "rgba(239, 35, 60, 0.12)" 
+                        : "rgba(37, 99, 235, 0.12)",
+                    border: `1px solid ${
+                      composerFeedback.type === "success" 
+                        ? "rgba(16, 185, 129, 0.35)" 
+                        : composerFeedback.type === "danger" 
+                          ? "rgba(239, 35, 60, 0.35)" 
+                          : "rgba(37, 99, 235, 0.35)"
+                    }`,
+                    color: composerFeedback.type === "success" 
+                      ? "#10b981" 
+                      : composerFeedback.type === "danger" 
+                        ? "#ef233c" 
+                        : "#60a5fa"
+                  }}>
+                    {composerFeedback.type === "success" && <CheckCircle size={18} style={{ flexShrink: 0 }} />}
+                    {composerFeedback.type === "danger" && <XCircle size={18} style={{ flexShrink: 0 }} />}
+                    {composerFeedback.type !== "success" && composerFeedback.type !== "danger" && <AlertCircle size={18} style={{ flexShrink: 0 }} />}
+                    <span>{composerFeedback.message}</span>
                   </div>
                 )}
 
@@ -679,7 +705,7 @@ The Team`
                 <div className="lead-cta-card">
                   <div className="lead-cta-header">
                     <div className="lead-cta-title-group">
-                      <Target size={18} style={{ color: "#0f766e" }} />
+                      <Target size={18} style={{ color: "#2563eb" }} />
                       <span className="lead-cta-title">Lead Generation Call-to-Action (CTA)</span>
                     </div>
                     <label className="lead-cta-toggle-label">
@@ -743,7 +769,8 @@ The Team`
                     }}
                     onClick={() => setShowAdvancedTracking(!showAdvancedTracking)}
                   >
-                    ⚙ {showAdvancedTracking ? "Hide" : "Configure"} Custom Public Tracking URL (Optional)
+                    <Settings size={13} style={{ marginRight: "4px" }} />
+                    {showAdvancedTracking ? "Hide" : "Configure"} Custom Public Tracking URL (Optional)
                   </button>
                   {showAdvancedTracking && (
                     <div className="advanced-tracking-box">
@@ -757,7 +784,7 @@ The Team`
                         style={{ fontSize: "13px" }}
                       />
                       <p>
-                        Leave blank to auto-detect. When testing locally with real Gmail, Gmail's proxy cannot reach <code>localhost:5000</code>. You can paste a public tunnel URL here or use the email&apos;s receipt link / ⚡ Test Open button.
+                        Leave blank to auto-detect. When testing locally with real Gmail, Gmail's proxy cannot reach <code>localhost:5000</code>. You can paste a public tunnel URL here or use the email&apos;s receipt link or Test Open action.
                       </p>
                     </div>
                   )}
@@ -867,14 +894,14 @@ The Team`
                                   display: "inline-flex",
                                   alignItems: "center",
                                   gap: "8px",
-                                  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+                                  background: "#ef233c",
                                   color: "#ffffff",
                                   fontSize: "14px",
                                   fontWeight: 700,
                                   padding: "12px 28px",
                                   borderRadius: "8px",
                                   textDecoration: "none",
-                                  boxShadow: "0 4px 14px rgba(15, 118, 110, 0.35)",
+                                  boxShadow: "0 4px 14px rgba(239, 35, 60, 0.35)",
                                   pointerEvents: "none"
                                 }}
                               >
@@ -942,8 +969,8 @@ The Team`
                   width: "56px",
                   height: "56px",
                   borderRadius: "50%",
-                  background: "rgba(15, 118, 110, 0.1)",
-                  color: "#0f766e",
+                  background: "rgba(37, 99, 235, 0.12)",
+                  color: "#2563eb",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -980,8 +1007,8 @@ The Team`
                   width: "56px",
                   height: "56px",
                   borderRadius: "50%",
-                  background: "rgba(15, 118, 110, 0.12)",
-                  color: "#0f766e",
+                  background: "rgba(37, 99, 235, 0.12)",
+                  color: "#2563eb",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1020,11 +1047,11 @@ The Team`
                 <div className="stat-card-value text-emerald-600 font-bold">{totalOpened}</div>
                 <div className="stat-card-sub">{openRate}% email open rate</div>
               </div>
-              <div className="stat-card" style={{ borderColor: "#f97316" }}>
+              <div className="stat-card" style={{ borderColor: "rgba(239, 35, 60, 0.4)" }}>
                 <div className="stat-card-title" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <Flame size={15} style={{ color: "#f97316" }} /> Hot Qualified Leads
+                  <Flame size={15} style={{ color: "#ef233c" }} /> Hot Qualified Leads
                 </div>
-                <div className="stat-card-value" style={{ color: "#ea580c", fontWeight: 800 }}>{totalClicked}</div>
+                <div className="stat-card-value" style={{ color: "#ef233c", fontWeight: 800 }}>{totalClicked}</div>
                 <div className="stat-card-sub">{conversionRate}% CTA conversion rate</div>
               </div>
               <div className="stat-card">
@@ -1100,7 +1127,7 @@ The Team`
                 Every prospect who receives your campaign is automatically segmented in real-time based on their engagement:
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px", marginTop: "8px" }}>
                   <div className="lead-pipeline-pill-hot">
-                    <strong style={{ color: "#ea580c" }}>Hot Qualified Lead:</strong>
+                    <strong style={{ color: "#ef233c" }}>Hot Qualified Lead:</strong>
                     <div style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>Prospect clicked your Call-to-Action button (e.g. booked demo/visited landing page). Ready for immediate sales closing!</div>
                   </div>
                   <div className="lead-pipeline-pill-warm">
@@ -1152,7 +1179,7 @@ The Team`
                     <button 
                       className={`bulk-tab-btn ${openFilter === "hot" ? "active" : ""}`}
                       onClick={() => setOpenFilter("hot")}
-                      style={{ color: openFilter === "hot" ? "#ea580c" : undefined }}
+                      style={{ color: openFilter === "hot" ? "#ef233c" : undefined }}
                     >
                       Hot Leads ({totalClicked})
                     </button>
@@ -1252,7 +1279,7 @@ The Team`
                           <td>
                             {recipient.clickedAt ? (
                               <div>
-                                <span style={{ color: "#ea580c", fontWeight: 600 }}>{new Date(recipient.clickedAt).toLocaleTimeString()}</span>
+                                <span style={{ color: "#ef233c", fontWeight: 600 }}>{new Date(recipient.clickedAt).toLocaleTimeString()}</span>
                                 <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{new Date(recipient.clickedAt).toLocaleDateString()}</div>
                               </div>
                             ) : recipient.openedAt ? (
@@ -1267,11 +1294,11 @@ The Team`
                           <td>
                             {recipient.clicked ? (
                               <div>
-                                <span style={{ color: "#ea580c", fontWeight: 700 }}>{recipient.clickCount || 1} CTA click{recipient.clickCount === 1 ? "" : "s"}</span>
+                                <span style={{ color: "#ef233c", fontWeight: 700 }}>{recipient.clickCount || 1} CTA click{recipient.clickCount === 1 ? "" : "s"}</span>
                                 <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{recipient.openCount || 1} open{recipient.openCount === 1 ? "" : "s"}</div>
                               </div>
                             ) : recipient.opened ? (
-                              <span className="font-semibold text-teal-700">
+                              <span className="font-semibold text-emerald-400">
                                 {recipient.openCount} {recipient.openCount === 1 ? "open" : "opens"}
                               </span>
                             ) : (
@@ -1290,9 +1317,9 @@ The Team`
                                   fontWeight: 600,
                                   borderRadius: "6px",
                                   textDecoration: "none",
-                                  color: "#0f766e",
-                                  borderColor: "#14b8a6",
-                                  background: "rgba(20, 184, 166, 0.07)",
+                                  color: "#2563eb",
+                                  borderColor: "rgba(37, 99, 235, 0.35)",
+                                  background: "rgba(37, 99, 235, 0.1)",
                                   display: "inline-flex",
                                   alignItems: "center",
                                   gap: "5px"
