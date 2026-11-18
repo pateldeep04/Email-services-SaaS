@@ -1,11 +1,22 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ShieldCheck, FileText, Lock, AlertTriangle, CheckCircle2, ArrowLeft, Mail, Server } from "lucide-react";
 import { useSEO } from "../hooks/useSEO.js";
 import "../styles/Terms.css";
 
 export function TermsPage() {
-  const [activeTab, setActiveTab] = useState("terms");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(() =>
+    location.pathname === "/privacy" ? "privacy" : "terms"
+  );
+
+  useEffect(() => {
+    if (location.pathname === "/privacy") {
+      setActiveTab("privacy");
+    } else if (location.pathname === "/terms") {
+      setActiveTab("terms");
+    }
+  }, [location.pathname]);
 
   useSEO({
     title: activeTab === "terms" ? "Terms of Service | MailBridge" : "Privacy Policy | MailBridge",
@@ -200,13 +211,9 @@ export function TermsPage() {
 
           <div style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--border-color, rgba(148, 163, 184, 0.2))", textAlign: "center", fontSize: "14px", color: "#94a3b8" }}>
             Questions regarding our terms or deliverability policies? Contact our compliance desk at{" "}
-            <a href="mailto:compliance@mail-bridge.email" style={{ color: "#2563eb", textDecoration: "none", fontWeight: 600 }}>
+            <a href="mailto:compliance@mail-bridge.email" style={{ color: "#2dd4bf", textDecoration: "none", fontWeight: 600 }}>
               compliance@mail-bridge.email
             </a>
-            {" "}or call our support hotline at{" "}
-            <a href="tel:+18005550199" style={{ color: "#2563eb", textDecoration: "none", fontWeight: 600 }}>
-              +1 (800) 555-0199
-            </a>.
           </div>
         </div>
       </div>

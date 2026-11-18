@@ -706,83 +706,148 @@ export function DashboardPage() {
 
   const renderChart = () => {
     const chartData = [
-      { name: "OTP", value: stats?.byType?.otp || 0, color: "#ffffff" },
+      { name: "OTP", value: stats?.byType?.otp || 0, color: "#2563eb" },
       { name: "Welcome", value: stats?.byType?.welcome || 0, color: "#10b981" },
       { name: "Forgot Pw", value: stats?.byType?.["forgot-password"] || 0, color: "#f59e0b" },
-      { name: "Notification", value: stats?.byType?.notification || 0, color: "#94a3b8" },
-      { name: "Custom", value: stats?.byType?.custom || 0, color: "#e4e4e7" },
-      { name: "SMS OTP", value: stats?.byType?.["sms-otp"] || 0, color: "#64748b" }
+      { name: "Notification", value: stats?.byType?.notification || 0, color: "#8b5cf6" },
+      { name: "Custom", value: stats?.byType?.custom || 0, color: "#ef233c" },
+      { name: "SMS OTP", value: stats?.byType?.["sms-otp"] || 0, color: "#06b6d4" }
     ];
 
-    const maxValue = Math.max(...chartData.map((d) => d.value), 5);
+    const totalMessages = chartData.reduce((acc, d) => acc + d.value, 0);
+    const rawMax = Math.max(...chartData.map((d) => d.value), 0);
+    // Ceiling divisible by 4, at least 4
+    const ceiling = Math.max(4, Math.ceil(Math.max(rawMax, 1) / 4) * 4);
+
+    const yTicks = [
+      { val: ceiling, y: 25 },
+      { val: Math.round(ceiling * 0.75), y: 60 },
+      { val: Math.round(ceiling * 0.5), y: 95 },
+      { val: Math.round(ceiling * 0.25), y: 130 },
+      { val: 0, y: 165 }
+    ];
 
     return (
       <div className="card chart-card">
-        <h3>Messages by Template Type</h3>
+        <div className="chart-card-header">
+          <div className="chart-title-group">
+            <h3>Messages by Template Type</h3>
+            <span className="chart-subtitle">Real-time breakdown of API &amp; campaign dispatches</span>
+          </div>
+          <div className="chart-header-metrics">
+            <div className="chart-metric-chip">
+              <span className="metric-chip-label">Total Dispatches</span>
+              <span className="metric-chip-val">{totalMessages}</span>
+            </div>
+          </div>
+        </div>
+
         <div className="svg-chart-wrapper">
-          <svg viewBox="0 0 500 200" className="svg-chart">
-            {/* Draw Y-axis grid lines */}
-            <line x1="40" y1="20" x2="480" y2="20" stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 4" />
-            <line x1="40" y1="70" x2="480" y2="70" stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 4" />
-            <line x1="40" y1="120" x2="480" y2="120" stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 4" />
-            <line x1="40" y1="170" x2="480" y2="170" stroke="currentColor" strokeOpacity="0.25" strokeWidth="1.5" />
+          <svg viewBox="0 0 540 215" className="svg-chart">
+            {/* Grid lines and Y-axis numeric labels */}
+            {yTicks.map((t) => (
+              <g key={t.y} className="chart-grid-line-group">
+                <line
+                  x1="52"
+                  y1={t.y}
+                  x2="505"
+                  y2={t.y}
+                  stroke="rgba(255, 255, 255, 0.08)"
+                  strokeDasharray={t.val === 0 ? "none" : "3 3"}
+                  strokeWidth={t.val === 0 ? "1.5" : "1"}
+                />
+                <text x="44" y={t.y + 3.5} textAnchor="end" className="chart-label-y">
+                  {t.val}
+                </text>
+              </g>
+            ))}
 
-            {/* Grid line labels */}
-            <text x="15" y="24" className="chart-label-y">{Math.round(maxValue)}</text>
-            <text x="15" y="74" className="chart-label-y">{Math.round(maxValue / 2)}</text>
-            <text x="15" y="124" className="chart-label-y">{Math.round(maxValue / 4)}</text>
-            <text x="15" y="174" className="chart-label-y">0</text>
+            {/* Y-axis line */}
+            <line x1="52" y1="25" x2="52" y2="165" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1.5" />
 
-            {/* Draw Bars */}
+            {/* Draw Columns */}
             {chartData.map((d, index) => {
-              const x = 38 + index * 74;
-              const barHeight = (d.value / maxValue) * 140;
-              const y = 170 - barHeight;
+              const colWidth = 72;
+              const startX = 64;
+              const x = startX + index * colWidth;
+              const barWidth = 32;
+              const barHeight = ceiling > 0 ? (d.value / ceiling) * 140 : 0;
+              const y = 165 - barHeight;
+              const badgeY = d.value > 0 ? Math.max(y - 20, 8) : 138;
 
               return (
                 <g key={d.name} className="chart-bar-group">
-                  {/* Tooltip background & text on hover */}
+                  {/* Subtle background column track */}
                   <rect
-                    x={x + 5}
-                    y={y - 25}
-                    width="40"
-                    height="18"
-                    rx="3"
-                    fill="#1f2937"
-                    className="chart-tooltip-bg"
-                  />
-                  <text
-                    x={x + 25}
-                    y={y - 13}
-                    textAnchor="middle"
-                    fill="#ffffff"
-                    fontSize="10"
-                    fontWeight="bold"
-                    className="chart-tooltip-text"
-                  >
-                    {d.value}
-                  </text>
-
-                  {/* The Bar */}
-                  <rect
-                    x={x + 10}
-                    y={y}
-                    width="30"
-                    height={barHeight}
-                    fill={d.color}
-                    rx="4"
-                    className="chart-bar"
+                    x={x}
+                    y="25"
+                    width={barWidth}
+                    height="140"
+                    rx="6"
+                    className="chart-col-track"
                   />
 
-                  {/* Label */}
+                  {/* Active Bar */}
+                  {d.value > 0 ? (
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={barHeight}
+                      fill={d.color}
+                      rx="6"
+                      className="chart-bar"
+                    />
+                  ) : (
+                    <rect
+                      x={x}
+                      y="162"
+                      width={barWidth}
+                      height="3"
+                      rx="1.5"
+                      className="chart-zero-bar"
+                    />
+                  )}
+
+                  {/* Permanent Numeric Value Pill on top of column */}
+                  <g className="chart-value-badge">
+                    <rect
+                      x={x - 3}
+                      y={badgeY}
+                      width={barWidth + 6}
+                      height="18"
+                      rx="4"
+                      fill={d.value > 0 ? "#141722" : "rgba(20, 23, 34, 0.75)"}
+                      stroke={d.value > 0 ? d.color : "rgba(255, 255, 255, 0.12)"}
+                      strokeWidth={d.value > 0 ? "1.5" : "1"}
+                      className={d.value > 0 ? "chart-pill-bg active" : "chart-pill-bg zero"}
+                    />
+                    <text
+                      x={x + barWidth / 2}
+                      y={badgeY + 12.5}
+                      textAnchor="middle"
+                      fill={d.value > 0 ? "#ffffff" : "#94a3b8"}
+                      fontSize="11"
+                      fontWeight={d.value > 0 ? "800" : "600"}
+                      fontFamily="monospace"
+                      className={d.value > 0 ? "chart-pill-val active" : "chart-pill-val zero"}
+                    >
+                      {d.value}
+                    </text>
+                  </g>
+
+                  {/* X-axis Category Label */}
                   <text
-                    x={x + 25}
-                    y="190"
+                    x={x + barWidth / 2}
+                    y="188"
                     textAnchor="middle"
                     className="chart-label-x"
                   >
                     {d.name}
                   </text>
+
+                  {/* Hover Tooltip with Percentage */}
+                  <title>{`${d.name}: ${d.value} sent (${totalMessages > 0 ? Math.round((d.value / totalMessages) * 100) : 0}%)`}</title>
                 </g>
               );
             })}
@@ -1061,17 +1126,22 @@ export function DashboardPage() {
 
         {/* Pagination Footer */}
         <div className="logs-pagination-footer">
-          <div className="logs-page-size-selector">
-            <span>Rows per page:</span>
-            <select value={pageSize} onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setCurrentPage(1);
-            }}>
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
+          <div className="logs-pagination-left">
+            <div className="logs-page-size-selector">
+              <span>Rows per page:</span>
+              <select value={pageSize} onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+            <span className="logs-pagination-details">
+              Showing <strong>{totalLogs === 0 ? 0 : (currentPage - 1) * pageSize + 1}</strong>–<strong>{Math.min(currentPage * pageSize, totalLogs)}</strong> of <strong>{totalLogs}</strong> logs &bull; Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+            </span>
           </div>
 
           <div className="logs-page-nav">
@@ -1080,8 +1150,9 @@ export function DashboardPage() {
               className="pagination-btn nav-btn"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              title="Go to previous page"
             >
-              Prev
+              ‹ Prev
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
@@ -1098,7 +1169,10 @@ export function DashboardPage() {
                   key={pageNum}
                   type="button"
                   className={`pagination-btn num-btn ${currentPage === pageNum ? "active" : ""}`}
+                  style={currentPage === pageNum ? { backgroundColor: "#ef233c", borderColor: "#ef233c", color: "#ffffff", fontWeight: "800", boxShadow: "0 0 12px rgba(239, 35, 60, 0.45)" } : {}}
                   onClick={() => setCurrentPage(pageNum)}
+                  aria-label={`Page ${pageNum}`}
+                  aria-current={currentPage === pageNum ? "page" : undefined}
                 >
                   {pageNum}
                 </button>
@@ -1108,10 +1182,11 @@ export function DashboardPage() {
             <button
               type="button"
               className="pagination-btn nav-btn"
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || totalPages === 0}
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              title="Go to next page"
             >
-              Next
+              Next ›
             </button>
           </div>
         </div>
@@ -1295,7 +1370,7 @@ export function DashboardPage() {
     if (activeTemplate === "welcome") {
       titleText = emailTitle || "Welcome aboard";
       bodyHtml = `
-        <p>Hi <strong>John Doe</strong>,</p>
+        <p>Hi <strong>Valued Customer</strong>,</p>
         <p data-field="emailMessage" contenteditable="true" style="margin-bottom: 24px; color: #4b5563; white-space: pre-line;">${emailMessage || `Your account is ready. We are happy to have you with ${brandName}.`}</p>
         <p style="margin-top: 16px; color: #4b5563; font-style: italic; font-size: 13px;">Note: This is a preview of the Welcome Email template. You can trigger this template via the API.</p>
       `;
@@ -2420,7 +2495,7 @@ export function DashboardPage() {
                 type="text"
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
-                placeholder="e.g. Gopal Namkeen"
+                placeholder="e.g. Acme Studio"
               />
             </div>
 

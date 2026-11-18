@@ -722,9 +722,9 @@ html.dark .badge-admin {
 
 .admin-page-btn {
   padding: 6px 14px;
-  border: 1px solid var(--border-color, #cbd5e1);
-  background: var(--card-bg, #ffffff);
-  color: var(--text-main);
+  border: 1px solid var(--border-color, #282f42);
+  background: var(--card-bg, #141722);
+  color: var(--text-main, #cbd5e1);
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
@@ -733,12 +733,46 @@ html.dark .badge-admin {
 }
 
 .admin-page-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .admin-page-btn:hover:not(:disabled) {
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(37, 99, 235, 0.15);
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+html.dark .admin-page-btn {
+  background: #141722;
+  border-color: #282f42;
+  color: #cbd5e1;
+}
+
+.admin-page-btn.active,
+html.dark .admin-page-btn.active {
+  background: #ef233c !important;
+  border-color: #ef233c !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 12px rgba(239, 35, 60, 0.4) !important;
+}
+
+.admin-page-btn.num-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+}
+
+html.dark .admin-page-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: #3b82f6;
+  color: #ffffff;
 }
 
 /* Modals */

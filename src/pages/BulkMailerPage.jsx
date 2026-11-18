@@ -626,37 +626,12 @@ The Team`
                 <h3 className="bulk-card-title"><Send size={20} /> 2. Customize & Personalize Email</h3>
 
                 {composerFeedback.message && (
-                  <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    marginBottom: "18px",
-                    fontSize: "13.5px",
-                    fontWeight: 600,
-                    background: composerFeedback.type === "success" 
-                      ? "rgba(16, 185, 129, 0.12)" 
-                      : composerFeedback.type === "danger" 
-                        ? "rgba(239, 35, 60, 0.12)" 
-                        : "rgba(37, 99, 235, 0.12)",
-                    border: `1px solid ${
-                      composerFeedback.type === "success" 
-                        ? "rgba(16, 185, 129, 0.35)" 
-                        : composerFeedback.type === "danger" 
-                          ? "rgba(239, 35, 60, 0.35)" 
-                          : "rgba(37, 99, 235, 0.35)"
-                    }`,
-                    color: composerFeedback.type === "success" 
-                      ? "#10b981" 
-                      : composerFeedback.type === "danger" 
-                        ? "#ef233c" 
-                        : "#60a5fa"
-                  }}>
-                    {composerFeedback.type === "success" && <CheckCircle size={18} style={{ flexShrink: 0 }} />}
-                    {composerFeedback.type === "danger" && <XCircle size={18} style={{ flexShrink: 0 }} />}
-                    {composerFeedback.type !== "success" && composerFeedback.type !== "danger" && <AlertCircle size={18} style={{ flexShrink: 0 }} />}
-                    <span>{composerFeedback.message}</span>
+                  <div className={`p-3 rounded-lg mb-4 text-sm font-medium ${
+                    composerFeedback.type === "success" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" :
+                    composerFeedback.type === "danger" ? "bg-red-50 text-red-800 border border-red-200" :
+                    "bg-blue-50 text-blue-800 border border-blue-200"
+                  }`}>
+                    {composerFeedback.message}
                   </div>
                 )}
 

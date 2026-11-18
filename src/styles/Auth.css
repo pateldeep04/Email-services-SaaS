@@ -7,36 +7,6 @@
   padding: 30px 20px;
 }
 
-.auth-brand-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--text-main);
-  font-family: var(--font-heading);
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 20px;
-  transition: opacity 0.2s;
-}
-
-.auth-brand-badge:hover {
-  opacity: 0.85;
-}
-
-.auth-brand-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: #ef233c;
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 12px rgba(239, 35, 60, 0.45);
-}
-
 .auth-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-main);
@@ -268,7 +238,7 @@ html.dark .auth-container {
   background: var(--bg-main);
 }
 
-.auth-card {
+html.dark .auth-card {
   background: var(--bg-surface);
   border-color: var(--border-main);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);

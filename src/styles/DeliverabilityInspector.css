@@ -710,23 +710,173 @@ html.dark .dns-record-card {
 
 @media (max-width: 768px) {
   .deliverability-inspector-section {
-    padding: 36px 16px;
+    padding: 32px 14px;
+  }
+  .inspector-header {
+    margin-bottom: 24px;
+  }
+  .inspector-presets-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 18px;
+    width: 100%;
+  }
+  .presets-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+  }
+  .presets-buttons {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 8px;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+  .presets-buttons::-webkit-scrollbar {
+    display: none;
+  }
+  .btn-preset-chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: #141722;
+    border: 1px solid #282f42;
+    color: #cbd5e1;
   }
   .inspector-inputs-card,
   .inspector-preview-card,
   .inspector-dns-panel {
-    padding: 16px;
+    padding: 16px 12px;
+    border-radius: 12px;
   }
-  .inspector-nav-tabs {
+  .inspector-input,
+  .inspector-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  .input-header-row {
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 4px;
   }
-  .inspector-nav-tab {
-    padding: 8px 14px;
+  .char-counter {
+    font-size: 11px;
+  }
+  .score-meter-panel {
+    padding: 14px 12px;
+    margin-bottom: 16px;
+  }
+  .score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .score-title {
     font-size: 13px;
   }
+  .score-badge {
+    font-size: 11.5px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  .score-verdict {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .device-toggle-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .device-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .device-btn {
+    justify-content: center;
+    padding: 7px 6px;
+    font-size: 11.5px;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .inspector-nav-tabs {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding: 4px;
+    scrollbar-width: none;
+    max-width: 100%;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .inspector-nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .inspector-nav-tab {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    min-height: 40px;
+  }
   .desktop-inbox-row {
-    grid-template-columns: 80px 1fr 50px;
-    padding: 10px 12px;
+    grid-template-columns: 70px 1fr 45px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .dns-records-grid {
+    grid-template-columns: 1fr;
+  }
+  .mobile-phone-frame {
+    width: 100%;
+    max-width: 310px;
+    margin: 0 auto;
+    padding: 12px 10px;
+    border-radius: 18px;
+    box-sizing: border-box;
+  }
+  .notification-card {
+    padding: 10px 10px;
+  }
+  .notif-title {
+    font-size: 12px;
+  }
+  .notif-body {
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 480px) {
+  .inspector-title {
+    font-size: 20px;
+  }
+  .inspector-subtitle {
+    font-size: 13px;
+  }
+  .inspector-inputs-card,
+  .inspector-preview-card {
+    padding: 14px 10px;
+    border-radius: 10px;
+  }
+  .mobile-phone-frame {
+    max-width: 100%;
   }
 }

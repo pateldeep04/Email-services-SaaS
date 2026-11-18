@@ -107,9 +107,10 @@ html.dark {
   gap: 24px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .bulk-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 
@@ -800,7 +801,8 @@ html.dark .stepper-btn {
 }
 
 html.dark .stepper-btn:hover:not(:disabled) {
-  background: #ffffff !important;
+  background: #2563eb !important;
+  border-color: #3b82f6 !important;
   color: #ffffff !important;
 }
 

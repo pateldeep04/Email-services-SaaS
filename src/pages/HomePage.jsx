@@ -6,6 +6,7 @@ import {
   ShieldCheck,
   BarChart3,
   CheckCircle2,
+  XCircle,
   Mail,
   Terminal,
   Code,
@@ -34,8 +35,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { API_URL } from "../config.js";
 import { useSEO } from "../hooks/useSEO.js";
 import { DeliverabilityInspector } from "../components/DeliverabilityInspector.jsx";
-import { ThreeDBackground } from "../components/ThreeDBackground.jsx";
-import { ThreeDHeroPlayer } from "../components/ThreeDHeroPlayer.jsx";
+import { ProductMarketingVideo } from "../components/ProductMarketingVideo.jsx";
 
 const features = [
   { 
@@ -150,7 +150,75 @@ export function HomePage() {
   const [isExecutingHero, setIsExecutingHero] = useState(false);
   const [heroExecutionDone, setHeroExecutionDone] = useState(false);
 
+  // High-Performance Animated Ambient Video Mesh Canvas
+  useEffect(() => {
+    const canvas = document.getElementById("ambientMotionCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animationFrameId;
+    let width = (canvas.width = canvas.offsetWidth || window.innerWidth);
+    let height = (canvas.height = 950);
 
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.offsetWidth || window.innerWidth;
+      height = canvas.height = 950;
+    };
+    window.addEventListener("resize", handleResize);
+
+    const particles = Array.from({ length: 24 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      radius: Math.random() * 2 + 1,
+      color: Math.random() > 0.5 ? "rgba(37, 99, 235, " : "rgba(239, 35, 60, ",
+      alpha: Math.random() * 0.35 + 0.1
+    }));
+
+    let t = 0;
+    const render = () => {
+      t += 0.008;
+      ctx.clearRect(0, 0, width, height);
+
+      // Cyber Perspective Grid Waves
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(37, 99, 235, 0.06)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < width; x += 50) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + Math.sin(t + x * 0.005) * 15, height);
+      }
+      for (let y = 0; y < height; y += 50) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y + Math.cos(t + y * 0.005) * 15);
+      }
+      ctx.stroke();
+
+      // Flowing Ambient Particles
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + p.alpha + ")";
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   const HERO_CODE_SNIPPETS = {
     nodejs: `import { MailBridge } from '@mailbridge/sdk';
@@ -546,8 +614,13 @@ print(f"Relayed {campaign.total} emails via Gmail SMTP")`,
 
   return (
     <div className="home-page-redesign">
-      {/* 3D WebGL Background Scene (AnimMaster / Vengeance / Skiper UI Architecture) */}
-      <ThreeDBackground />
+      {/* High-Performance Animated Ambient Video Mesh & Particle Canvas Background */}
+      <div className="home-animated-canvas-bg" aria-hidden="true">
+        <canvas id="ambientMotionCanvas" className="motion-canvas"></canvas>
+        <div className="home-ambient-glow-blue"></div>
+        <div className="home-ambient-glow-red"></div>
+        <div className="home-ambient-glow-bottom-red"></div>
+      </div>
 
       {/* Complete SEO JSON-LD Structured Data */}
       <script type="application/ld+json">
@@ -682,8 +755,8 @@ print(f"Relayed {campaign.total} emails via Gmail SMTP")`,
               </div>
             </div>
 
-            {/* Interactive 3D Isometric Engine & 4K Walkthrough Video Player (AnimMaster / Vengeance / Skiper UI Architecture) */}
-            <ThreeDHeroPlayer />
+            {/* Animated Product Marketing Video Component */}
+            <ProductMarketingVideo />
           </div>
 
           {/* Hero Right: Studio Obsidian Developer Terminal & Relay Engine */}
@@ -1657,7 +1730,8 @@ print(f"Relayed {campaign.total} emails via Gmail SMTP")`,
 
             {realSendResult && (
               <div className={`real-send-toast-inline ${realSendResult.success ? "success" : "error"}`}>
-                <CheckCircle2 size={16} /> <span>{realSendResult.message}</span>
+                {realSendResult.success ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+                <span>{realSendResult.message}</span>
               </div>
             )}
           </div>

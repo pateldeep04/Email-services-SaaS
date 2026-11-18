@@ -1184,6 +1184,20 @@ export function AdminPage() {
               >
                 Previous
               </button>
+              {Array.from({ length: userTotalPages }, (_, i) => i + 1).map((p) => {
+                if (userTotalPages > 5 && Math.abs(p - userPage) > 1 && p !== 1 && p !== userTotalPages) {
+                  return null;
+                }
+                return (
+                  <button
+                    key={p}
+                    className={`admin-page-btn num-btn ${p === userPage ? "active" : ""}`}
+                    onClick={() => setUserPage(p)}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
               <button
                 className="admin-page-btn"
                 disabled={userPage >= userTotalPages}
@@ -1330,6 +1344,20 @@ export function AdminPage() {
               >
                 Previous
               </button>
+              {Array.from({ length: logTotalPages }, (_, i) => i + 1).map((p) => {
+                if (logTotalPages > 5 && Math.abs(p - logPage) > 1 && p !== 1 && p !== logTotalPages) {
+                  return null;
+                }
+                return (
+                  <button
+                    key={p}
+                    className={`admin-page-btn num-btn ${p === logPage ? "active" : ""}`}
+                    onClick={() => setLogPage(p)}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
               <button
                 className="admin-page-btn"
                 disabled={logPage >= logTotalPages}
@@ -1416,6 +1444,20 @@ export function AdminPage() {
               >
                 Previous
               </button>
+              {Array.from({ length: campaignTotalPages }, (_, i) => i + 1).map((p) => {
+                if (campaignTotalPages > 5 && Math.abs(p - campaignPage) > 1 && p !== 1 && p !== campaignTotalPages) {
+                  return null;
+                }
+                return (
+                  <button
+                    key={p}
+                    className={`admin-page-btn num-btn ${p === campaignPage ? "active" : ""}`}
+                    onClick={() => setCampaignPage(p)}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
               <button
                 className="admin-page-btn"
                 disabled={campaignPage >= campaignTotalPages}

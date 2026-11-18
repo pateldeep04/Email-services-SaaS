@@ -169,10 +169,23 @@
 }
 
 @media (max-width: 768px) {
+  .legal-page-container {
+    padding: 28px 14px 50px;
+  }
   .legal-card {
-    padding: 24px;
+    padding: 20px 16px;
   }
   .legal-title {
-    font-size: 28px;
+    font-size: 26px;
+  }
+  .legal-nav-tabs {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  .legal-tab-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
   }
 }

@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heart, Mail, Phone, ExternalLink, ShieldCheck, FileSpreadsheet, Terminal, BookOpen } from "lucide-react";
+import { Mail, Phone, Heart, ExternalLink, ShieldCheck, Github } from "lucide-react";
 import "../styles/Footer.css";
 
-function MailBridgeFooterLogo({ size = 24 }) {
+function MailBridgeFooterLogo({ size = 22 }) {
   return (
     <svg
       width={size}
@@ -14,7 +14,7 @@ function MailBridgeFooterLogo({ size = 24 }) {
       strokeWidth="2.2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ display: "inline-block", verticalAlign: "middle" }}
+      style={{ display: "inline-block", verticalAlign: "middle", color: "#ef233c" }}
     >
       <path d="M 4 19 C 7 13.5, 17 13.5, 20 19" />
       <path d="M 8 16 L 8 19" opacity="0.6" />
@@ -32,126 +32,71 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Top Multi-column Section */}
-        <div className="footer-grid">
-          {/* Brand & Direct Contact Column */}
-          <div className="footer-col footer-col-brand">
-            <Link to="/" className="footer-brand" aria-label="MailBridge Home">
-              <span className="footer-logo-icon">
-                <MailBridgeFooterLogo size={22} />
-              </span>
-              <span className="footer-brand-title">MailBridge</span>
-            </Link>
-            <p className="footer-tagline">
-              Cold email outreach and transactional SMTP relay SaaS. Personalize CSV campaigns, track email opens in real time, and route directly via Google Workspace with 99.8% inbox placement.
-            </p>
-            <div className="footer-contact-list">
-              <a href="mailto:support@mail-bridge.email" className="footer-contact-link" title="Send support email">
-                <Mail size={15} className="contact-icon" />
-                <span>support@mail-bridge.email</span>
-              </a>
-              <a href="tel:+18005550199" className="footer-contact-link" title="Call support line">
-                <Phone size={15} className="contact-icon" />
-                <span>+1 (800) 555-0199 (Support Hotline)</span>
-              </a>
-            </div>
-          </div>
-
-          {/* Product & Solutions Column */}
-          <div className="footer-col">
-            <h4 className="footer-col-heading">Platform</h4>
-            <ul className="footer-nav-list">
-              <li>
-                <Link to="/bulk-mail" className="footer-link">
-                  <FileSpreadsheet size={13} /> Bulk Mailer
-                </Link>
-              </li>
-              <li>
-                <Link to="/#spam-checker" className="footer-link">
-                  <ShieldCheck size={13} /> Spam Inspector
-                </Link>
-              </li>
-              <li>
-                <Link to="/tester" className="footer-link">
-                  <Terminal size={13} /> API Sandbox Tester
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard" className="footer-link">
-                  Outbound Telemetry
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Developers & Docs Column */}
-          <div className="footer-col">
-            <h4 className="footer-col-heading">Developers</h4>
-            <ul className="footer-nav-list">
-              <li>
-                <Link to="/docs" className="footer-link">
-                  <BookOpen size={13} /> API Documentation
-                </Link>
-              </li>
-              <li>
-                <Link to="/docs#send-email" className="footer-link">
-                  Transactional SDK
-                </Link>
-              </li>
-              <li>
-                <Link to="/docs#sms-gateway" className="footer-link">
-                  Carrier SMS Gateway
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/pateldeep04/Email-services-SaaS"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer-link"
-                >
-                  GitHub Repository <ExternalLink size={12} />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal & Compliance Column */}
-          <div className="footer-col">
-            <h4 className="footer-col-heading">Compliance</h4>
-            <ul className="footer-nav-list">
-              <li>
-                <Link to="/terms" className="footer-link">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="footer-link">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="footer-link">
-                  CAN-SPAM Guidelines
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="footer-link">
-                  DKIM &amp; SPF Verification
-                </Link>
-              </li>
-            </ul>
+        {/* Brand & Mission Column */}
+        <div className="footer-col footer-col-brand">
+          <Link to="/" className="footer-brand" title="MailBridge Home">
+            <MailBridgeFooterLogo size={24} />
+            <span className="footer-brand-name">MailBridge</span>
+          </Link>
+          <p className="footer-tagline">
+            High-converting cold email outreach engine and developer Gmail SMTP transactional relay. Zero monthly vendor fees.
+          </p>
+          <div className="footer-contacts">
+            <a href="mailto:support@mail-bridge.email" className="footer-contact-item" title="Send email to MailBridge support">
+              <Mail size={14} className="footer-contact-icon" />
+              <span>support@mail-bridge.email</span>
+            </a>
+            <a href="tel:+18005550199" className="footer-contact-item" title="Call MailBridge customer helpline">
+              <Phone size={14} className="footer-contact-icon" />
+              <span>+1 (800) 555-0199</span>
+            </a>
           </div>
         </div>
 
-        {/* Bottom Copyright & Attribution Bar */}
-        <div className="footer-bottom-bar">
+        {/* Product Navigation */}
+        <div className="footer-col footer-col-platform">
+          <h4 className="footer-heading">Platform</h4>
+          <ul className="footer-nav-list">
+            <li><Link to="/" className="footer-link">Home</Link></li>
+            <li><Link to="/bulk-mail" className="footer-link">Bulk Mailer</Link></li>
+            <li><a href="/#spam-checker" className="footer-link">Spam Inspector</a></li>
+            <li><Link to="/tester" className="footer-link">API Live Tester</Link></li>
+            <li><Link to="/dashboard" className="footer-link">Campaign Dashboard</Link></li>
+          </ul>
+        </div>
+
+        {/* Resources & Docs */}
+        <div className="footer-col footer-col-developers">
+          <h4 className="footer-heading">Developers</h4>
+          <ul className="footer-nav-list">
+            <li><Link to="/docs" className="footer-link">API Documentation</Link></li>
+            <li><a href="https://github.com/pateldeep04/Email-services-SaaS" target="_blank" rel="noopener noreferrer" className="footer-link footer-ext-link">
+              GitHub Repository <ExternalLink size={12} />
+            </a></li>
+            <li><Link to="/docs#smtp" className="footer-link">Gmail SMTP Relay</Link></li>
+            <li><Link to="/docs#webhook" className="footer-link">Event Webhooks</Link></li>
+          </ul>
+        </div>
+
+        {/* Legal & Trust */}
+        <div className="footer-col footer-col-legal">
+          <h4 className="footer-heading">Legal & Trust</h4>
+          <ul className="footer-nav-list">
+            <li><Link to="/terms" className="footer-link">Terms of Service</Link></li>
+            <li><Link to="/privacy" className="footer-link">Privacy Policy</Link></li>
+            <li><span className="footer-compliance-badge"><ShieldCheck size={13} /> CAN-SPAM Compliant</span></li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Bottom Sub-footer */}
+      <div className="footer-bottom">
+        <div className="footer-bottom-container">
           <div className="footer-copyright">
-            &copy; {currentYear} MailBridge Inc. All rights reserved. Zero vendor platform markups.
+            &copy; {currentYear} MailBridge Platform. All rights reserved.
           </div>
-          <div className="footer-credits">
-            Crafted with{" "}
-            <Heart size={14} style={{ color: "#ef233c", fill: "#ef233c", display: "inline", verticalAlign: "middle" }} /> by{" "}
+          <div className="footer-credit">
+            Engineered with <Heart size={13} className="footer-heart-icon" /> by{" "}
             <a
               href="https://github.com/pateldeep04"
               target="_blank"
@@ -166,3 +111,5 @@ export function Footer() {
     </footer>
   );
 }
+
+export default Footer;

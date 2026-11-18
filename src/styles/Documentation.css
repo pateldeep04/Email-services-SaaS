@@ -295,10 +295,10 @@
 
   .docs-nav {
     position: sticky;
-    top: 64px;
+    top: 60px;
     left: 0;
     width: 100%;
-    z-index: 90;
+    z-index: 80;
     margin-bottom: 24px;
     padding: 12px;
     display: flex;
