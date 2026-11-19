@@ -159,25 +159,35 @@ router.get("/stats", requireAdmin, async (req, res, next) => {
           ApiKey.countDocuments()
         ]);
 
-        // Calculate API key creators distribution
-        const topKeyCreatorsRaw = await ApiKey.aggregate([
+        // Calculate API key creators distribution via a single optimized aggregation pipeline (zero N+1 queries)
+        const topKeyCreators = await ApiKey.aggregate([
           { $group: { _id: "$userId", count: { $sum: 1 } } },
           { $sort: { count: -1 } },
-          { $limit: 10 }
+          { $limit: 50 },
+          {
+            $lookup: {
+              from: "users",
+              localField: "_id",
+              foreignField: "_id",
+              as: "userDoc"
+            }
+          },
+          {
+            $unwind: {
+              path: "$userDoc",
+              preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $project: {
+              userId: "$_id",
+              apiKeyCount: "$count",
+              name: { $ifNull: ["$userDoc.name", "Deleted User"] },
+              email: { $ifNull: ["$userDoc.email", "—"] },
+              role: { $ifNull: ["$userDoc.role", "client"] }
+            }
+          }
         ]);
-
-        const topKeyCreators = await Promise.all(
-          topKeyCreatorsRaw.map(async (item) => {
-            const userDoc = await User.findById(item._id).select("name email role").lean();
-            return {
-              userId: item._id,
-              name: userDoc?.name || "Deleted User",
-              email: userDoc?.email || "—",
-              role: userDoc?.role || "client",
-              apiKeyCount: item.count
-            };
-          })
-        );
 
         const deliverabilityRate = totalEmails > 0 
           ? Math.round(((sentEmails + simulatedEmails) / totalEmails) * 100) 
@@ -238,7 +248,8 @@ router.get("/stats", requireAdmin, async (req, res, next) => {
             total: stats.totalCampaigns
           },
           apiKeys: {
-            total: stats.totalApiKeys
+            total: stats.totalApiKeys,
+            topCreators: stats.topCreators || []
           },
           system: {
             database: "memory",

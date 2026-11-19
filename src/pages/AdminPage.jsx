@@ -74,6 +74,10 @@ export function AdminPage() {
   const [campaignTotalPages, setCampaignTotalPages] = useState(1);
   const [campaignLoading, setCampaignLoading] = useState(false);
 
+  // Overview tab: API Key Creators pagination
+  const [creatorPage, setCreatorPage] = useState(1);
+  const creatorsPerPage = 4;
+
   // System tab state
   const [systemInfo, setSystemInfo] = useState(null);
   const [smtpTesting, setSmtpTesting] = useState(false);
@@ -817,66 +821,142 @@ export function AdminPage() {
                   No API keys registered yet.
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {stats?.apiKeys?.topCreators.map((creator, idx) => (
-                    <div
-                      key={creator.userId || idx}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "10px 14px",
-                        background: "rgba(148, 163, 184, 0.06)",
-                        border: "1px solid rgba(148, 163, 184, 0.12)",
-                        borderRadius: "8px"
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <div
-                          style={{
-                            width: "28px",
-                            height: "28px",
-                            borderRadius: "50%",
-                            background: creator.role === "admin" ? "rgba(168, 85, 247, 0.15)" : "rgba(14, 165, 233, 0.15)",
-                            color: creator.role === "admin" ? "#a855f7" : "#0ea5e9",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "12px",
-                            fontWeight: 700
-                          }}
-                        >
-                          {creator.name?.charAt(0).toUpperCase() || "U"}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: "13px", fontWeight: 600 }}>{creator.name}</div>
-                          <div style={{ fontSize: "11px", color: "#64748b" }}>{creator.email}</div>
-                        </div>
+                (() => {
+                  const creatorsList = stats?.apiKeys?.topCreators || [];
+                  const creatorTotalPages = Math.ceil(creatorsList.length / creatorsPerPage) || 1;
+                  const safePage = Math.min(creatorPage, creatorTotalPages);
+                  const startIndex = (safePage - 1) * creatorsPerPage;
+                  const paginatedCreators = creatorsList.slice(startIndex, startIndex + creatorsPerPage);
+
+                  return (
+                    <>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {paginatedCreators.map((creator, idx) => (
+                          <div
+                            key={creator.userId || idx}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              padding: "10px 14px",
+                              background: "rgba(148, 163, 184, 0.06)",
+                              border: "1px solid rgba(148, 163, 184, 0.12)",
+                              borderRadius: "8px"
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                              <div
+                                style={{
+                                  width: "28px",
+                                  height: "28px",
+                                  borderRadius: "50%",
+                                  background: creator.role === "admin" ? "rgba(168, 85, 247, 0.15)" : "rgba(14, 165, 233, 0.15)",
+                                  color: creator.role === "admin" ? "#a855f7" : "#0ea5e9",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "12px",
+                                  fontWeight: 700
+                                }}
+                              >
+                                {creator.name?.charAt(0).toUpperCase() || "U"}
+                              </div>
+                              <div>
+                                <div style={{ fontSize: "13px", fontWeight: 600 }}>{creator.name}</div>
+                                <div style={{ fontSize: "11px", color: "#64748b" }}>{creator.email}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                              <span
+                                className={`badge badge-${creator.role === "admin" ? "admin" : "client"}`}
+                                style={{ fontSize: "10px", padding: "2px 8px" }}
+                              >
+                                {creator.role === "admin" ? "Admin" : "Regular"}
+                              </span>
+                              <span
+                                style={{
+                                  background: "rgba(234, 179, 8, 0.15)",
+                                  color: "#ca8a04",
+                                  padding: "4px 10px",
+                                  borderRadius: "9999px",
+                                  fontSize: "12px",
+                                  fontWeight: 700
+                                }}
+                              >
+                                {creator.apiKeyCount} {creator.apiKeyCount === 1 ? "Key" : "Keys"}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
 
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span
-                          className={`badge badge-${creator.role === "admin" ? "admin" : "client"}`}
-                          style={{ fontSize: "10px", padding: "2px 8px" }}
-                        >
-                          {creator.role === "admin" ? "Admin" : "Regular"}
-                        </span>
-                        <span
+                      {/* Pagination Controls for API Key Creators */}
+                      {creatorsList.length > creatorsPerPage && (
+                        <div
+                          className="admin-pagination"
                           style={{
-                            background: "rgba(234, 179, 8, 0.15)",
-                            color: "#ca8a04",
-                            padding: "4px 10px",
-                            borderRadius: "9999px",
-                            fontSize: "12px",
-                            fontWeight: 700
+                            marginTop: "14px",
+                            paddingTop: "12px",
+                            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: "8px"
                           }}
                         >
-                          {creator.apiKeyCount} {creator.apiKeyCount === 1 ? "Key" : "Keys"}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                          <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+                            Showing <strong>{startIndex + 1}</strong>–<strong>{Math.min(startIndex + creatorsPerPage, creatorsList.length)}</strong> of <strong>{creatorsList.length}</strong>
+                          </span>
+                          <div className="admin-pagination-btns" style={{ gap: "6px" }}>
+                            <button
+                              type="button"
+                              className="admin-page-btn"
+                              style={{ padding: "4px 10px", fontSize: "12px" }}
+                              disabled={safePage <= 1}
+                              onClick={() => setCreatorPage((p) => Math.max(1, p - 1))}
+                            >
+                              ‹ Prev
+                            </button>
+                            {Array.from({ length: creatorTotalPages }, (_, i) => i + 1).map((p) => (
+                              <button
+                                key={p}
+                                type="button"
+                                className={`admin-page-btn num-btn ${p === safePage ? "active" : ""}`}
+                                style={
+                                  p === safePage
+                                    ? {
+                                        backgroundColor: "#ef233c",
+                                        borderColor: "#ef233c",
+                                        color: "#ffffff",
+                                        fontWeight: "800",
+                                        minWidth: "28px",
+                                        height: "28px",
+                                        padding: 0
+                                      }
+                                    : { minWidth: "28px", height: "28px", padding: 0 }
+                                }
+                                onClick={() => setCreatorPage(p)}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              className="admin-page-btn"
+                              style={{ padding: "4px 10px", fontSize: "12px" }}
+                              disabled={safePage >= creatorTotalPages}
+                              onClick={() => setCreatorPage((p) => Math.min(creatorTotalPages, p + 1))}
+                            >
+                              Next ›
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()
               )}
             </div>
           </div>

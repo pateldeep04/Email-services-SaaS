@@ -647,6 +647,26 @@ export const memoryStore = {
       ? Math.round(((sentEmails + simulatedEmails) / totalEmails) * 100) 
       : 100;
 
+    // Group API keys by userId
+    const keyCountByUser = {};
+    for (const k of apiKeys) {
+      const uid = String(k.userId || "");
+      if (uid) keyCountByUser[uid] = (keyCountByUser[uid] || 0) + 1;
+    }
+    const topCreators = Object.entries(keyCountByUser)
+      .map(([userId, count]) => {
+        const u = users.find(usr => String(usr._id || usr.id) === userId);
+        return {
+          userId,
+          name: u?.name || "Deleted User",
+          email: u?.email || "—",
+          role: u?.role || "client",
+          apiKeyCount: count
+        };
+      })
+      .sort((a, b) => b.apiKeyCount - a.apiKeyCount)
+      .slice(0, 50);
+
     return {
       totalUsers,
       totalEmails,
@@ -656,7 +676,8 @@ export const memoryStore = {
       emailsLast24h,
       deliverabilityRate,
       totalCampaigns,
-      totalApiKeys
+      totalApiKeys,
+      topCreators
     };
   }
 };
